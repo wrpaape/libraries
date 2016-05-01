@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <ctime>
+
+extern "C" {
 #include <utils/rand.c>
+}
 
 class RandTest : public testing::Test
 {

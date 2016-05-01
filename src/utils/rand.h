@@ -64,9 +64,9 @@ inline double rand_in_dbl_range(const double lbound,
 	       + lbound;
 }
 
-static inline void swap_els(void *restrict el1,
-			    void *restrict el2,
-			    void *restrict buf,
+static inline void swap_els(void *__restrict__ el1,
+			    void *__restrict__ el2,
+			    void *__restrict__ buf,
 			    const size_t width);
 
 void shuffle_array(void *array,

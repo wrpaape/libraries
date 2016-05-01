@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <ctime>
+
+extern "C" {
 #include <utils/utils.c>
+}
 
 class UtilsTest : public testing::Test
 {

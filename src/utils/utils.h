@@ -87,8 +87,8 @@ inline size_t log_base_two(const size_t num)
 	return __builtin_ctzl(num);
 }
 
-inline void mem_swap(void *restrict x,
-		     void *restrict y,
+inline void mem_swap(void *__restrict__ x,
+		     void *__restrict__ y,
 		     const size_t width)
 {
 	char buffer[width];

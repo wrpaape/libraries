@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <ctime>
+
+extern "C" {
 #include <bheap/bheap.c>
+}
 
 class BHeapTest : public testing::Test
 {

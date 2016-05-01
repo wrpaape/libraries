@@ -16,9 +16,9 @@ extern inline double rand_in_dbl_range(const double lbound,
 
 extern inline int32_t *init_rand_int_array(const size_t length);
 
-inline void swap_els(void *restrict el1,
-		     void *restrict el2,
-		     void *restrict buf,
+inline void swap_els(void *__restrict__ el1,
+		     void *__restrict__ el2,
+		     void *__restrict__ buf,
 		     const size_t width)
 {
 	memcpy(buf, el1, width);
