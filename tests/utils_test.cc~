@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <ctime>
+
 #include <utils/utils.c>
 
 class UtilsTest : public testing::Test
