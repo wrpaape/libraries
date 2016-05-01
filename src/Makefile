@@ -69,4 +69,4 @@ $(BHEAP_OBJ): $(BHEAP_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) $(LIB_DIR)/*.a $(INC_DIR)/**/*.o $(INC_DIR)/**/*~ $(INC_DIR)/*~
+	$(RM) $(LIB_DIR)/*.a $(INC_DIR)/**/*.o $(INC_DIR)/**/*~ $(INC_DIR)/*~  $(INC_DIR)/../*~
