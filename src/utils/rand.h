@@ -1,9 +1,9 @@
 #ifndef UTILS_RAND_H_
 #define UTILS_RAND_H_
-#include "pcg_basic.h"   /* psuedorandom number generator */
-#include <time.h>        /* unique seed */
-#include <stdbool.h>     /* true, false */
-#include <utils/utils.h> /* malloc, memcpy, ptrdiff_t, stdbool */
+#include <utils/pcg_basic.h> /* psuedorandom number generator */
+#include <time.h>	     /* unique seed */
+#include <stdbool.h>	     /* true, false */
+#include <utils/utils.h>     /* malloc, memcpy, ptrdiff_t */
 
 #define RNG_MAX UINT32_MAX
 
