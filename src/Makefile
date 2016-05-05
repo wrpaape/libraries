@@ -1,8 +1,5 @@
 .PHONY: all clean
 
-# SRC_DIR = $(C_INCLUDE_PATH)
-# LIB_DIR = $(LIBRARY_PATH)
-
 ROOT_DIR  = ..
 SRC_DIR   = $(ROOT_DIR)/src
 OBJ_DIR   = $(ROOT_DIR)/obj
@@ -13,21 +10,41 @@ UTILS_DIR = $(SRC_DIR)/utils
 PCGB_DIR  = $(UTILS_DIR)
 RAND_DIR  = $(UTILS_DIR)
 BHEAP_DIR = $(SRC_DIR)/bheap
+BIGO_DIR  = $(UTILS_DIR)
 
 CC      = gcc
 CFLAGS  = -g -I$(SRC_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__
 AR      = ar
 ARFLAGS = rcs
 
-# test stuff
+# Google Test config
+# for 'GTEST_DIR' environment variable
 SHELL := /bin/zsh
-CXXFLAGS += -g -Wall -Wextra -pthread
+# Flags passed to the preprocessor.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
-GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-                $(GTEST_DIR)/include/gtest/internal/*.h
-GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-GTEST_FLAGS = -I$(GTEST_DIR)
-USER_TEST_FLAGS = -I$(SRC_DIR) -lpthread
+# Flags passed to the C++ compiler.
+CXXFLAGS += -g -Wall -Wextra -pthread
+# All Google Test headers.
+GTEST_HDRS = $(GTEST_DIR)/include/gtest/*.h \
+	     $(GTEST_DIR)/include/gtest/internal/*.h
+# All Google Test source files.
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HDRS)
+# Flags for building Google Test object files.
+GTEST_OBJ_FLAGS = -I$(GTEST_DIR)
+# Flags for building user test object files.
+TEST_OBJ_FLAGS  = -I$(SRC_DIR)
+# Flags for building user test binary files.
+TEST_BIN_FLAGS  = $(TEST_OBJ_FLAGS) -lpthread
+
+# # test stuff
+# SHELL := /bin/zsh
+# CXXFLAGS += -g -Wall -Wextra -pthread
+# CPPFLAGS += -isystem $(GTEST_DIR)/include
+# GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+#                 $(GTEST_DIR)/include/gtest/internal/*.h
+# GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+# GTEST_FLAGS = -I$(GTEST_DIR)
+# USER_TEST_FLAGS = -I$(SRC_DIR) -lpthread
 
 UTILS_NAME = utils
 UTILS_SRC  = $(addprefix $(UTILS_DIR)/, $(addsuffix .c, $(UTILS_NAME)))
@@ -59,49 +76,73 @@ BHEAP_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(BHEAP
 BHEAP_ODEP = $(BHEAP_SRC) $(BHEAP_HDR) $(UTILS_HDR)
 BHEAP_LDEP = $(BHEAP_OBJ) $(UTILS_OBJ)
 
+BIGO_NAME = big_o
+BIGO_SRC  = $(addprefix $(BIGO_DIR)/, $(addsuffix .c, $(BIGO_NAME)))
+BIGO_HDR  = $(addprefix $(BIGO_DIR)/, $(addsuffix .h, $(BIGO_NAME)))
+BIGO_OBJ  = $(addprefix $(OBJ_DIR)/, 	$(addsuffix .o, $(BIGO_NAME)))
+BIGO_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(BIGO_NAME))))
+BIGO_ODEP = $(BIGO_SRC) $(BIGO_HDR)
+BIGO_LDEP = $(BIGO_OBJ)
 
-# tests
+
+# TESTS
+
+# root/obj/gtest-all.a
 GTEST_ALL_NAME = gtest-all
 GTEST_ALL_SRC  = $(addprefix $(GTEST_DIR)/src/, $(addsuffix .cc, $(GTEST_ALL_NAME)))
 GTEST_ALL_OBJ  = $(addprefix $(OBJ_DIR)/,       $(addsuffix .o,  $(GTEST_ALL_NAME)))
-GTEST_ALL_LIB  = $(addprefix $(LIB_DIR)/,       $(addsuffix .a,  $(GTEST_ALL_NAME)))
+GTEST_ALL_LIB  = $(addprefix $(OBJ_DIR)/,       $(addsuffix .a,  $(GTEST_ALL_NAME)))
 GTEST_ALL_ODEP = $(GTEST_ALL_SRC) $(GTEST_SRCS_)
 GTEST_ALL_LDEP = $(GTEST_ALL_OBJ)
 
+# root/obj/gtest_main.a
 GTEST_MAIN_NAME = gtest_main
 GTEST_MAIN_SRC  = $(addprefix $(GTEST_DIR)/src/, $(addsuffix .cc, $(GTEST_MAIN_NAME)))
 GTEST_MAIN_OBJ  = $(addprefix $(OBJ_DIR)/,       $(addsuffix .o,  $(GTEST_MAIN_NAME)))
-GTEST_MAIN_LIB  = $(addprefix $(LIB_DIR)/,       $(addsuffix .a,  $(GTEST_MAIN_NAME)))
+GTEST_MAIN_LIB  = $(addprefix $(OBJ_DIR)/,       $(addsuffix .a,  $(GTEST_MAIN_NAME)))
 GTEST_MAIN_ODEP = $(GTEST_MAIN_SRC) $(GTEST_SRCS_)
-GTEST_MAIN_LDEP = $(GTEST_MAIN_OBJ)
+GTEST_MAIN_LDEP = $(GTEST_ALL_OBJ) $(GTEST_MAIN_OBJ)
 
+# root/tests/utils_test
 UTILS_TEST_NAME = $(addsuffix _test, $(UTILS_NAME))
 UTILS_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(UTILS_TEST_NAME)))
 UTILS_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(UTILS_TEST_NAME))
 UTILS_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(UTILS_TEST_NAME))
-UTILS_TEST_ODEP = $(UTILS_TEST_SRC) $(UTILS_SRC) $(GTEST_HEADERS)
+UTILS_TEST_ODEP = $(UTILS_TEST_SRC) $(UTILS_SRC) $(GTEST_HDRS)
 UTILS_TEST_BDEP = $(UTILS_TEST_OBJ) $(GTEST_MAIN_LIB)
 
+# root/tests/rand_test
 RAND_TEST_NAME = $(addsuffix _test, $(RAND_NAME))
 RAND_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(RAND_TEST_NAME)))
 RAND_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(RAND_TEST_NAME))
 RAND_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(RAND_TEST_NAME))
-RAND_TEST_ODEP = $(RAND_TEST_SRC) $(RAND_SRC) $(GTEST_HEADERS)
+RAND_TEST_ODEP = $(RAND_TEST_SRC) $(RAND_SRC) $(GTEST_HDRS)
 RAND_TEST_BDEP = $(RAND_TEST_OBJ) $(GTEST_MAIN_LIB)
 
+# root/tests/bheap_test
 BHEAP_TEST_NAME = $(addsuffix _test, $(BHEAP_NAME))
 BHEAP_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(BHEAP_TEST_NAME)))
 BHEAP_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(BHEAP_TEST_NAME))
 BHEAP_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(BHEAP_TEST_NAME))
-BHEAP_TEST_ODEP = $(BHEAP_TEST_SRC) $(BHEAP_SRC) $(GTEST_HEADERS)
+BHEAP_TEST_ODEP = $(BHEAP_TEST_SRC) $(BHEAP_SRC) $(GTEST_HDRS)
 BHEAP_TEST_BDEP = $(BHEAP_TEST_OBJ) $(GTEST_MAIN_LIB)
 
-## all make targets
-USER_LIBS  = $(UTILS_LIB) $(RAND_LIB) $(BHEAP_LIB)
-TEST_LIBS  = $(GTEST_ALL_LIB) $(GTEST_MAIN_LIB) 
-USER_TESTS = $(UTILS_TEST_BIN) $(RAND_TEST_BIN) $(BHEAP_TEST_BIN)
+# convenience groupings
+GROUP = $(foreach item, $(addsuffix _$(1), $($(2))), $(eval $(item)))
 
-all: $(USER_LIBS) $(TEST_LIBS) $(USER_TESTS)
+USER_ITEMS = UTILS RAND BHEAP BIGO
+TEST_ITEMS = GTEST_ALL GTEST_MAIN
+USER_LIBS  = $(foreach item, $(addsuffix, _LIB, $(USER_ITEMS)), $($(item)))
+USER_TESTS = $(foreach item, $(addsuffix, _TEST_BIN, $(USER_ITEMS)), $($(item)))
+TEST_LIBS  = $(foreach item, $(addsuffix, _LIB, $(TEST_ITEMS)), $($(item)))
+
+# USER_LIBS  = $(call GROUP, LIB,	     USER_ITEMS)
+# USER_TESTS = $(call GROUP, TEST_BIN, USER_ITEMS)
+# TEST_LIBS  = $(call GROUP, LIB,      TEST_ITEMS)
+ALL_TRGTS  = $(USER_LIBS) $(TEST_LIBS) $(USER_TESTS)
+
+
+all: $(ALL_TRGTS)
 
 $(UTILS_LIB): $(UTILS_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
@@ -110,6 +151,9 @@ $(RAND_LIB): $(RAND_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(BHEAP_LIB): $(BHEAP_LDEP)
+	$(AR) $(ARFLAGS) $@ $^
+
+$(BIGO_LIB): $(BIGO_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(GTEST_ALL_LIB): $(GTEST_ALL_LDEP)
@@ -139,6 +183,9 @@ $(RAND_OBJ): $(RAND_ODEP)
 $(BHEAP_OBJ): $(BHEAP_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+$(BIGO_OBJ): $(BIGO_ODEP)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 $(GTEST_ALL_OBJ): $(GTEST_ALL_ODEP)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GTEST_FLAGS) -c -o $@ $<
 
@@ -155,4 +202,4 @@ $(BHEAP_TEST_OBJ): $(BHEAP_TEST_ODEP)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -c -o $@ $<
 
 clean:
-	$(RM) $(LIB_DIR)/*.a $(OBJ_DIR)/*.o $(ROOT_DIR)/*~ $(ROOT_DIR)/**/*~ $(ROOT_DIR)/**/**/*~
+	$(RM) $(LIB_DIR)/*.a $(OBJ_DIR)/*.o
