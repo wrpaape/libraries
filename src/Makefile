@@ -1,5 +1,10 @@
 .PHONY: all clean
 
+# TODO:
+# 1) fix bheap.c (in process of making more robust, generic)
+# 2) complete unit testing
+# 3) resolve c-cpp syntax issues for ALL tests
+
 ROOT_DIR = ..
 SRC_DIR  = $(ROOT_DIR)/src
 OBJ_DIR  = $(ROOT_DIR)/obj
@@ -107,7 +112,7 @@ RAND_TEST_SRC  = $(addprefix $(TEST_DIR)/, $(addsuffix .cc, $(RAND_TEST_NAME)))
 RAND_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(RAND_TEST_NAME))
 RAND_TEST_BIN  = $(addprefix $(TEST_DIR)/, $(RAND_TEST_NAME))
 RAND_TEST_ODEP = $(RAND_TEST_SRC) $(RAND_SRC) $(GTEST_HDRS)
-RAND_TEST_BDEP = $(RAND_TEST_OBJ) $(GTEST_MAIN_LIB)
+RAND_TEST_BDEP = $(RAND_TEST_OBJ) $(PCGB_OBJ) $(GTEST_MAIN_LIB)
 
 # root/tests/bheap_test
 BHEAP_TEST_NAME = $(addsuffix _test, $(BHEAP_NAME))
@@ -127,7 +132,8 @@ EXPAND_GROUP = $(foreach item, $(patsubst %, %_$1, $2), $($(item)))
 ALL_OBJS      = $(call EXPAND_GROUP,OBJ,$(ALL_ITEMS))
 ALL_LIBS      = $(call EXPAND_GROUP,LIB,$(ALL_ITEMS))
 ALL_TEST_BINS = $(call EXPAND_GROUP,TEST_BIN,$(USER_ITEMS))
-ALL_TARGETS   = $(ALL_OBJS) $(ALL_LIBS) $(ALL_TEST_BINS)
+# ALL_TARGETS   = $(ALL_OBJS) $(ALL_LIBS) $(ALL_TEST_BINS)
+ALL_TARGETS   = $(ALL_OBJS) $(ALL_LIBS)
 
 all: $(ALL_TARGETS)
 
