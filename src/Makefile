@@ -128,11 +128,13 @@ BHEAP_TEST_ODEP = $(BHEAP_TEST_SRC) $(BHEAP_SRC) $(GTEST_HDRS)
 BHEAP_TEST_BDEP = $(BHEAP_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 # convenience groupings
-GROUP = $(foreach item, $(addsuffix _$(1), $($(2))), $(eval $(item)))
 
 USER_ITEMS = UTILS RAND BHEAP BIGO
 TEST_ITEMS = GTEST_ALL GTEST_MAIN
-USER_LIBS  = $(foreach item, $(addsuffix, _LIB, $(USER_ITEMS)), $($(item)))
+
+GROUP = $(foreach item, $(patsubst %, %_$1, $2), $($(item)))
+ALL_LIBS = $(call GROUP,LIB,$(USER_ITEMS) $(TEST_ITEMS))
+$(info "ALL_LIBS: $(ALL_LIBS)")
 USER_TESTS = $(foreach item, $(addsuffix, _TEST_BIN, $(USER_ITEMS)), $($(item)))
 TEST_LIBS  = $(foreach item, $(addsuffix, _LIB, $(TEST_ITEMS)), $($(item)))
 
