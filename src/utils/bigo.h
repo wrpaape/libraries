@@ -95,7 +95,7 @@
 #define _TC_QUA_ENUM2 TC_N_SQUARED
 #define _TC_QUA_ENUM3 TC_N_2
 
-#define _TC_CUB_ENUM1 CUBIC,
+#define _TC_CUB_ENUM1 CUBIC
 #define _TC_CUB_ENUM2 TC_N_CUBED
 #define _TC_CUB_ENUM3 TC_N_3
 
@@ -105,7 +105,7 @@
 
 #define _TC_FAC_ENUM1 FACTORIAL
 #define _TC_FAC_ENUM2 TC_FACT_N
-#define _TC_FAC_ENUM3 TC_N_!
+#define _TC_FAC_ENUM3 TC_N_FACT
 
 /* class macro shorthand */
 #define _TC_CLASS_TYPE(CLASS, TYPE) _TC_ ## CLASS ## _ ## TYPE
@@ -167,7 +167,6 @@ static const char *TIME_COMPLEXITY_ORDERS[] = {
 static const char *TIME_COMPLEXITY_RATINGS[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_RATING)
 };
-
 
 /* stringify TimeComplexityClass enum */
 inline char *time_complexity_class(const enum TimeComplexityClass tcc)

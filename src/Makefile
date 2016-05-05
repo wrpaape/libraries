@@ -1,10 +1,10 @@
 .PHONY: all clean
 
-ROOT_DIR  = ..
-SRC_DIR   = $(ROOT_DIR)/src
-OBJ_DIR   = $(ROOT_DIR)/obj
-LIB_DIR   = $(ROOT_DIR)/lib
-TESTS_DIR = $(ROOT_DIR)/tests
+ROOT_DIR = ..
+SRC_DIR  = $(ROOT_DIR)/src
+OBJ_DIR  = $(ROOT_DIR)/obj
+LIB_DIR  = $(ROOT_DIR)/lib
+TEST_DIR = $(ROOT_DIR)/tests
 
 UTILS_DIR = $(SRC_DIR)/utils
 PCGB_DIR  = $(UTILS_DIR)
@@ -36,16 +36,6 @@ TEST_OBJ_FLAGS  = -I$(SRC_DIR)
 # Flags for building user test binary files.
 TEST_BIN_FLAGS  = $(TEST_OBJ_FLAGS) -lpthread
 
-# # test stuff
-# SHELL := /bin/zsh
-# CXXFLAGS += -g -Wall -Wextra -pthread
-# CPPFLAGS += -isystem $(GTEST_DIR)/include
-# GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-#                 $(GTEST_DIR)/include/gtest/internal/*.h
-# GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-# GTEST_FLAGS = -I$(GTEST_DIR)
-# USER_TEST_FLAGS = -I$(SRC_DIR) -lpthread
-
 UTILS_NAME = utils
 UTILS_SRC  = $(addprefix $(UTILS_DIR)/, $(addsuffix .c, $(UTILS_NAME)))
 UTILS_HDR  = $(addprefix $(UTILS_DIR)/, $(addsuffix .h, $(UTILS_NAME)))
@@ -76,11 +66,11 @@ BHEAP_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(BHEAP
 BHEAP_ODEP = $(BHEAP_SRC) $(BHEAP_HDR) $(UTILS_HDR)
 BHEAP_LDEP = $(BHEAP_OBJ) $(UTILS_OBJ)
 
-BIGO_NAME = big_o
+BIGO_NAME = bigo
 BIGO_SRC  = $(addprefix $(BIGO_DIR)/, $(addsuffix .c, $(BIGO_NAME)))
 BIGO_HDR  = $(addprefix $(BIGO_DIR)/, $(addsuffix .h, $(BIGO_NAME)))
-BIGO_OBJ  = $(addprefix $(OBJ_DIR)/, 	$(addsuffix .o, $(BIGO_NAME)))
-BIGO_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(BIGO_NAME))))
+BIGO_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(BIGO_NAME)))
+BIGO_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(BIGO_NAME))))
 BIGO_ODEP = $(BIGO_SRC) $(BIGO_HDR)
 BIGO_LDEP = $(BIGO_OBJ)
 
@@ -105,46 +95,41 @@ GTEST_MAIN_LDEP = $(GTEST_ALL_OBJ) $(GTEST_MAIN_OBJ)
 
 # root/tests/utils_test
 UTILS_TEST_NAME = $(addsuffix _test, $(UTILS_NAME))
-UTILS_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(UTILS_TEST_NAME)))
+UTILS_TEST_SRC  = $(addprefix $(TEST_DIR)/, $(addsuffix .cc, $(UTILS_TEST_NAME)))
 UTILS_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(UTILS_TEST_NAME))
-UTILS_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(UTILS_TEST_NAME))
+UTILS_TEST_BIN  = $(addprefix $(TEST_DIR)/, $(UTILS_TEST_NAME))
 UTILS_TEST_ODEP = $(UTILS_TEST_SRC) $(UTILS_SRC) $(GTEST_HDRS)
 UTILS_TEST_BDEP = $(UTILS_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 # root/tests/rand_test
 RAND_TEST_NAME = $(addsuffix _test, $(RAND_NAME))
-RAND_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(RAND_TEST_NAME)))
+RAND_TEST_SRC  = $(addprefix $(TEST_DIR)/, $(addsuffix .cc, $(RAND_TEST_NAME)))
 RAND_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(RAND_TEST_NAME))
-RAND_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(RAND_TEST_NAME))
+RAND_TEST_BIN  = $(addprefix $(TEST_DIR)/, $(RAND_TEST_NAME))
 RAND_TEST_ODEP = $(RAND_TEST_SRC) $(RAND_SRC) $(GTEST_HDRS)
 RAND_TEST_BDEP = $(RAND_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 # root/tests/bheap_test
 BHEAP_TEST_NAME = $(addsuffix _test, $(BHEAP_NAME))
-BHEAP_TEST_SRC  = $(addprefix $(TESTS_DIR)/, $(addsuffix .cc, $(BHEAP_TEST_NAME)))
+BHEAP_TEST_SRC  = $(addprefix $(TEST_DIR)/, $(addsuffix .cc, $(BHEAP_TEST_NAME)))
 BHEAP_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,   $(BHEAP_TEST_NAME))
-BHEAP_TEST_BIN  = $(addprefix $(TESTS_DIR)/, $(BHEAP_TEST_NAME))
+BHEAP_TEST_BIN  = $(addprefix $(TEST_DIR)/, $(BHEAP_TEST_NAME))
 BHEAP_TEST_ODEP = $(BHEAP_TEST_SRC) $(BHEAP_SRC) $(GTEST_HDRS)
 BHEAP_TEST_BDEP = $(BHEAP_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 # convenience groupings
+USER_ITEMS  = UTILS RAND BHEAP BIGO
+GTEST_ITEMS = GTEST_ALL GTEST_MAIN
+ALL_ITEMS   = $(USER_ITEMS) $(GTEST_ITEMS)
 
-USER_ITEMS = UTILS RAND BHEAP BIGO
-TEST_ITEMS = GTEST_ALL GTEST_MAIN
+EXPAND_GROUP = $(foreach item, $(patsubst %, %_$1, $2), $($(item)))
 
-GROUP = $(foreach item, $(patsubst %, %_$1, $2), $($(item)))
-ALL_LIBS = $(call GROUP,LIB,$(USER_ITEMS) $(TEST_ITEMS))
-$(info "ALL_LIBS: $(ALL_LIBS)")
-USER_TESTS = $(foreach item, $(addsuffix, _TEST_BIN, $(USER_ITEMS)), $($(item)))
-TEST_LIBS  = $(foreach item, $(addsuffix, _LIB, $(TEST_ITEMS)), $($(item)))
+ALL_OBJS      = $(call EXPAND_GROUP,OBJ,$(ALL_ITEMS))
+ALL_LIBS      = $(call EXPAND_GROUP,LIB,$(ALL_ITEMS))
+ALL_TEST_BINS = $(call EXPAND_GROUP,TEST_BIN,$(USER_ITEMS))
+ALL_TARGETS   = $(ALL_OBJS) $(ALL_LIBS) $(ALL_TEST_BINS)
 
-# USER_LIBS  = $(call GROUP, LIB,	     USER_ITEMS)
-# USER_TESTS = $(call GROUP, TEST_BIN, USER_ITEMS)
-# TEST_LIBS  = $(call GROUP, LIB,      TEST_ITEMS)
-ALL_TRGTS  = $(USER_LIBS) $(TEST_LIBS) $(USER_TESTS)
-
-
-all: $(ALL_TRGTS)
+all: $(ALL_TARGETS)
 
 $(UTILS_LIB): $(UTILS_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
@@ -165,13 +150,13 @@ $(GTEST_MAIN_LIB): $(GTEST_MAIN_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(UTILS_TEST_BIN): $(UTILS_TEST_BDEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_BIN_FLAGS) -o $@ $^
 
 $(RAND_TEST_BIN): $(RAND_TEST_BDEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_BIN_FLAGS) -o $@ $^
 
 $(BHEAP_TEST_BIN): $(BHEAP_TEST_BDEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_BIN_FLAGS) -o $@ $^
 
 $(UTILS_OBJ): $(UTILS_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -189,19 +174,19 @@ $(BIGO_OBJ): $(BIGO_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(GTEST_ALL_OBJ): $(GTEST_ALL_ODEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GTEST_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GTEST_OBJ_FLAGS) -c -o $@ $<
 
 $(GTEST_MAIN_OBJ): $(GTEST_MAIN_ODEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GTEST_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GTEST_OBJ_FLAGS) -c -o $@ $<
 
 $(UTILS_TEST_OBJ): $(UTILS_TEST_ODEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_OBJ_FLAGS) -c -o $@ $<
 
 $(RAND_TEST_OBJ): $(RAND_TEST_ODEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_OBJ_FLAGS) -c -o $@ $<
 
 $(BHEAP_TEST_OBJ): $(BHEAP_TEST_ODEP)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(USER_TEST_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_OBJ_FLAGS) -c -o $@ $<
 
 clean:
-	$(RM) $(LIB_DIR)/*.a $(OBJ_DIR)/*.o
+	$(RM) $(ALL_TARGETS)
