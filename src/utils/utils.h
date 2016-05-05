@@ -28,6 +28,30 @@ do {									\
 	exit(EXIT_FAILURE);						\
 } while (0)
 
+#ifdef __cplusplus /* cast returned alloc, 'nullptr' instead of 'NULL' */
+#define HANDLE_MALLOC(ptr, size)					\
+do {									\
+	ptr = (__typeof__(ptr)) malloc(size);				\
+	if (ptr == nullptr)						\
+		EXIT_ON_FAILURE("failed to allocate %lu bytes", size);	\
+} while (0)
+
+#define HANDLE_CALLOC(ptr, count, size)					\
+do {									\
+	ptr = (__typeof__(ptr)) calloc(count, size);			\
+	if (ptr == nullptr)						\
+		EXIT_ON_FAILURE("failed to allocate %lu blocks of %lu"	\
+				"bytes", count, size);			\
+} while (0)
+
+#define HANDLE_REALLOC(ptr, size)					\
+do {									\
+	ptr = (__typeof__(ptr)) realloc(ptr, size);			\
+	if (ptr == nullptr)						\
+		EXIT_ON_FAILURE("failed to reallocate memory at '" #ptr	\
+				"' to %lu bytes", size);		\
+} while (0)
+#else
 #define HANDLE_MALLOC(ptr, size)					\
 do {									\
 	ptr = malloc(size);						\
@@ -50,6 +74,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to reallocate memory at '" #ptr	\
 				"' to %lu bytes", size);		\
 } while (0)
+#endif
 
 #define VAR_SWAP(x, y)				\
 do {						\
