@@ -169,22 +169,7 @@ static const char *TIME_COMPLEXITY_RATINGS[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_RATING)
 };
 
-#define DEFINE_TEST_PARAMS(FN)
 
-struct FnInput {
-	void *input;
-	clock_t ticks;
-	size_t n;
-};
-
-struct FnInputPool {
-	struct FnInput *inputs;
-	size_t count;
-};
-
-inline struct FnInputPool *
-
-/* stringify TimeComplexityClass enum */
 inline char *time_complexity_class(const enum TimeComplexityClass tcc)
 {
 	return TIME_COMPLEXITY_CLASSES[tcc];
