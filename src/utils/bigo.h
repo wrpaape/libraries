@@ -1,8 +1,7 @@
 #ifndef UTILS_BIGO_H_
 #define UTILS_BIGO_H_
 
-/* descriptions from 'The Algorithm Design Manual 2ed' by Steven S. Skiena */
-
+#include <time.h> /* clock_t */
 
 /* class label strings */
 #define _TC_CON_LABEL "Constant"
@@ -31,6 +30,8 @@
 #define _TC_BIG_OMEGA_OF(ORDER)		"𝙏 ( " ORDER " )"
 #define _TC_LITTLE_OMEGA_OF(ORDER)	"𝙏 ( " ORDER " )"
 #define _TC_BIG_THETA_OF(ORDER)		"𝙏 ( " ORDER " )"
+
+/* descriptions from 'The Algorithm Design Manual 2ed' by Steven S. Skiena */
 
 /* class description strings */
 #define _TC_CON_DESC "Such functions might measure the cost of adding "	\
@@ -168,6 +169,21 @@ static const char *TIME_COMPLEXITY_RATINGS[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_RATING)
 };
 
+#define DEFINE_TEST_PARAMS(FN)
+
+struct FnInput {
+	void *input;
+	clock_t ticks;
+	size_t n;
+};
+
+struct FnInputPool {
+	struct FnInput *inputs;
+	size_t count;
+};
+
+inline struct FnInputPool *
+
 /* stringify TimeComplexityClass enum */
 inline char *time_complexity_class(const enum TimeComplexityClass tcc)
 {
@@ -183,4 +199,6 @@ inline char *time_complexity_rating(const enum TimeComplexityClass tcc)
 {
 	return TIME_COMPLEXITY_RATINGS[tcc];
 }
+
+
 #endif /* ifndef UTILS_BIGO_H_ */
