@@ -1,5 +1,5 @@
-#include <pthread.h>	 /* timeout */
-#include <utils/utils.h> /* error handling */
+#include <utils/utils.h>	/* error handling */
+#include <utils/pthread.h>	/* timeout */
 #include <utils/bigo.h>
 
 extern inline char *time_complexity_class(const enum TimeComplexityClass tcc);
@@ -13,7 +13,7 @@ inline void set_time_ratios_upto_n_cubed(long double *ratios,
 {
 
 	const long double n_ld     = (long double) n;
-	const long double lg_n     = log2l(n_ld);
+	const long double lg_n     = (long double) log_base_two(n);
 	const size_t n_sq = n * n;
 
 	ratios[0l] = time;
@@ -54,7 +54,7 @@ enum TimeComplexityClass approximate_time_complexity(struct SizeStream *restrict
 
 	const size_t n_res = n_range->res;
 
-	pthread_t
+	pthread_t timeout_thread;
 	size_t output_depth;
 	void (*set_time_ratios)(long double *,
 				const long double,

@@ -1,5 +1,11 @@
 #ifndef UTILS_UTILS_H_
 #define UTILS_UTILS_H_
+#ifdef __cplusplus /* ensure C linkage */
+extern "C" {
+#define restrict __restrict__
+#endif
+
+
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <stdlib.h>	/* m/c/realloc, free, exit */
@@ -15,74 +21,104 @@
 
 #define BIT_SIZE(TYPE) (sizeof(TYPE) * CHAR_BIT)
 
-#define EXIT_ON_FAILURE(format, ...)					\
+#define EXIT_ON_FAILURE(FORMAT, ...)					\
 do {									\
 	fprintf(stderr,							\
-		"\n\e[31m\e[5mERROR:\e[25m\t\e[4m" format "\e[24m\n\n"	\
-		"errno:\t%s\n\n"					\
-		"file:\t%s\n\n"						\
-		"func:\t%s\n\n"						\
-		"line:\t%d\e[0m\n",					\
+		"\n\e[31m\e[5mERROR:\e[25m\t\e[4m" FORMAT "\e[24m\n\n"	\
+		"errno: %s\n\n"						\
+		"file:  %s\n\n"						\
+		"func:  %s\n\n"						\
+		"line:  %d\e[0m\n",					\
 		##__VA_ARGS__,						\
 		strerror(errno), __FILE__, __func__, __LINE__);		\
 	exit(EXIT_FAILURE);						\
 } while (0)
 
-#ifdef __cplusplus /* cast returned alloc, 'nullptr' instead of 'NULL' */
-#define HANDLE_MALLOC(ptr, size)					\
+/* error handlers
+ * ========================================================================== */
+#ifdef __cplusplus /* for c++ files */
+/* memory allocation (cast returned alloc, 'nullptr' instead of 'NULL') */
+#define HANDLE_MALLOC(PTR, SIZE)					\
 do {									\
-	ptr = (__typeof__(ptr)) malloc(size);				\
-	if (ptr == nullptr)						\
-		EXIT_ON_FAILURE("failed to allocate %lu bytes", size);	\
+	PTR = (__typeof__(PTR)) malloc(SIZE);				\
+	if (PTR == nullptr)						\
+		EXIT_ON_FAILURE("failed to allocate %lu bytes of "	\
+				"memory for '" #PTR "'", SIZE);		\
 } while (0)
-
-#define HANDLE_CALLOC(ptr, count, size)					\
+#define HANDLE_CALLOC(PTR, COUNT, SIZE)					\
 do {									\
-	ptr = (__typeof__(ptr)) calloc(count, size);			\
-	if (ptr == nullptr)						\
+	PTR = (__typeof__(PTR)) calloc(COUNT, SIZE);			\
+	if (PTR == nullptr)						\
 		EXIT_ON_FAILURE("failed to allocate %lu blocks of %lu"	\
-				"bytes", count, size);			\
+				"bytes of zeroed memory for '" #PTR	\
+				"'", COUNT, SIZE);			\
+} while (0)
+#define HANDLE_REALLOC(PTR, SIZE)					\
+do {									\
+	PTR = (__typeof__(PTR)) realloc(PTR, SIZE);			\
+	if (PTR == nullptr)						\
+		EXIT_ON_FAILURE("failed to reallocate memory for '"	\
+				#PTR "' to %lu bytes", SIZE);		\
 } while (0)
 
-#define HANDLE_REALLOC(ptr, size)					\
+/* fopen ('nullptr' instead of 'NULL') */
+#define HANDLE_FOPEN(FILE_PTR, FILENAME, MODE)				\
 do {									\
-	ptr = (__typeof__(ptr)) realloc(ptr, size);			\
-	if (ptr == nullptr)						\
-		EXIT_ON_FAILURE("failed to reallocate memory at '" #ptr	\
-				"' to %lu bytes", size);		\
-} while (0)
-#else
-#define HANDLE_MALLOC(ptr, size)					\
-do {									\
-	ptr = malloc(size);						\
-	if (ptr == NULL)						\
-		EXIT_ON_FAILURE("failed to allocate %lu bytes", size);	\
+	FILE_PTR = fopen(filename, MODE);				\
+	if (FILE_PTR == nullptr)					\
+		EXIT_ON_FAILURE("failed to open file \"%s\" for '"	\
+				#FILE_PTR "' in mode \"%s\"", FILENAME,	\
+				MODE);					\
 } while (0)
 
-#define HANDLE_CALLOC(ptr, count, size)					\
+#else	/* for c files */
+/* memory allocation */
+#define HANDLE_MALLOC(PTR, SIZE)					\
 do {									\
-	ptr = calloc(count, size);					\
-	if (ptr == NULL)						\
+	PTR = malloc(SIZE);						\
+	if (PTR == NULL)						\
+		EXIT_ON_FAILURE("failed to allocate %lu bytes of "	\
+				"memory for '" #PTR "'", SIZE);		\
+} while (0)
+#define HANDLE_CALLOC(PTR, COUNT, SIZE)					\
+do {									\
+	PTR = calloc(COUNT, SIZE);					\
+	if (PTR == NULL)						\
 		EXIT_ON_FAILURE("failed to allocate %lu blocks of %lu"	\
-				"bytes", count, size);			\
+				"bytes of zeroed memory for '" #PTR	\
+				"'", COUNT, SIZE);			\
 } while (0)
-
-#define HANDLE_REALLOC(ptr, size)					\
+#define HANDLE_REALLOC(PTR, SIZE)					\
 do {									\
-	ptr = realloc(ptr, size);					\
-	if (ptr == NULL)						\
-		EXIT_ON_FAILURE("failed to reallocate memory at '" #ptr	\
-				"' to %lu bytes", size);		\
+	PTR = realloc(PTR, SIZE);					\
+	if (PTR == NULL)						\
+		EXIT_ON_FAILURE("failed to reallocate memory for '"	\
+				#PTR "' to %lu bytes", SIZE);		\
 } while (0)
-#endif
 
-#define VAR_SWAP(x, y)				\
+/* fopen */
+#define HANDLE_FOPEN(FILE_PTR, FILENAME, MODE)				\
+do {									\
+	FILE_PTR = fopen(filename, MODE);				\
+	if (FILE_PTR == NULL)						\
+		EXIT_ON_FAILURE("failed to open file \"%s\" for '"	\
+				#FILE_PTR "' in mode \"%s\"", FILENAME,	\
+				MODE);					\
+} while (0)
+#endif	/* ifdef __cplusplus */
+
+
+
+
+/* swap variables (same type) */
+#define VAR_SWAP(X, Y)				\
 do {						\
-	const __typeof__(x) __swap_tmp = x;	\
-	x = y;					\
-	y = __swap_tmp;				\
+	const __typeof__(X) __swap_tmp = X;	\
+	X = Y;					\
+	Y = __swap_tmp;				\
 } while(0)
 
+/* swap elements of 'ARRAY' at indices 'I', 'J' */
 #define EL_SWAP(ARRAY, I, J)				\
 do {							\
 	const __typeof__(*ARRAY) __swap_tmp = ARRAY[I];	\
@@ -90,6 +126,7 @@ do {							\
 	ARRAY[J] =  __swap_tmp;				\
 } while(0)
 
+/* print elements of 'ARRAY' */
 #define PRINT_ARRAY(ARRAY, LENGTH, FORMAT)		\
 do {							\
 	printf(#ARRAY ": {\n" FORMAT, ARRAY[0l]);	\
@@ -98,9 +135,8 @@ do {							\
 	puts("\n}");					\
 } while (0)
 
-
-
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
 
 inline size_t next_pow_two(const size_t num)
 {
@@ -121,5 +157,8 @@ inline void mem_swap(void *__restrict__ x,
 	memcpy(x,	    y,		 width);
 	memcpy(y,	    &buffer[0l], width);
 }
-#endif /* ifndef UTILS_UTILS_H_ */
 
+#ifdef __cplusplus /* close 'extern "C" {' */
+}
+#endif
+#endif /* ifndef UTILS_UTILS_H_ */
