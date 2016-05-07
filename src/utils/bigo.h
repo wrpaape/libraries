@@ -160,11 +160,12 @@
 				   MACRO(EXP),	\
 				   MACRO(FAC)
 
-/* stringify lookup maps */
+/* time complexity ids */
 enum TimeComplexityClass {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_ENUMS)
 };
 
+/* stringify lookup maps */
 static const char *TIME_COMPLEXITY_CLASSES[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_LABEL)
 };
@@ -175,6 +176,17 @@ static const char *TIME_COMPLEXITY_ORDERS[] = {
 
 static const char *TIME_COMPLEXITY_RATINGS[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_RATING)
+};
+
+/* spec for generating a range of input 'n' */
+struct SizeStream {
+	size_t min;
+	size_t max;
+	size_t res;
+	void (*generator)(size_t *,
+			  const size_t,
+			  const size_t,
+			  const size_t)
 };
 
 /* input size cutoffs for testing extreme growth rates */

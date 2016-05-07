@@ -1,19 +1,11 @@
-#include <utils/utils.h>
+#include <pthread.h>	 /* timeout */
+#include <utils/utils.h> /* error handling */
 #include <utils/bigo.h>
 
 extern inline char *time_complexity_class(const enum TimeComplexityClass tcc);
 extern inline char *time_complexity_order(const enum TimeComplexityClass tcc);
 extern inline char *time_complexity_rating(const enum TimeComplexityClass tcc);
 
-struct SizeStream {
-	size_t min;
-	size_t max;
-	size_t res;
-	void (*generator)(const size_t *,
-			  const size_t,
-			  const size_t,
-			  const size_t)
-};
 
 inline void set_time_ratios_upto_n_cubed(long double *ratios,
 					 const long double time,
@@ -27,8 +19,9 @@ inline void set_time_ratios_upto_n_cubed(long double *ratios,
 	ratios[0l] = time;
 	ratios[1l] = time / lg_n;
 	ratios[2l] = time / n_ld;
-	ratios[3l] = time / ((long double) n_sq);
-	ratios[4l] = time / ((long double) (n_sq * n));
+	ratios[3l] = time / (n_ld * lg_n);
+	ratios[4l] = time / ((long double) n_sq);
+	ratios[5l] = time / ((long double) (n_sq * n));
 }
 
 inline void set_time_ratios_upto_exp_n(long double *ratios,
@@ -36,7 +29,7 @@ inline void set_time_ratios_upto_exp_n(long double *ratios,
 				       const size_t n)
 {
 	set_time_ratios_upto_n_cubed(ratios, time, n);
-	ratios[5l] = time / ((long double) (1ul << n));
+	ratios[6l] = time / ((long double) (1ul << n));
 }
 
 inline void set_time_ratios_upto_n_fact(long double *ratios,
@@ -44,7 +37,7 @@ inline void set_time_ratios_upto_n_fact(long double *ratios,
 					const size_t n)
 {
 	set_time_ratios_upto_exp_n(ratios, time, n);
-	ratios[6l] = time / FACTORIAL_MAP[n];
+	ratios[7l] = time / FACTORIAL_MAP[n];
 }
 
 
@@ -52,33 +45,49 @@ enum TimeComplexityClass approximate_time_complexity(struct SizeStream *restrict
 						     struct timeval *restrict timeout,
 						     clock_t (*function_timer)(const size_t))
 {
+	const size_t n_min = n_range->min;
+	const size_t n_max = n_range->max;
 
-	if (n_range->max < n_range->min)
+	if (n_max < n_min)
 		EXIT_ON_FAILURE("maximum input 'n' ( %zu ) exceeds minimum ( %zu )",
-				n_range->max, n_range->min);
+				n_max, n_min);
 
+	const size_t n_res = n_range->res;
+
+	pthread_t
 	size_t output_depth;
 	void (*set_time_ratios)(long double *,
 				const long double,
 				const size_t);
 
-	if (n_range->max > EXP_MAX_N) {
-		output_depth = 5ul;
+	if (n_max > EXP_MAX_N) {
+		output_depth = 6ul;
 		set_time_ratios = &set_time_ratios_upto_n_cubed;
 
-	} else if (n_range->max > FACT_MAX_N) {
-		output_depth = 6ul;
+	} else if (n_max > FACT_MAX_N) {
+		output_depth = 7ul;
 		set_time_ratios = &set_time_ratios_upto_exp_n;
 
 	} else {
-		output_depth = 7ul;
+		output_depth = 8ul;
 		set_time_ratios = &set_time_ratios_upto_exp_n;
 	}
 
 
-	size_t input_n[n_range->res];
-	long double time_ratios[output_depth][n_range->res];
+	size_t input_n[n_res];
+	long double time_ratios[n_res][output_depth];
 
 
-	return tc_clas;
+	/* generate range of input 'n' */
+	n_range->generator(&input_n[0l], n_min, n_max, n_res);
+
+
+	for (ptrdiff_t i = 0l; i < n_res; ++i) {
+
+		function_timer(input_n[i], );
+
+	}
+
+
+	return tc_class;
 }
