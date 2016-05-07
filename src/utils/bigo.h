@@ -1,6 +1,15 @@
 #ifndef UTILS_BIGO_H_
 #define UTILS_BIGO_H_
 
+/* <utils/bigo.h>
+ *
+ * a collection of functions, macros, interfaces for bush league time
+ * complexity analysis
+ *
+ * Time complexity descriptions and a handful of fudge factors, 'rules of
+ * thumb', etc... were taken from or based off of 'The Algorithm Design
+ * Manual 2ed' by Steven S. Skiena */
+
 #include <time.h> /* clock_t */
 
 /* class label strings */
@@ -31,7 +40,6 @@
 #define _TC_LITTLE_OMEGA_OF(ORDER)	"𝙏 ( " ORDER " )"
 #define _TC_BIG_THETA_OF(ORDER)		"𝙏 ( " ORDER " )"
 
-/* descriptions from 'The Algorithm Design Manual 2ed' by Steven S. Skiena */
 
 /* class description strings */
 #define _TC_CON_DESC "Such functions might measure the cost of adding "	\
@@ -169,32 +177,27 @@ static const char *TIME_COMPLEXITY_RATINGS[] = {
 	_TC_FOR_ALL_CLASSES(_TC_DEF_RATING)
 };
 
-/* precaution for eⁿ, n! overflow (size_t must be of at least 16 bits) */
-
-#if SIZE_MAX < UINT32_MAX
-/* 2¹⁶ <= SIZE_MAX < 2³² */
-#define EXP_MAX_N 11ul
-#define FACT_MAX_N 8ul
-/* 2³² <= SIZE_MAX < 2⁶⁴ */
-#elif SIZE_MAX < UINT64_MAX
-#define EXP_MAX_N 22ul
-#define FACT_MAX_N 12ul
-#else
-/* SIZE_MAX >= 2⁶⁴ */
-#define FACT_MAX_N 20ul
-#endif
+/* input size cutoffs for testing extreme growth rates */
+#define EXP_MAX_N 40ul
+#define FACT_MAX_N 19ul
 static long double FACTORIAL_MAP[] = {
-	1.0l, 1.0l, 2.0l, 6.0l, 24.0l, 120.0l, 720.0l, 5040.0l, 40320.0l,
-	362880.0l, 3628800.0l, 39916800.0l, 479001600.0l, 6227020800.0l,
-	87178291200.0l, 1307674368000.0l, 20922789888000.0l, 355687428096000.0l,
-	6402373705728000.0l, 121645100408832000.0l, 2432902008176640000.0l,
-	51090942171709440000.0l, 1124000727777607680000.0l,
-	25852016738884976640000.0l, 620448401733239439360000.0l,
-	15511210043330985984000000.0l, 403291461126605635584000000.0l,
-	10888869450418352160768000000.0l, 304888344611713860501504000000.0l,
-	8841761993739701954543616000000.0l, 265252859812191058636308480000000.0l
+	0X8P-3l, 0X8P-3l, 0X8P-2l, 0XCP-1l, 0XCP+1l, 0XFP+3l, 0XB.4P+6l,
+	0X9.D8P+9l, 0X9.D8P+12l, 0XB.13P+15l, 0XD.D7CP+18l, 0X9.8454P+22l,
+	0XE.467EP+25l, 0XB.99466P+29l, 0XA.261D94P+33l, 0X9.83BBBACP+37l,
+	0X9.83BBBACP+41l, 0XA.1BF7766CP+45l, 0XB.5F7665398P+49l, 0XD.815C983448P+53l,
 };
 
+static inline void set_time_ratios_upto_n_cubed(long double *ratios,
+						const long double time,
+						const size_t n);
+
+static inline void set_time_ratios_upto_exp_n(long double *ratios,
+					      const long double time,
+					      const size_t n);
+
+static inline void set_time_ratios_upto_n_fact(long double *ratios,
+					       const long double time,
+					       const size_t n);
 
 inline char *time_complexity_class(const enum TimeComplexityClass tcc)
 {

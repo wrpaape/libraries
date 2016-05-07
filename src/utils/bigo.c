@@ -15,16 +15,38 @@ struct SizeStream {
 			  const size_t)
 };
 
-long double time_over_1(const clock_t time, const size_t n);
-long double time_over_log_n(const clock_t time, const size_t n);
-long double time_over_n(const clock_t time, const size_t n);
-long double time_over_n_log_n(const clock_t time, const size_t n);
-long double time_over_n_squared(const clock_t time, const size_t n);
-long double time_over_n_cubed(const clock_t time, const size_t n);
-long double time_over_exp_n(const clock_t time, const size_t n);
-long double time_over_n_factorial(const clock_t time, const size_t n);
+inline void set_time_ratios_upto_n_cubed(long double *ratios,
+					 const long double time,
+					 const size_t n)
+{
 
-long double (*RATIO_MAP[])
+	const long double n_ld     = (long double) n;
+	const long double lg_n     = log2l(n_ld);
+	const size_t n_sq = n * n;
+
+	ratios[0l] = time;
+	ratios[1l] = time / lg_n;
+	ratios[2l] = time / n_ld;
+	ratios[3l] = time / ((long double) n_sq);
+	ratios[4l] = time / ((long double) (n_sq * n));
+}
+
+inline void set_time_ratios_upto_exp_n(long double *ratios,
+				       const long double time,
+				       const size_t n)
+{
+	set_time_ratios_upto_n_cubed(ratios, time, n);
+	ratios[5l] = time / ((long double) (1ul << n));
+}
+
+inline void set_time_ratios_upto_n_fact(long double *ratios,
+					const long double time,
+					const size_t n)
+{
+	set_time_ratios_upto_exp_n(ratios, time, n);
+	ratios[6l] = time / FACTORIAL_MAP[n];
+}
+
 
 enum TimeComplexityClass approximate_time_complexity(struct SizeStream *restrict n_range,
 						     struct timeval *restrict timeout,
@@ -35,11 +57,27 @@ enum TimeComplexityClass approximate_time_complexity(struct SizeStream *restrict
 		EXIT_ON_FAILURE("maximum input 'n' ( %zu ) exceeds minimum ( %zu )",
 				n_range->max, n_range->min);
 
+	size_t output_depth;
+	void (*set_time_ratios)(long double *,
+				const long double,
+				const size_t);
+
+	if (n_range->max > EXP_MAX_N) {
+		output_depth = 5ul;
+		set_time_ratios = &set_time_ratios_upto_n_cubed;
+
+	} else if (n_range->max > FACT_MAX_N) {
+		output_depth = 6ul;
+		set_time_ratios = &set_time_ratios_upto_exp_n;
+
+	} else {
+		output_depth = 7ul;
+		set_time_ratios = &set_time_ratios_upto_exp_n;
+	}
 
 
-	clock_t ticks[n_range->res];
 	size_t input_n[n_range->res];
-	long double n_ratios[];
+	long double time_ratios[output_depth][n_range->res];
 
 
 	return tc_clas;
