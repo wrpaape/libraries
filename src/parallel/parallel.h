@@ -1,7 +1,6 @@
 #ifndef PARALLEL_PARALLEL_H
 #define PARALLEL_PARALLEL_H
 
-
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
 #ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
@@ -12,8 +11,9 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <utils/utils.h> /* error handling, misc convenience functions */
-#include <pthread.h>
+#include <utils/utils.h>	/* error handling, misc convenience functions */
+#include <time.h>		/* time types, structs, functions */
+#include <pthread.h>		/* pthead API */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -33,9 +33,9 @@ do {									\
 				"\tstart_routine: '" #ROUTINE "'\n"	\
 				"\targ:           '" #ARG "'\n}\n\n"	\
 				"reason: %s",				\
-				PTHREAD_CREATE_FAILURE_REASON(code));	\
+				PT_CREATE_FAILURE_REASON(code));	\
 } while (0)
-#define PTHREAD_CREATE_FAILURE_REASON(CODE)				\
+#define PT_CREATE_FAILURE_REASON(CODE)				\
 ((CODE == EAGAIN)							\
 ? "The system lacked the necessary resources to create another thread"	\
   ", or the system-imposed limit on the total number of threads in a "	\
@@ -53,9 +53,9 @@ do {									\
 				"\tthread:    '" #THREAD "'\n"		\
 				"\tvalue_ptr: '" #VALUE_PTR "'\n}\n\n"	\
 				"reason: %s",				\
-				PTHREAD_JOIN_FAILURE_REASON(code));	\
+				PT_JOIN_FAILURE_REASON(code));		\
 } while (0)
-#define PTHREAD_JOIN_FAILURE_REASON(CODE)				\
+#define PT_JOIN_FAILURE_REASON(CODE)				\
 ((CODE == EDEADLK)							\
 ? "A deadlock was detected or the value of thread specifies the "	\
   "calling thread."							\
@@ -67,7 +67,36 @@ do {									\
   "given thread ID, thread."						\
 : "unknown")))
 
+
+/* pthread_setcanceltype */
+#define HANDLE_PTHREAD_SETCANCELTYPE(TYPE, OLDTYPE)			\
+do {									\
+	int code = pthread_setcanceltype(TYPE, OLDTYPE);		\
+	if (code != 0)							\
+		EXIT_ON_FAILURE("failed to set pthread cancel type"	\
+				"\e24m]\n\n{\n"				\
+				"\ttype:    '" #TYPE "'\n"		\
+				"\toldtype: '" #OLDTYPE "'\n}\n\n"	\
+				"reason: %s",				\
+				PT_SETCANCELTYPE_FAILURE_REASON(code));	\
+} while (0)
+#define PT_SETCANCELTYPE_FAILURE_REASON(CODE)				\
+((CODE == EINVAL)							\
+? "The specified state is not 'PTHREAD_CANCEL_DEFERRED' or "		\
+  "'PTHREAD_CANCEL_ASYNCHRONOUS'."					\
+: "unknown")))
+
+/* #define HANDLE_TIMEOUT(FORMAT, ...) */
+
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+
+inline void *parallel_timeout(void *timeout)
+{
+	return (void *) nanosleep((struct timespec *) timeout, NULL);
+}
+
+
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
