@@ -54,23 +54,24 @@ UTILS_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(UTILS
 UTILS_ODEP = $(UTILS_SRC) $(UTILS_HDR)
 UTILS_LDEP = $(UTILS_OBJ)
 
-# root/obj/pcg_basic.o
-PCGB_NAME = pcg_basic
-PCGB_DIR  = $(UTILS_DIR)
-PCGB_SRC  = $(addprefix $(PCGB_DIR)/, $(addsuffix .c, $(PCGB_NAME)))
-PCGB_HDR  = $(addprefix $(PCGB_DIR)/, $(addsuffix .h, $(PCGB_NAME)))
-PCGB_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(PCGB_NAME)))
-PCGB_ODEP = $(PCGB_SRC) $(PCGB_HDR)
-
 # root/lib/rand.a
 RAND_NAME = rand
-RAND_DIR  = $(UTILS_DIR)
+RAND_DIR  = $(addprefix $(SRC_DIR)/,  $(RAND_NAME))
 RAND_SRC  = $(addprefix $(RAND_DIR)/, $(addsuffix .c, $(RAND_NAME)))
 RAND_HDR  = $(addprefix $(RAND_DIR)/, $(addsuffix .h, $(RAND_NAME)))
 RAND_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(RAND_NAME)))
 RAND_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(RAND_NAME))))
 RAND_ODEP = $(RAND_SRC) $(RAND_HDR) $(PCG_HDR)
 RAND_LDEP = $(RAND_OBJ) $(PCGB_OBJ)
+
+# root/obj/pcg_basic.o
+PCGB_NAME = pcg_basic
+PCGB_DIR  = $(RAND_DIR)
+PCGB_SRC  = $(addprefix $(PCGB_DIR)/, $(addsuffix .c, $(PCGB_NAME)))
+PCGB_HDR  = $(addprefix $(PCGB_DIR)/, $(addsuffix .h, $(PCGB_NAME)))
+PCGB_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(PCGB_NAME)))
+PCGB_ODEP = $(PCGB_SRC) $(PCGB_HDR)
+
 
 # root/lib/parallel.a
 PARAL_NAME = parallel
@@ -94,6 +95,7 @@ BHEAP_LDEP = $(BHEAP_OBJ) $(UTILS_OBJ)
 
 # root/lib/big_o.a
 BIG_O_NAME = big_o
+BIG_O_DIR  = $(addprefix $(SRC_DIR)/,   $(BIG_O_NAME))
 BIG_O_SRC  = $(addprefix $(BIG_O_DIR)/, $(addsuffix .c, $(BIG_O_NAME)))
 BIG_O_HDR  = $(addprefix $(BIG_O_DIR)/, $(addsuffix .h, $(BIG_O_NAME)))
 BIG_O_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(BIG_O_NAME)))
