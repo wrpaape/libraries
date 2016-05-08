@@ -1,6 +1,6 @@
 #include <utils/utils.h>	/* error handling */
-#include <utils/pthread.h>	/* timeout */
-#include <utils/bigo.h>
+#include <parallel/parallel.h>	/* timeout */
+#include <big_o/big_o.h>
 
 extern inline char *time_complexity_class(const enum TimeComplexityClass tcc);
 extern inline char *time_complexity_order(const enum TimeComplexityClass tcc);

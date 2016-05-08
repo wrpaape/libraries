@@ -1,9 +1,14 @@
-#ifndef UTILS_PTHREAD_H_
-#define UTILS_PTHREAD_H_
+#ifndef PARALLEL_PARALLEL_H
+#define PARALLEL_PARALLEL_H
+
+
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
 #define restrict __restrict__
 #endif
+#endif
+
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
@@ -17,7 +22,6 @@ extern "C" {
 
 /* error handlers
  * ========================================================================== */
-
 /* pthread_create */
 #define HANDLE_PTHREAD_CREATE(THREAD, ATTR, ROUTINE, ARG)		\
 do {									\
@@ -68,4 +72,5 @@ do {									\
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif
-#endif /* ifndef UTILS_PTHREAD_H_ */
+
+#endif /* ifndef PARALLEL_PARALLEL_H */

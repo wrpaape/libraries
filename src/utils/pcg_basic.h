@@ -31,11 +31,14 @@
 #ifndef PCG_BASIC_H_INCLUDED
 #define PCG_BASIC_H_INCLUDED 1
 
-#include <inttypes.h>
-
-#if __cplusplus
+#ifdef __cplusplus /* ensure C linkage */
 extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#define restrict __restrict__
 #endif
+#endif
+
+#include <inttypes.h>
 
 struct pcg_state_setseq_64 {    // Internals are *Private*.
     uint64_t state;             // RNG state.  All values are possible.
@@ -71,7 +74,7 @@ uint32_t pcg32_random_r(pcg32_random_t* rng);
 uint32_t pcg32_boundedrand(uint32_t bound);
 uint32_t pcg32_boundedrand_r(pcg32_random_t* rng, uint32_t bound);
 
-#if __cplusplus
+#ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif
 

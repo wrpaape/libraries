@@ -1,5 +1,14 @@
 #ifndef BHEAP_BHEAP_H_
 #define BHEAP_BHEAP_H_
+
+#ifdef __cplusplus /* ensure C linkage */
+extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#define restrict __restrict__
+#endif
+#endif
+
+
 struct BHeap {
 	size_t count;	/* count of occupied nodes */
 	size_t alloc;	/* count of allocated nodes */
@@ -164,4 +173,8 @@ inline struct BHeap *array_into_bheap(void *const array,
 	return heap;
 
 }
+#ifdef __cplusplus /* close 'extern "C" {' */
+}
+#endif
+
 #endif /* ifndef BHEAP_BHEAP_H_ */

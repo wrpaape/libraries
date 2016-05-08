@@ -1,7 +1,14 @@
-#ifndef UTILS_BIGO_H_
-#define UTILS_BIGO_H_
+#ifndef BIG_O_BIG_O_H_
+#define BIG_O_BIG_O_H_
 
-/* <utils/bigo.h>
+#ifdef __cplusplus /* ensure C linkage */
+extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#define restrict __restrict__
+#endif
+#endif
+
+/* <big_o/big_o.h>
  *
  * a collection of functions, macros, interfaces for bush league time
  * complexity analysis
@@ -10,7 +17,13 @@
  * thumb', etc... were taken from or based off of 'The Algorithm Design
  * Manual 2ed' by Steven S. Skiena */
 
+
+/* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 #include <time.h> /* clock_t */
+
+/* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
 
 /* class label strings */
 #define _TC_CON_LABEL "Constant"
@@ -226,5 +239,8 @@ inline char *time_complexity_rating(const enum TimeComplexityClass tcc)
 	return TIME_COMPLEXITY_RATINGS[tcc];
 }
 
+#ifdef __cplusplus /* close 'extern "C" {' */
+}
+#endif
 
-#endif /* ifndef UTILS_BIGO_H_ */
+#endif /* ifndef BIG_O_BIG_O_H_ */

@@ -1,8 +1,11 @@
 #ifndef UTILS_UTILS_H_
 #define UTILS_UTILS_H_
+
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
 #define restrict __restrict__
+#endif
 #endif
 
 
@@ -16,6 +19,7 @@ extern "C" {
 #include <limits.h>	/* max word value */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
 
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
@@ -161,4 +165,5 @@ inline void mem_swap(void *__restrict__ x,
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif
+
 #endif /* ifndef UTILS_UTILS_H_ */

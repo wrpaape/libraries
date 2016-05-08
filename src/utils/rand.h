@@ -1,11 +1,29 @@
 #ifndef UTILS_RAND_H_
 #define UTILS_RAND_H_
+
+#ifdef __cplusplus /* ensure C linkage */
+extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#define restrict __restrict__
+#endif
+#endif
+
+
+/* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 #include <utils/pcg_basic.h> /* psuedorandom number generator */
 #include <time.h>	     /* unique seed */
 #include <stdbool.h>	     /* true, false */
 #include <utils/utils.h>     /* malloc, memcpy, ptrdiff_t */
 
+/* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+
+/* CONSTANTS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 #define RNG_MAX UINT32_MAX
+
+/* CONSTANTS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 pcg32_random_t _RNG;
 
@@ -85,5 +103,9 @@ inline int32_t *init_rand_int_array(const size_t length)
 	return array;
 }
 
+
+#ifdef __cplusplus /* close 'extern "C" {' */
+}
+#endif
 
 #endif /* ifndef UTILS_RAND_H_ */

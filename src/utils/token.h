@@ -199,4 +199,5 @@ do {				\
 
 /* ◯ */
 #define PUT_LARGE_CIRCLE(PTR) _GEO_CIRC(PTR, 175)
+
 #endif /* ifndef UTILS_TOKEN_H_ */
