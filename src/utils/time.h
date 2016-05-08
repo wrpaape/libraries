@@ -26,7 +26,7 @@ extern "C" {
  * https://gist.github.com/jbenet/1087739A (source) */
 
 
-inline void get_real_time(struct timespec *time)
+inline void get_real_time(struct timespec *restrict time)
 {
 #ifdef __MACH__ /* OS X does not have clock_gettime, use clock_get_time */
 	clock_serv_t calendar_clock;
@@ -44,6 +44,18 @@ inline void get_real_time(struct timespec *time)
 	clock_gettime(CLOCK_REALTIME, time);
 #endif
 }
+
+
+inline void set_time_limit(struct timespec *restrict time_limit,
+			   const struct timespec *restrict timeout)
+{
+	get_real_time(time_limit);
+
+	time_limit->tv_sec  += timeout->tv_sec;
+	time_limit->tv_nsec += timeout->tv_nsec;
+}
+
+
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
