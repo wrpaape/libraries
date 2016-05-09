@@ -11,10 +11,13 @@ void *timeout_task(pthread_t *restrict thread,
 void *new_timeout_task(const struct Task *restrict task,
 		       const struct timespec *restrict timeout)
 {
-	/* pthread_cond_t task_complete; */
+	pthread_t task_thread;
+	pthread_cond_t task_complete;
 	pthread_mutex_t processing_task;
 
-	HANDL_PTHREAD_MUTEX_INIt
+	HANDLE_PTHREAD_MUTEX_INIT(&processing_task, NULL);
+	HANDLE_PTHREAD_COND_INIT(&task_complete, NULL);
+
 	struct TimeoutArg timeout_arg;
 	struct timespec time_limit;
 

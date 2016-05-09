@@ -1,0 +1,61 @@
+
+     The pthread_attr_set*() functions set the attribute that corresponds to each function name.
+
+     The pthread_attr_get*() functions copy the value of the attribute that corresponds to each function name to the loca-
+     tion pointed to by the second function parameter.
+
+RETURN VALUES
+     If successful, these functions return 0.  Otherwise, an error number is returned to indicate the error.
+
+ERRORS
+     pthread_attr_init() will fail if:
+
+     [ENOMEM]           Out of memory.
+
+     pthread_attr_destroy() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     pthread_attr_setstacksize() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     [EINVAL]           stacksize is less than PTHREAD_STACK_MIN.
+
+     [EINVAL]           stacksize is not a multiple of the system page size.
+
+     pthread_attr_setdetachstate() will fail if:
+
+     [EINVAL]           Invalid value for attr or detachstate.
+
+     pthread_attr_setinheritsched() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     pthread_attr_setschedparam() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     [ENOTSUP]          Invalid value for param.
+
+     pthread_attr_setschedpolicy() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     [ENOTSUP]          Invalid or unsupported value for policy.
+
+     pthread_attr_setscope() will fail if:
+
+     [EINVAL]           Invalid value for attr.
+
+     [ENOTSUP]          Invalid or unsupported value for contentionscope.
+
+SEE ALSO
+     pthread_create(3)
+
+STANDARDS
+     pthread_attr_init(), pthread_attr_destroy(), pthread_attr_setstacksize(), pthread_attr_getstacksize(),
+     pthread_attr_setstackaddr(), pthread_attr_getstackaddr(), pthread_attr_setdetachstate(), and
+     pthread_attr_getdetachstate() conform to ISO/IEC 9945-1:1996 (``POSIX.1'')
+
+:

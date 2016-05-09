@@ -26,7 +26,7 @@ struct Task {
 
 struct TimeoutArg {
 	struct Task *task;
-	pthread_cond_t task_complete;
+	pthread_cond_t *task_complete;
 	int oldtype;
 };
 

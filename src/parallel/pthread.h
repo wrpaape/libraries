@@ -102,6 +102,175 @@ do {									\
 
 
 
+/* pthread_attr_t
+ * ========================================================================== */
+/* pthread_attr_init */
+#define HANDLE_PTHREAD_ATTR_INIT(ATTR)					\
+do {									\
+	int status = pthread_attr_init(ATTR);				\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to initialize pthread "		\
+				"attribute"				\
+				"\e24m]\n\n{\n"				\
+				"\tattr: '" #ATTR "'\n"			\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_INIT_FAILURE(status));		\
+} while (0)
+#define PT_A_INIT_FAILURE(STATUS)					\
+((STATUS == ENOMEM)							\
+? "Out of memory."							\
+: "unknown")
+
+
+/* pthread_attr_destroy */
+#define HANDLE_PTHREAD_ATTR_DESTROY(ATTR)				\
+do {									\
+	int status = pthread_attr_destroy(ATTR);			\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to destroy pthread attribute"	\
+				"\e24m]\n\n{\n"				\
+				"\tattr: '" #ATTR "'\n"			\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_DESTROY_FAILURE(status));		\
+} while (0)
+#define PT_A_DESTROY_FAILURE(STATUS)					\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr'."						\
+: "unknown")
+
+
+/* pthread_attr_setstacksize */
+#define HANDLE_PTHREAD_ATTR_SETSTACKSIZE(ATTR, STACKSIZE)		\
+do {									\
+	int status = pthread_attr_setstacksize(ATTR, STACKSIZE);	\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'stacksize' for "	\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:      '" #ATTR      ",'\n"	\
+				"\tstacksize: '" #STACKSIZE "'\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETSTACKSIZE_FAILURE(status));	\
+} while (0)
+#define PT_A_SETSTACKSIZE_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr', 'stacksize' is less than "			\
+  "'PTHREAD_STACK_MIN', or 'stacksize' is not a multipple of the "	\
+  "system page size."							\
+: "unknown")
+
+
+/* pthread_attr_setdetachstate */
+#define HANDLE_PTHREAD_ATTR_SETDETACHSTATE(ATTR, DETACHSTATE)		\
+do {									\
+	int status = pthread_attr_setdetachstate(ATTR, DETACHSTATE);	\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'detachstate' for "	\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:        '" #ATTR        ",'\n"	\
+				"\tdetachstate: '" #DETACHSTATE "'\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETDETACHSTATE_FAILURE(status));	\
+} while (0)
+#define PT_A_SETDETACHSTATE_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr' or 'detachstate'."				\
+: "unknown")
+
+
+/* pthread_attr_setinheritsched */
+#define HANDLE_PTHREAD_ATTR_SETINHERITSCHED(ATTR, INHERITSCHED)		\
+do {									\
+	int status = pthread_attr_setinheritsched(ATTR, INHERITSCHED);	\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'inheritsched' for "	\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:         '" #ATTR        ",'\n"	\
+				"\tinheritsched: '" #INHERITSCHED "'\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETINHERITSCHED_FAILURE(status));	\
+} while (0)
+#define PT_A_SETINHERITSCHED_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr'."						\
+: "unknown")
+
+
+/* pthread_attr_setschedparam */
+#define HANDLE_PTHREAD_ATTR_SETSCHEDPARAM(ATTR, PARAM)			\
+do {									\
+	int status = pthread_attr_setschedparam(ATTR, PARAM);		\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'sched_param' for "	\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:  '" #ATTR  ",'\n"		\
+				"\tparam: '" #PARAM "'\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETSCHEDPARAM_FAILURE(status));	\
+} while (0)
+#define PT_A_SETSCHEDPARAM_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr'."						\
+: ((STATUS == ENOTSUP)							\
+? "Invalid value for 'param'."						\
+: "unknown"))
+
+
+/* pthread_attr_setschedpolicy */
+#define HANDLE_PTHREAD_ATTR_SETSCHEDPOLICY(ATTR, POLICY)		\
+do {									\
+	int status = pthread_attr_setschedpolicy(ATTR, POLICY);		\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'policy' for "		\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:   '" #ATTR   ",'\n"		\
+				"\tpolicy: '" #POLICY "'\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETSCHEDPOLICY_FAILURE(status));	\
+} while (0)
+#define PT_A_SETSCHEDPOLICY_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr'."						\
+: ((STATUS == ENOTSUP)							\
+? "Invalid or unsupported value for value for 'policy'."		\
+: "unknown"))
+
+
+/* pthread_attr_setschedscope */
+#define HANDLE_PTHREAD_ATTR_SETSCHEDSCOPE(ATTR, CONTENTIONSCOPE)	\
+do {									\
+	int status = pthread_attr_setschedscope(ATTR, CONTENTIONSCOPE);	\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to set 'contentionscope' for "	\
+				"pthread attribute"			\
+				"\e24m]\n\n{\n"				\
+				"\tattr:            '" #ATTR ",'\n"	\
+				"\tcontentionscope: '" #CONTENTIONSCOPE	\
+				"'\n"			                \
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_A_SETSCHEDSCOPE_FAILURE(status));	\
+} while (0)
+#define PT_A_SETSCHEDSCOPE_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "Invalid value for 'attr'."						\
+: ((STATUS == ENOTSUP)							\
+? "Invalid or unsupported value for value for 'contentionscope'."	\
+: "unknown"))
+
+
+
 /* pthread_mutex_t
  * ========================================================================== */
 /* pthread_mutex_init */
