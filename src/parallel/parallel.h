@@ -20,12 +20,12 @@ extern "C" {
 /* TYPEDEFS, ENUM AND STRUCT DEFINITIONS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 struct Task {
-	void *(*start_routine)(void *);
+	void (*fun)(void *);
 	void *arg;
 };
 
-struct TempThreadArg {
-	int cancelability;
+struct SpawnArg {
+	int prev_cancel_type;
 	struct Task *task;
 	pthread_cond_t *task_complete;
 };
