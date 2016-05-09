@@ -1,12 +1,15 @@
 #include <parallel/parallel.h>
 
 
-void *execute_spawned_thread(void *arg)
+/* processes a task in a cancellable thread */
+void *execute_spawned_thread(void *restrict arg)
 {
 	struct SpawnArg *const spawn_arg = (struct SpawnArg *) arg;
 
+	int prev_cancel_type; /* dummy */
+
 	HANDLE_PTHREAD_SETCANCELTYPE(PTHREAD_CANCEL_ASYNCHRONOUS,
-				     &spawn_arg->prev_cancel_type);
+				     &prev_cancel_type);
 
 	(*(spawn_arg->task->fun))(spawn_arg->task->arg);
 
@@ -15,22 +18,19 @@ void *execute_spawned_thread(void *arg)
 	return NULL;
 }
 
-void *assign_timeout_task(pthread_t *restrict thread,
-			  const pthread_attr_t *restrict attr,
-			  const struct Task *restrict task,
-			  const struct timespec *restrict timeout)
-{
-	return NULL;
-}
 
-void spawn_timeout_task(const struct Task *restrict task,
+void spawn_timeout_task(struct Task *const restrict task,
 			const struct timespec *restrict timeout)
 {
-	pthread_t thread;
+	pthread_t task_thread;
 	pthread_cond_t task_complete;
 	pthread_mutex_t processing_task;
 	struct timespec time_limit;
-	struct SpawnArg spawn_arg;
+
+	const struct SpawnArg spawn_arg = {
+		.task	       = task,
+		.task_complete = &task_complete
+	};
 
 	HANDLE_PTHREAD_COND_INIT(&task_complete,
 				 NULL);
@@ -38,14 +38,12 @@ void spawn_timeout_task(const struct Task *restrict task,
 	HANDLE_PTHREAD_MUTEX_INIT(&processing_task,
 				  NULL);
 
-	set_time_limit(&time_limit, timeout);
-
-	spawn_arg.task = task;
-	spawn_arg.task_complete = &task_complete;
-
 	HANDLE_PTHREAD_MUTEX_LOCK(&processing_task);
 
-	HANDLE_PTHREAD_CREATE(&thread,
+	set_time_limit(&time_limit,
+		       timeout);
+
+	HANDLE_PTHREAD_CREATE(&task_thread,
 			      NULL,
 			      &execute_spawned_thread,
 			      (void *) &spawn_arg);

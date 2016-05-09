@@ -20,25 +20,21 @@ extern "C" {
 /* TYPEDEFS, ENUM AND STRUCT DEFINITIONS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 struct Task {
-	void (*fun)(void *);
-	void *arg;
+	void (*fun)(void *restrict);
+	void *restrict arg;
 };
 
 struct SpawnArg {
-	int prev_cancel_type;
-	struct Task *task;
+	struct Task *restrict task;
 	pthread_cond_t *task_complete;
 };
 
 /* TYPEDEFS, ENUM AND STRUCT DEFINITIONS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 
-void *assign_timeout_task(pthread_t *restrict thread,
-			  const pthread_attr_t *restrict attr,
-			  const struct Task *restrict task,
-			  const struct timespec *restrict timeout);
+void *execute_spawned_thread(void *restrict arg);
 
-void spawn_timeout_task(const struct Task *restrict task,
+void spawn_timeout_task(struct Task *const restrict task,
 			const struct timespec *restrict timeout);
 
 

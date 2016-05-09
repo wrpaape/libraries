@@ -11,11 +11,11 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <pthread.h>		/* pthead API */
+#include <pthread.h>		/* pthread API */
+#include <signal.h>		/* pthread_kill */
 #include <utils/utils.h>	/* EXIT_ON_FAILURE */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
-
 
 /* <parallel/pthread.h>
  *
@@ -45,7 +45,7 @@ do {									\
 				PT_CREATE_FAILURE(status));		\
 } while (0)
 #define PT_CREATE_FAILURE(STATUS)					\
-((STATUS == EAGAIN)							\
+  ((STATUS == EAGAIN)							\
 ? "The system lacked the necessary resources to create another thread"	\
   ", or the system-imposed limit on the total number of threads in a "	\
   "process [PTHREAD_THREADS_MAX] would be exceeded."			\
@@ -67,8 +67,8 @@ do {									\
 				"reason: %s",				\
 				PT_JOIN_FAILURE(status));		\
 } while (0)
-#define PT_JOIN_FAILURE(STATUS)					\
-((STATUS == EDEADLK)							\
+#define PT_JOIN_FAILURE(STATUS)						\
+  ((STATUS == EDEADLK)							\
 ? "A deadlock was detected or the value of thread specifies the "	\
   "calling thread."							\
 : ((STATUS == EINVAL)							\
@@ -94,10 +94,10 @@ do {									\
 				PT_KILL_FAILURE(status));		\
 } while (0)
 #define PT_KILL_FAILURE(STATUS)						\
-((STATUS == EINVAL)							\
-? "'sig' is an invalid or unsupported signal number."
+  ((STATUS == EINVAL)							\
+? "'sig' is an invalid or unsupported signal number."			\
 : ((STATUS == ESRCH)							\
-? "'thread' is an invalid thread ID."
+? "'thread' is an invalid thread ID."					\
 : "unknown"))
 
 
@@ -118,7 +118,7 @@ do {									\
 				PT_A_INIT_FAILURE(status));		\
 } while (0)
 #define PT_A_INIT_FAILURE(STATUS)					\
-((STATUS == ENOMEM)							\
+  ((STATUS == ENOMEM)							\
 ? "Out of memory."							\
 : "unknown")
 
@@ -136,7 +136,7 @@ do {									\
 				PT_A_DESTROY_FAILURE(status));		\
 } while (0)
 #define PT_A_DESTROY_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -156,7 +156,7 @@ do {									\
 				PT_A_SETSTACKSIZE_FAILURE(status));	\
 } while (0)
 #define PT_A_SETSTACKSIZE_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr', 'stacksize' is less than "			\
   "'PTHREAD_STACK_MIN', or 'stacksize' is not a multipple of the "	\
   "system page size."							\
@@ -178,7 +178,7 @@ do {									\
 				PT_A_SETDETACHSTATE_FAILURE(status));	\
 } while (0)
 #define PT_A_SETDETACHSTATE_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr' or 'detachstate'."				\
 : "unknown")
 
@@ -198,7 +198,7 @@ do {									\
 				PT_A_SETINHERITSCHED_FAILURE(status));	\
 } while (0)
 #define PT_A_SETINHERITSCHED_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -218,7 +218,7 @@ do {									\
 				PT_A_SETSCHEDPARAM_FAILURE(status));	\
 } while (0)
 #define PT_A_SETSCHEDPARAM_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : ((STATUS == ENOTSUP)							\
 ? "Invalid value for 'param'."						\
@@ -240,7 +240,7 @@ do {									\
 				PT_A_SETSCHEDPOLICY_FAILURE(status));	\
 } while (0)
 #define PT_A_SETSCHEDPOLICY_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : ((STATUS == ENOTSUP)							\
 ? "Invalid or unsupported value for value for 'policy'."		\
@@ -263,7 +263,7 @@ do {									\
 				PT_A_SETSCHEDSCOPE_FAILURE(status));	\
 } while (0)
 #define PT_A_SETSCHEDSCOPE_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : ((STATUS == ENOTSUP)							\
 ? "Invalid or unsupported value for value for 'contentionscope'."	\
@@ -287,13 +287,33 @@ do {									\
 				PT_M_INIT_FAILURE(status));		\
 } while (0)
 #define PT_M_INIT_FAILURE(STATUS)					\
-((STATUS == EAGAIN)							\
+  ((STATUS == EAGAIN)							\
 ? "The system temporarily lacks the resources to create another mutex."	\
 : ((STATUS == EINVAL)							\
 ? "The value specified by 'attr' is invalid."				\
 : ((STATUS == ENOMEM)							\
 ? "The process cannot allocate enough memory to create another mutex."	\
 : "unknown")))
+
+
+/* pthread_mutex_destroy */
+#define HANDLE_PTHREAD_MUTEX_DESTROY(MUTEX)				\
+do {									\
+	int status = pthread_mutex_destroy(MUTEX);			\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to destroy pthread mutex"	\
+				"\e24m]\n\n{\n"				\
+				"\tmutex: '" #MUTEX "',\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_M_DESTROY_FAILURE(status));		\
+} while (0)
+#define PT_M_DESTROY_FAILURE(STATUS)					\
+  ((STATUS == EBUSY)							\
+? "'mutex' is locked by a thread."					\
+: ((STATUS == EINVAL)							\
+? "The value specified by 'mutex' is invalid."				\
+: "unknown"))
 
 
 /* pthread_mutex_lock */
@@ -309,7 +329,7 @@ do {									\
 				PT_M_LOCK_FAILURE(status));		\
 } while (0)
 #define PT_M_LOCK_FAILURE(STATUS)					\
-((STATUS == EDEADLK)							\
+  ((STATUS == EDEADLK)							\
 ? "A deadlock would occur if the thread is blocked waiting for mutex."	\
 : ((STATUS == EINVAL)							\
 ? "The value specified by 'mutex' is invalid."				\
@@ -329,11 +349,11 @@ do {									\
 				PT_M_UNLOCK_FAILURE(status));		\
 } while (0)
 #define PT_M_UNLOCK_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The value specified by 'mutex' is invalid."				\
 : ((STATUS == EPERM)							\
 ? "The current thread does not hold a lock on 'mutex'."			\
-: "unknown")
+: "unknown"))
 
 
 
@@ -353,7 +373,7 @@ do {									\
 				PT_MA_INIT_FAILURE(status));		\
 } while (0)
 #define PT_MA_INIT_FAILURE(STATUS)					\
-((STATUS == EAGAIN)							\
+  ((STATUS == EAGAIN)							\
 ? "Out of memory."							\
 : "unknown")
 
@@ -372,7 +392,7 @@ do {									\
 				PT_MA_DESTROY_FAILURE(status));		\
 } while (0)
 #define PT_MA_DESTROY_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -393,7 +413,7 @@ do {									\
 				PT_MA_SETPRIOCEILING_FAILURE(status));	\
 } while (0)
 #define PT_MA_SETPRIOCEILING_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr', or invalid value for 'prioceiling'."	\
 : "unknown")
 
@@ -414,7 +434,7 @@ do {									\
 				PT_MA_GETPRIOCEILING_FAILURE(status));	\
 } while (0)
 #define PT_MA_GETPRIOCEILING_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -434,7 +454,7 @@ do {									\
 				PT_MA_SETPROTOCOL_FAILURE(status));	\
 } while (0)
 #define PT_MA_SETPROTOCOL_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr', or invalid value for 'protocol'."		\
 : "unknown")
 
@@ -455,7 +475,7 @@ do {									\
 				PT_MA_GETPROTOCOL_FAILURE(status));	\
 } while (0)
 #define PT_MA_GETPROTOCOL_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -475,7 +495,7 @@ do {									\
 				PT_MA_SETTYPE_FAILURE(status));		\
 } while (0)
 #define PT_MA_SETTYPE_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr', or invalid value for 'type'."		\
 : "unknown")
 
@@ -495,7 +515,7 @@ do {									\
 				PT_MA_GETTYPE_FAILURE(status));		\
 } while (0)
 #define PT_MA_GETTYPE_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -518,7 +538,7 @@ do {									\
 				PT_MA_GETPSHARED_FAILURE(status));	\
 } while (0)
 #define PT_MA_GETPSHARED_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -538,7 +558,7 @@ do {									\
 				PT_MA_SETPSHARED_FAILURE(status));	\
 } while (0)
 #define PT_MA_SETPSHARED_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The new value specified for the attribute is outside the range of "	\
   "legal values for that attribute."					\
 : "unknown")
@@ -563,7 +583,7 @@ do {									\
 				PT_COND_INIT_FAILURE(status));		\
 } while (0)
 #define PT_COND_INIT_FAILURE(STATUS)					\
-((STATUS == EAGAIN)							\
+  ((STATUS == EAGAIN)							\
 ? "The system temporarily lacks the resources to create another "	\
   "condition variable."							\
 : ((STATUS == EINVAL)							\
@@ -587,7 +607,7 @@ do {									\
 				PT_COND_DESTROY_FAILURE(status));	\
 } while (0)
 #define PT_COND_DESTROY_FAILURE(STATUS)					\
-((STATUS == EBUSY)							\
+  ((STATUS == EBUSY)							\
 ? "The variable 'cond' is locked by another thread."			\
 : ((STATUS == EINVAL)							\
 ? "The value specified by 'cond' is invalid."				\
@@ -607,7 +627,7 @@ do {									\
 				PT_COND_SIGNAL_FAILURE(status));	\
 } while (0)
 #define PT_COND_SIGNAL_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The value specified by 'cond' is invalid."				\
 : "unknown")
 
@@ -625,7 +645,7 @@ do {									\
 				PT_COND_BROADCAST_FAILURE(status));	\
 } while (0)
 #define PT_COND_BROADCAST_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The value specified by 'cond' is invalid."				\
 : "unknown")
 
@@ -644,7 +664,7 @@ do {									\
 				PT_COND_WAIT_FAILURE(status));		\
 } while (0)
 #define PT_COND_WAIT_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The value specified by 'cond' or the value specified by 'mutex' is "	\
  "invalid."								\
 : "unknown")
@@ -665,11 +685,11 @@ do {									\
 				PT_COND_TIMEDWAIT_FAILURE(status));	\
 } while (0)
 #define PT_COND_TIMEDWAIT_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The value specified by 'cond', 'mutex' or 'abstime' is invalid."	\
 : ((STATUS == ETIMEDOUT)						\
 ? "The system time has reached or exceeded the time specified in "	\
-  "'abstime'."
+  "'abstime'."								\
 : "unknown"))
 
 
@@ -689,7 +709,7 @@ do {									\
 				PT_CA_INIT_FAILURE(status));		\
 } while (0)
 #define PT_CA_INIT_FAILURE(STATUS)					\
-((STATUS == EAGAIN)							\
+  ((STATUS == EAGAIN)							\
 ? "Out of memory."							\
 : "unknown")
 
@@ -708,7 +728,7 @@ do {									\
 				PT_CA_DESTROY_FAILURE(status));		\
 } while (0)
 #define PT_CA_DESTROY_FAILURE(STATUS)					\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -731,7 +751,7 @@ do {									\
 				PT_CA_GETPSHARED_FAILURE(status));	\
 } while (0)
 #define PT_CA_GETPSHARED_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "Invalid value for 'attr'."						\
 : "unknown")
 
@@ -751,7 +771,7 @@ do {									\
 				PT_CA_SETPSHARED_FAILURE(status));	\
 } while (0)
 #define PT_CA_SETPSHARED_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The new value specified for the attribute is outside the range of "	\
   "legal values for that attribute."					\
 : "unknown")
@@ -775,7 +795,7 @@ do {									\
 				PT_SETCANCELTYPE_FAILURE(status));	\
 } while (0)
 #define PT_SETCANCELTYPE_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The specified state is not 'PTHREAD_CANCEL_DEFERRED' or "		\
   "'PTHREAD_CANCEL_ASYNCHRONOUS'."					\
 : "unknown")
@@ -796,7 +816,7 @@ do {									\
 				PT_SETCANCELSTATE_FAILURE(status));	\
 } while (0)
 #define PT_SETCANCELSTATE_FAILURE(STATUS)				\
-((STATUS == EINVAL)							\
+  ((STATUS == EINVAL)							\
 ? "The specified state is not 'PTHREAD_CANCEL_ENABLE' or "		\
   "'PTHREAD_CANCEL_ASYNCHRONOUS'."					\
 : "unknown")
