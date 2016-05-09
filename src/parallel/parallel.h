@@ -24,19 +24,22 @@ struct Task {
 	void *arg;
 };
 
-struct TimeoutArg {
+struct TempThreadArg {
+	int cancelability;
 	struct Task *task;
 	pthread_cond_t *task_complete;
-	int oldtype;
 };
 
 /* TYPEDEFS, ENUM AND STRUCT DEFINITIONS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 
-void *timeout_task(pthread_t *restrict thread,
-		   const pthread_attr_t *restrict attr,
-		   const struct Task *restrict task,
-		   const struct timespec *restrict timeout);
+void *assign_timeout_task(pthread_t *restrict thread,
+			  const pthread_attr_t *restrict attr,
+			  const struct Task *restrict task,
+			  const struct timespec *restrict timeout);
+
+void spawn_timeout_task(const struct Task *restrict task,
+			const struct timespec *restrict timeout);
 
 
 #ifdef __cplusplus /* close 'extern "C" {' */
