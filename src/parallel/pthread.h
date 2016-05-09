@@ -1,5 +1,5 @@
-#ifndef PARALLEL_HANDLE_H_
-#define PARALLEL_HANDLE_H_
+#ifndef PARALLEL_PTHREAD_H_
+#define PARALLEL_PTHREAD_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -9,7 +9,23 @@ extern "C" {
 #endif
 
 
+/* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+#include <pthread.h>		/* pthead API */
+#include <utils/utils.h>	/* EXIT_ON_FAILURE */
+
+/* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+
+/* <parallel/pthread.h>
+ *
+ * defines macros, convenience functions for accessing the pthread API */
+
+
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+/* error handlers
+ * exit the calling program and print an error message on failure */
 
 /* pthread_t
  * ========================================================================== */
@@ -20,9 +36,9 @@ do {									\
 	if (status != 0)						\
 		EXIT_ON_FAILURE("failed to create pthread"		\
 				"\e24m]\n\n{\n"				\
-				"\tthread:        '" #THREAD  "'\n"	\
-				"\tattr:          '" #ATTR    "'\n"	\
-				"\tstart_routine: '" #ROUTINE "'\n"	\
+				"\tthread:        '" #THREAD  "',\n"	\
+				"\tattr:          '" #ATTR    "',\n"	\
+				"\tstart_routine: '" #ROUTINE "',\n"	\
 				"\targ:           '" #ARG     "'\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -45,7 +61,7 @@ do {									\
 	if (status != 0)						\
 		EXIT_ON_FAILURE("failed to join pthread"		\
 				"\e24m]\n\n{\n"				\
-				"\tthread:    '" #THREAD    "'\n"	\
+				"\tthread:    '" #THREAD    "',\n"	\
 				"\tvalue_ptr: '" #VALUE_PTR "'\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -64,6 +80,27 @@ do {									\
 : "unknown")))
 
 
+/* pthread_kill */
+#define HANDLE_PTHREAD_KILL(THREAD, SIG)				\
+do {									\
+	int status = pthread_kill(THREAD, SIG);				\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to kill pthread"		\
+				"\e24m]\n\n{\n"				\
+				"\tthread: '" #THREAD "',\n"		\
+				"\sig:     '" #SIG    "'\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_KILL_FAILURE(status));		\
+} while (0)
+#define PT_KILL_FAILURE(STATUS)						\
+((STATUS == EINVAL)							\
+? "'sig' is an invalid or unsupported signal number."
+: ((STATUS == ESRCH)							\
+? "'thread' is an invalid thread ID."
+: "unknown"))
+
+
 
 /* pthread_mutex_t
  * ========================================================================== */
@@ -74,8 +111,8 @@ do {									\
 	if (status != 0)						\
 		EXIT_ON_FAILURE("failed to initialize pthread mutex"	\
 				"\e24m]\n\n{\n"				\
-				"\tmutex: '" #MUTEX "'\n"		\
-				"\tattr:  '" #ATTR "'\n"		\
+				"\tmutex: '" #MUTEX "',\n"		\
+				"\tattr:  '" #ATTR  "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
 				PT_M_INIT_FAILURE(status));		\
@@ -180,7 +217,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to set priority ceiling for "	\
 				"pthread mutex attribute"		\
 				"\e24m]\n\n{\n"				\
-				"\tattr:        '" #ATTR "'\n"		\
+				"\tattr:        '" #ATTR        "',\n"	\
 				"\tprioceiling: '" #PRIOCEILING "'\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -201,7 +238,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to get priority ceiling for "	\
 				"pthread mutex attribute"		\
 				"\e24m]\n\n{\n"				\
-				"\tattr:        '" #ATTR "'\n"		\
+				"\tattr:        '" #ATTR        "',\n"	\
 				"\tprioceiling: '" #PRIOCEILING "'\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -221,7 +258,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to set protocol for pthread "	\
 				"mutex attribute"			\
 				"\e24m]\n\n{\n"				\
-				"\tattr:     '" #ATTR "'\n"		\
+				"\tattr:     '" #ATTR     "',\n"	\
 				"\tprotocol: '" #PROTOCOL "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -242,7 +279,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to get protocol for pthread "	\
 				"mutex attribute"			\
 				"\e24m]\n\n{\n"				\
-				"\tattr:     '" #ATTR "'\n"		\
+				"\tattr:     '" #ATTR     "',\n"	\
 				"\tprotocol: '" #PROTOCOL "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -262,7 +299,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to set type for pthread mutex "	\
 				"attribute"				\
 				"\e24m]\n\n{\n"				\
-				"\tattr: '" #ATTR "'\n"			\
+				"\tattr: '" #ATTR "',\n"		\
 				"\ttype: '" #TYPE "'\n"			\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -282,7 +319,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to get type for pthread mutex "	\
 				"attribute"				\
 				"\e24m]\n\n{\n"				\
-				"\tattr: '" #ATTR "'\n"			\
+				"\tattr: '" #ATTR "',\n"		\
 				"\ttype: '" #TYPE "'\n"			\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -305,7 +342,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to get 'process-shared' "	\
 				"for pthread mutex attribute"		\
 				"\e24m]\n\n{\n"				\
-				"\tattr:    '" #ATTR "'\n"		\
+				"\tattr:    '" #ATTR    "',\n"		\
 				"\tpshared: '" #PSHARED "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -325,7 +362,7 @@ do {									\
 		EXIT_ON_FAILURE("failed to set 'process-shared' "	\
 				"for pthread mutex attribute"		\
 				"\e24m]\n\n{\n"				\
-				"\tattr:    '" #ATTR "'\n"		\
+				"\tattr:    '" #ATTR    "',\n"		\
 				"\tpshared: '" #PSHARED "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -347,9 +384,10 @@ do {									\
 do {									\
 	int status = pthread_cond_init(COND, ATTR);			\
 	if (status != 0)						\
-		EXIT_ON_FAILURE("failed to set pthread cancel type"	\
+		EXIT_ON_FAILURE("failed to initialize pthread "		\
+				"condition"				\
 				"\e24m]\n\n{\n"				\
-				"\tcond: '" #COND "'\n"			\
+				"\tcond: '" #COND "',\n"		\
 				"\tattr: '" #ATTR "'\n"			\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -367,6 +405,26 @@ do {									\
 : "unknown")))
 
 
+/* pthread_cond_destroy */
+#define HANDLE_PTHREAD_COND_DESTROY(COND)				\
+do {									\
+	int status = pthread_cond_destroy(COND);			\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to destroy pthread condition"	\
+				"\e24m]\n\n{\n"				\
+				"\tcond: '" #COND "'\n"			\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_COND_DESTROY_FAILURE(status));	\
+} while (0)
+#define PT_COND_DESTROY_FAILURE(STATUS)					\
+((STATUS == EBUSY)							\
+? "The variable 'cond' is locked by another thread."			\
+: ((STATUS == EINVAL)							\
+? "The value specified by 'cond' is invalid."				\
+: "unknown"))
+
+
 /* pthread_cond_signal */
 #define HANDLE_PTHREAD_COND_SIGNAL(COND)				\
 do {									\
@@ -381,7 +439,45 @@ do {									\
 } while (0)
 #define PT_COND_SIGNAL_FAILURE(STATUS)					\
 ((STATUS == EINVAL)							\
-? "the value specified by 'cond' is invalid."				\
+? "The value specified by 'cond' is invalid."				\
+: "unknown")
+
+
+/* pthread_cond_broadcast */
+#define HANDLE_PTHREAD_COND_BROADCAST(COND)				\
+do {									\
+	int status = pthread_cond_broadcast(COND);			\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to broadcast pthread condition"	\
+				"\e24m]\n\n{\n"				\
+				"\tcond: '" #COND "'\n"			\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_COND_BROADCAST_FAILURE(status));	\
+} while (0)
+#define PT_COND_BROADCAST_FAILURE(STATUS)				\
+((STATUS == EINVAL)							\
+? "The value specified by 'cond' is invalid."				\
+: "unknown")
+
+
+/* pthread_cond_wait */
+#define HANDLE_PTHREAD_COND_WAIT(COND, MUTEX)				\
+do {									\
+	int status = pthread_cond_wait(COND, MUTEX);			\
+	if (status != 0)						\
+		EXIT_ON_FAILURE("failed to signal pthread condition"	\
+				"\e24m]\n\n{\n"				\
+				"\tcond:    '" #COND "',\n"		\
+				"\tmutex:   '" #MUTEX "'\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PT_COND_WAIT_FAILURE(status));		\
+} while (0)
+#define PT_COND_WAIT_FAILURE(STATUS)					\
+((STATUS == EINVAL)							\
+? "The value specified by 'cond' or the value specified by 'mutex' is "	\
+ "invalid."								\
 : "unknown")
 
 
@@ -392,8 +488,8 @@ do {									\
 	if (status != 0)						\
 		EXIT_ON_FAILURE("failed to signal pthread condition"	\
 				"\e24m]\n\n{\n"				\
-				"\tcond:    '" #COND "'\n"		\
-				"\tmutex:   '" #MUTEX "'\n"		\
+				"\tcond:    '" #COND    "',\n"		\
+				"\tmutex:   '" #MUTEX   "',\n"		\
 				"\tabstime: '" #ABSTIME "'\n"		\
 				"}\n\n"					\
 				"reason: %s",				\
@@ -543,4 +639,4 @@ do {									\
 }
 #endif
 
-#endif /* ifndef PARALLEL_HANDLE_H_ */
+#endif /* ifndef PARALLEL_PTHREAD_H_ */

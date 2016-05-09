@@ -25,7 +25,7 @@ extern "C" {
 
 /* CONSTANTS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
-pcg32_random_t _RNG;
+pcg32_random_t _RNG;	/* global random number generator state */
 
 inline void init_rng(void)
 {

@@ -75,12 +75,14 @@ PCGB_ODEP = $(PCGB_SRC) $(PCGB_HDR)
 
 # root/lib/parallel.a
 PARAL_NAME = parallel
+PARPT_NAME = pthread
 PARAL_DIR  = $(addprefix $(SRC_DIR)/,   $(PARAL_NAME))
 PARAL_SRC  = $(addprefix $(PARAL_DIR)/, $(addsuffix .c, $(PARAL_NAME)))
 PARAL_HDR  = $(addprefix $(PARAL_DIR)/, $(addsuffix .h, $(PARAL_NAME)))
+PHNDL_HDR  = $(addprefix $(PARAL_DIR)/, $(addsuffix .h, $(PARPT_NAME)))
 PARAL_OBJ  = $(addprefix $(OBJ_DIR)/,   $(addsuffix .o, $(PARAL_NAME)))
 PARAL_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(PARAL_NAME))))
-PARAL_ODEP = $(PARAL_SRC) $(PARAL_HDR)
+PARAL_ODEP = $(PARAL_SRC) $(PARAL_HDR) $(PHNDL_HDR)
 PARAL_LDEP = $(PARAL_OBJ) $(PCGB_OBJ)
 
 # root/lib/bheap.a

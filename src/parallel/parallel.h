@@ -11,10 +11,8 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <pthread.h>		/* pthead API */
-#include <utils/utils.h>	/* error handling, misc convenience fns */
 #include <utils/time.h>		/* real time clock, time types, structs, fns */
-#include <parallel/handle.h>	/* pthead API error handler macros */
+#include <parallel/pthread.h>	/* pthead API, error handler macros */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -39,17 +37,6 @@ void *timeout_task(pthread_t *restrict thread,
 		   const pthread_attr_t *restrict attr,
 		   const struct Task *restrict task,
 		   const struct timespec *restrict timeout);
-
-/* convenience, default handlers
- * ========================================================================== */
-inline void init_default_mutex(pthread_mutex_t *restrict mutex,
-			      pthread_mutexattr_t *restrict attr)
-{
-	HANDLE_PTHREAD
-}
-
-
-
 
 
 #ifdef __cplusplus /* close 'extern "C" {' */
