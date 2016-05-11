@@ -18,6 +18,12 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
+/* CONSTANTS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+#define DEFAULT_PERMISSIONS S_IRWXU
+
+/* CONSTANTS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #define PUT_SLASH(PTR)	\
@@ -82,8 +88,9 @@ do {									\
 	int status = mkdir(FILENAME, MODE);				\
 	if (status != 0)						\
 		EXIT_ON_FAILURE("failed to make directory \"%s\" in "	\
-				"mode \"%s\":\n%s", FILENAME, MODE,	\
-				HANDLE_MKDIR_FAILURE(STATUS));		\
+				"mode:\n%s\n\n%s", FILENAME,		\
+				PERMISSION(MODE),			\
+				HANDLE_MKDIR_FAILURE(status));		\
 } while (0)
 #define HANDLE_MKDIR_FAILURE(STATUS)					\
   ((STATUS == EACCES)							\
@@ -105,6 +112,53 @@ do {									\
 ? "The parent directory of the directory being created is on a "	\
   "read-only file system and cannot be modified."			\
 : "unknown")))))
+
+
+
+/* string description for permission bits 'MODE' */
+#define PERMISSION(MODE)						\
+  (((MODE == S_IRUSR) || (MODE == S_IREAD))				\
+? "'S_ISRUSR' - Read permission bit for the owner of the file. On many"	\
+  " systems this bit is 0400. 'S_IREAD' is an obsolete synonym "	\
+  "provided for BSD compatibility."					\
+: (((MODE == S_IWUSR) || (MODE == S_IWRITE))				\
+? "'S_IWUSR' - Write permission bit for the owner of the file. Usually"	\
+  " 0200. 'S_IWRITE' is an obsolete synonym provided for BSD "		\
+  "compatibility."							\
+: (((MODE == S_IXUSR) || (MODE == S_IEXEC))				\
+? "'S_IXUSR' - Execute (for ordinary files) or search (for "		\
+  "directories) permission bit for the owner of the file. Usually "	\
+  "0100. 'S_IEXEC' is an obsolete synonym provided for BSD "		\
+  "compatibility."							\
+: ((MODE == S_IRWXU)							\
+? "'S_IRWXU' - This is equivalent to ‘(S_IRUSR | S_IWUSR | S_IXUSR)’."	\
+: ((MODE == S_IRGRP)							\
+? "'S_IRGRP' - Read permission bit for the group owner of the file. "	\
+  "Usually 040."							\
+: ((MODE == S_IWGRP)							\
+? "'S_IWGRP' - Write permission bit for the group owner of the file. "	\
+  "Usually 020."							\
+: ((MODE == S_IXGRP)							\
+? "'S_IXGRP' - Execute or search permission bit for the group owner of"	\
+" the file. Usually 010.)"						\
+: ((MODE == S_IRWXG)							\
+? "'S_IRWXG' - This is equivalent to ‘(S_IRGRP | S_IWGRP | S_IXGRP)’."	\
+: ((MODE == S_IROTH)							\
+? "'S_IROTH' - Read permission bit for other users. Usually 04."	\
+: ((MODE == S_IWOTH)							\
+? "'S_IWOTH' - Write permission bit for other users. Usually 02."	\
+: ((MODE == S_IXOTH)							\
+? "'S_IXOTH' - Execute or search permission bit for other users. "	\
+   "Usually 01."							\
+: ((MODE == S_IRWXO)							\
+? "'S_IRWXO' - This is equivalent to ‘(S_IROTH | S_IWOTH | S_IXOTH)’."	\
+: ((MODE == S_ISUID)							\
+? "'S_ISUID' - This is the set-user-ID on execute bit, usually 04000."	\
+: ((MODE == S_ISGID)							\
+? "'S_ISGID' - This is the set-group-ID on execute bit, usually 02000."	\
+: ((MODE == S_ISVTX)							\
+? "'S_ISVTX' - This is the sticky bit, usually 01000."			\
+: "unknown")))))))))))))))
 
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
