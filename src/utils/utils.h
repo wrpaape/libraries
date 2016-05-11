@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
 #define restrict __restrict__
 #endif
 #endif
@@ -16,7 +16,7 @@ extern "C" {
 #include <stdio.h>	/* printf, fprintf */
 #include <errno.h>	/* errno */
 #include <string.h>	/* strerror */
-#include <limits.h>	/* max word value */
+#include <limits.h>	/* CHAR_BIT */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -65,17 +65,9 @@ do {									\
 				#PTR "' to %lu bytes", SIZE);		\
 } while (0)
 
-/* fopen ('nullptr' instead of 'NULL') */
-#define HANDLE_FOPEN(FILE_PTR, FILENAME, MODE)				\
-do {									\
-	FILE_PTR = fopen(filename, MODE);				\
-	if (FILE_PTR == nullptr)					\
-		EXIT_ON_FAILURE("failed to open file \"%s\" for '"	\
-				#FILE_PTR "' in mode \"%s\"", FILENAME,	\
-				MODE);					\
-} while (0)
 
 #else	/* for c files */
+
 /* memory allocation */
 #define HANDLE_MALLOC(PTR, SIZE)					\
 do {									\
@@ -100,19 +92,18 @@ do {									\
 				#PTR "' to %lu bytes", SIZE);		\
 } while (0)
 
-/* fopen */
-#define HANDLE_FOPEN(FILE_PTR, FILENAME, MODE)				\
-do {									\
-	FILE_PTR = fopen(filename, MODE);				\
-	if (FILE_PTR == NULL)						\
-		EXIT_ON_FAILURE("failed to open file \"%s\" for '"	\
-				#FILE_PTR "' in mode \"%s\"", FILENAME,	\
-				MODE);					\
-} while (0)
 #endif	/* ifdef __cplusplus */
 
 
+/* returns 'THIS' or 'THAT' according to the predicate 'THIS CMP THAT',
+ * where 'CMP' is a binary relational operator */
+#define THIS_OR_THAT(THIS, THAT, CMP) (((THIS) CMP (THAT)) ? (THIS) : (THAT))
 
+/* returns minimum of 'X' and 'Y' */
+#define MIN(X, Y) THIS_OR_THAT(X, Y, <)
+
+/* returns maximum of 'X' and 'Y' */
+#define MAX(X, Y) THIS_OR_THAT(X, Y, >)
 
 /* swap variables (same type) */
 #define VAR_SWAP(X, Y)				\
