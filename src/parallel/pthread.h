@@ -28,18 +28,18 @@ extern "C" {
  * A) 'PThreads Primer' 2nd ed. (Bil Lewis, Daniel J. Berg)
  *
  *
- * Scheduling Attributes (A, pg 99)
- * - scope
+ * The Four Scheduling Attributes (A, pg 99)
+ * - Scope
  *	pthread_attr_setscope() allows you to select either
  *	'PTHREAD_SCOPE_PROCESS' (local scheduling, unbound threads) or
  *	'PTHREAD_SCOPE_SYSTEM' (global scheduling, bound threads).
  *
- * - policy
+ * - Policy
  *	pthread_attr_setschedpolicy() allows you to select 'SCHED_RR',
  *	'SCHED_FIFO', or 'SCHED_OTHER', or other implementation-defined
  *	policies.
  *
- * - priority
+ * - Priority
  *	pthread_attr_setschedparam() allows you to set the priority level of a
  *	thread by setting the 'sched_param' struct element
  *	'param.sched_priority'. You can also change the parameters of a running
@@ -48,12 +48,16 @@ extern "C" {
  *	policy, the priority level must be between
  *	'sched_get_priority_max(policy)' and 'sched_get_priority_min(policy)'.
  *
- * - inheritance
+ * - Inheritance
  *	pthread_setinheritsched() allows you to specify if the scheduling
  *	policy and parameters will be inherited from the creating thread
  *	('PTHREAD_INHERIT_SCHED'), or will be set directly by the other
  *	functions ('PTHREAD_EXPLICIT_SCHED').
  *
+ * Unless you are doing realtime work (i.e. guarantee response within specified
+ * time constraints), only scope is of interest, and that will almost always be
+ * set to 'PTHREAD_SCOPE_SYSTEM'. POSIX does not specify default values for
+ * these attributes, so you should really set all four.
  *
  *
  */
