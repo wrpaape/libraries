@@ -8,7 +8,6 @@ extern "C" {
 #endif
 #endif
 
-
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <pthread.h>		/* pthread API */
@@ -19,7 +18,45 @@ extern "C" {
 
 /* <parallel/pthread.h>
  *
- * defines macros, convenience functions for accessing the pthread API */
+ * defines macros, convenience functions for accessing the pthread API
+ *
+ *
+ * NOTES
+ * ==========================================================================
+ *
+ * Sources
+ * A) 'PThreads Primer' 2nd ed. (Bil Lewis, Daniel J. Berg)
+ *
+ *
+ * Scheduling Attributes (A, pg 99)
+ * - scope
+ *	pthread_attr_setscope() allows you to select either
+ *	'PTHREAD_SCOPE_PROCESS' (local scheduling, unbound threads) or
+ *	'PTHREAD_SCOPE_SYSTEM' (global scheduling, bound threads).
+ *
+ * - policy
+ *	pthread_attr_setschedpolicy() allows you to select 'SCHED_RR',
+ *	'SCHED_FIFO', or 'SCHED_OTHER', or other implementation-defined
+ *	policies.
+ *
+ * - priority
+ *	pthread_attr_setschedparam() allows you to set the priority level of a
+ *	thread by setting the 'sched_param' struct element
+ *	'param.sched_priority'. You can also change the parameters of a running
+ *	thread via pthread_setschedparam(). POSIX gives no advice on how to use
+ *	the priority levels provided. All you know is that for any given
+ *	policy, the priority level must be between
+ *	'sched_get_priority_max(policy)' and 'sched_get_priority_min(policy)'.
+ *
+ * - inheritance
+ *	pthread_setinheritsched() allows you to specify if the scheduling
+ *	policy and parameters will be inherited from the creating thread
+ *	('PTHREAD_INHERIT_SCHED'), or will be set directly by the other
+ *	functions ('PTHREAD_EXPLICIT_SCHED').
+ *
+ *
+ *
+ */
 
 
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */

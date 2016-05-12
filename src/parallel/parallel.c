@@ -19,6 +19,9 @@ void *execute_spawned_thread(void *restrict arg)
 }
 
 
+/* 'spawn_timeout_task' spawns an ad hoc pthread, 'task_thread', to process
+ * 'task'. Program exits if 'task' has not finished processing before 'timeout'
+ * expires. */
 void spawn_timeout_task(struct Task *const restrict task,
 			const struct timespec *restrict timeout)
 {
