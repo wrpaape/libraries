@@ -1,6 +1,11 @@
-#include <utils/utils.h>	/* error handling */
-#include <parallel/parallel.h>	/* timeout */
 #include <big_o/big_o.h>
+
+/* input size cutoffs for testing extreme growth rates */
+#define EXP_MAX_N 40ul
+#define FACT_MAX_N 19ul
+
+/* upper limit of pthread create */
+#define MAX_WORKERS 4ul
 
 extern inline char *time_complexity_class(const enum TimeComplexityClass tcc);
 extern inline char *time_complexity_order(const enum TimeComplexityClass tcc);
@@ -79,15 +84,21 @@ enum TimeComplexityClass approximate_time_complexity(struct SizeStream *restrict
 
 
 	/* generate range of input 'n' */
-	n_range->generator(&input_n[0l], n_min, n_max, n_res);
+	(*(n_range->generator))(&input_n[0l],
+				n_min,
+				n_max,
+				n_res);
+
+	const size_t num_workers = MIN(n_res, MAX_WORKERS);
+
+	pthread_t workers[num_workers];
 
 
-	for (ptrdiff_t i = 0l; i < n_res; ++i) {
-
-		function_timer(input_n[i], );
+	for (ptrdiff_t i = 0l; i < num_workers; ++i) {
+		spawn_timeout_task
 
 	}
 
 
-	return tc_class;
+	return LOGARITHMIC;
 }

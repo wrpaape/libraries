@@ -105,6 +105,18 @@ BIG_O_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(BIG_O_
 BIG_O_ODEP = $(BIG_O_SRC) $(BIG_O_HDR)
 BIG_O_LDEP = $(BIG_O_OBJ)
 
+# root/lib/unity.a
+UNITY_NAME = unity
+UNITY_DIR  = $(addprefix $(SRC_DIR)/,   $(UNITY_NAME))
+UNITY_SRC  = $(addprefix $(UNITY_DIR)/, $(addsuffix .c, $(UNITY_NAME)))
+UNITY_HDR  = $(addprefix $(UNITY_DIR)/, $(addsuffix .h, $(UNITY_NAME)))
+UNTIY_IHDR = $(patsubst %.h, %_internals.h, $(UNITY_HDR))
+UNITY_CHDR = $(patsubst %.h, %_config.h,    $(UNITY_HDR))
+UNITY_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(UNITY_NAME)))
+UNITY_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(UNITY_NAME))))
+UNITY_ODEP = $(UNITY_SRC) $(UNITY_HDR) $(UNITY_IHDR) $(UNITY_CHDR)
+UNITY_LDEP = $(UNITY_OBJ)
+
 
 # tests
 # ==============================================================================
@@ -166,7 +178,8 @@ BIG_O_TEST_BDEP = $(BIG_O_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 
 # convenience groupings
-USER_ITEMS  = UTILS RAND PARAL BHEAP BIG_O
+# USER_ITEMS  = UTILS RAND PARAL BHEAP BIG_O
+USER_ITEMS  = UTILS RAND PARAL BHEAP UNITY
 GTEST_ITEMS = GTEST_ALL GTEST_MAIN
 ALL_ITEMS   = $(USER_ITEMS) $(GTEST_ITEMS)
 
@@ -197,6 +210,9 @@ $(BHEAP_LIB): $(BHEAP_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(BIG_O_LIB): $(BIG_O_LDEP)
+	$(AR) $(ARFLAGS) $@ $^
+
+$(UNITY_LIB): $(UNITY_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(GTEST_ALL_LIB): $(GTEST_ALL_LDEP)
@@ -236,6 +252,9 @@ $(BHEAP_OBJ): $(BHEAP_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BIG_O_OBJ): $(BIG_O_ODEP)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(UNITY_OBJ): $(UNITY_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(GTEST_ALL_OBJ): $(GTEST_ALL_ODEP)

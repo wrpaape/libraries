@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict' */
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
 #define restrict __restrict__
 #endif
 #endif
@@ -20,7 +20,7 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <time.h> /* clock_t */
+#include <parallel/parallel.h>	/* pthread API, timeout tasks, error handling */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -196,21 +196,19 @@ struct SizeStream {
 	size_t min;
 	size_t max;
 	size_t res;
-	void (*generator)(size_t *,
+	void (*generator)(size_t *restrict,
 			  const size_t,
 			  const size_t,
 			  const size_t)
 };
 
-/* input size cutoffs for testing extreme growth rates */
-#define EXP_MAX_N 40ul
-#define FACT_MAX_N 19ul
 static long double FACTORIAL_MAP[] = {
 	0X8P-3l, 0X8P-3l, 0X8P-2l, 0XCP-1l, 0XCP+1l, 0XFP+3l, 0XB.4P+6l,
 	0X9.D8P+9l, 0X9.D8P+12l, 0XB.13P+15l, 0XD.D7CP+18l, 0X9.8454P+22l,
 	0XE.467EP+25l, 0XB.99466P+29l, 0XA.261D94P+33l, 0X9.83BBBACP+37l,
 	0X9.83BBBACP+41l, 0XA.1BF7766CP+45l, 0XB.5F7665398P+49l, 0XD.815C983448P+53l,
 };
+
 
 static inline void set_time_ratios_upto_n_cubed(long double *ratios,
 						const long double time,
