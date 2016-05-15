@@ -1,9 +1,273 @@
 #include <string/generate.h>
 
+extern inline char *
+sample_word_group(const struct WordGroup *const restrict group);
+
+static const struct WordGroup
+PERSONAL_PRONOUNS[PERSONAL_PRONOUN_TYPES][PERSON_TYPES][NUMBER_TYPES] = {
+	[SUBJECT] = {
+		[FIRST]  = {
+			[SINGULAR] = {
+				.words = {
+					"I"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"we"
+				},
+				.i_max = 0ul
+			}
+		},
+		[SECOND] = {
+			[SINGULAR] = {
+				.words = {
+					"you"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"you", "you all", "y'all", "you guys",
+					"you lot", "you people"
+				},
+				.i_max = 5ul
+			}
+		},
+		[THIRD]  = {
+			[SINGULAR] = {
+				.words = {
+					"he", "she", "it", "they"
+				},
+				.i_max = 3ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"they"
+				},
+				.i_max = 0ul
+			}
+		}
+	},
+	[OBJECT] = {
+		[FIRST]	 = {
+			[SINGULAR] = {
+				.words = {
+					"me"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"us"
+				},
+				.i_max = 0ul
+			}
+		},
+		[SECOND] = {
+			[SINGULAR] = {
+				.words = {
+					"you"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"you", "you all", "y'all", "you guys",
+					"you lot", "you people"
+				},
+				.i_max = 5ul
+			}
+		},
+		[THIRD]  = {
+			[SINGULAR] = {
+				.words = {
+					"him", "her", "it", "them"
+				},
+				.i_max = 3ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"them"
+				},
+				.i_max = 0ul
+			}
+		}
+	},
+	[DEPENDENT_POSSESSIVE] = {
+		[FIRST]	 = {
+			[SINGULAR] = {
+				.words = {
+					"my"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"our"
+				},
+				.i_max = 0ul
+			}
+		},
+		[SECOND] = {
+			[SINGULAR] = {
+				.words = {
+					"your"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"your", "y'all's"
+				},
+				.i_max = 1ul
+			}
+		},
+		[THIRD]  = {
+			[SINGULAR] = {
+				.words = {
+					"his", "her", "its", "their"
+				},
+				.i_max = 3ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"their"
+				},
+				.i_max = 0ul
+			}
+		}
+	},
+	[INDEPENDENT_POSSESSIVE] = {
+		[FIRST]	 = {
+			[SINGULAR] = {
+				.words = {
+					"mine"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"ours"
+				},
+				.i_max = 0ul
+			}
+		},
+		[SECOND] = {
+			[SINGULAR] = {
+				.words = {
+					"yours"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"yours"
+				},
+				.i_max = 0ul
+			}
+		},
+		[THIRD]  = {
+			[SINGULAR] = {
+				.words = {
+					"his", "hers", "its", "theirs"
+				},
+				.i_max = 3ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"theirs"
+				},
+				.i_max = 0ul
+			}
+		}
+	},
+	[REFLEXIVE] = {
+		[FIRST]	 = {
+			[SINGULAR] = {
+				.words = {
+					"myself"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"ourselves"
+				},
+				.i_max = 0ul
+			}
+		},
+		[SECOND] = {
+			[SINGULAR] = {
+				.words = {
+					"yourself"
+				},
+				.i_max = 0ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"yourselves"
+				},
+				.i_max = 0ul
+			}
+		},
+		[THIRD]  = {
+			[SINGULAR] = {
+				.words = {
+					"himself", "herself", "itself", "themselves"
+				},
+				.i_max = 3ul
+			},
+			[PLURAL]   = {
+				.words = {
+					"themselves"
+				},
+				.i_max = 0ul
+			}
+		}
+	}
+};
+
+static const struct WordGroup
+DEMONSTRATIVES[NUMBER_TYPES] = {
+	[SINGULAR] = {
+		.words = {
+			"this", "that"
+		},
+		.i_max = 1ul
+	},
+	[PLURAL] = {
+		.words = {
+			"these", "those"
+		},
+		.i_max = 1ul
+	}
+};
+
+static const char *const AUXILIARY_VERBS[] = {
+	"be", "am", "are", "is", "was", "were", "being", "been",
+	"can",
+	"could",
+	"dare",
+	"do", "does", "did",
+	"have", "has", "had", "having",
+	"may",
+	"might",
+	"must",
+	"need",
+	"ought",
+	"shall",
+	"should",
+	"will",
+	"would"
+};
 
 
-static const char *const VERBS[][3][2] = {
-	{"", "be"},
+
+
+static const char *const VERBS[] = {
+	"be",
 	"have",
 	"do",
 	"say",

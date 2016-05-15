@@ -60,11 +60,6 @@ inline struct Queue *init_queue(void)
 	return queue;
 }
 
-inline void free_queue(struct Queue *queue)
-{
-	free(queue);
-}
-
 inline void queue_push(struct Queue *queue,
 		       void *data)
 {
@@ -97,6 +92,13 @@ inline void *queue_pop(struct Queue *queue)
 	free(node);
 
 	return data;
+}
+
+inline void free_queue(struct Queue *queue)
+{
+	while (queue_pop(queue) != NULL);
+
+	free(queue);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

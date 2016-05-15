@@ -14,7 +14,7 @@ extern "C" {
 
 #include <string/ascii.h>		/* ascii_t */
 #include <string/split_string.h>	/* split_string */
-#include <string/generate.h>		/* string generators */
+/* #include <string/generate.h>		/1* string generators *1/ */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES

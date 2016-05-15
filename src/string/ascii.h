@@ -190,49 +190,62 @@ static const ascii_t ASCII_LOWERCASE_VOWEL_GROUP[] = {
 
 /* ASCII group sets (boolean indicates membership)
  * ========================================================================== */
+
+#define _ASCII_X_RANGE_CC(I, J, X) [(I) ... (J)] = (X)
+#define _ASCII_X_RANGE_OC(I, J, X) _ASCII_X_RANGE_CC((I) + 1, J,       X)
+#define _ASCII_X_RANGE_CO(I, J, X) _ASCII_X_RANGE_CC(I,       (J) - 1, X)
+#define _ASCII_X_RANGE_OO(I, J, X) _ASCII_X_RANGE_CC((I) + 1, (J) - 1, X)
+#define _ASCII_T_RANGE_CC(I, J) _ASCII_X_RANGE_CC(I, J, true)
+#define _ASCII_T_RANGE_OC(I, J) _ASCII_X_RANGE_OC(I, J, true)
+#define _ASCII_T_RANGE_CO(I, J) _ASCII_X_RANGE_CO(I, J, true)
+#define _ASCII_T_RANGE_OO(I, J) _ASCII_X_RANGE_OO(I, J, true)
+#define _ASCII_F_RANGE_CC(I, J) _ASCII_X_RANGE_CC(I, J, false)
+#define _ASCII_F_RANGE_OC(I, J) _ASCII_X_RANGE_OC(I, J, false)
+#define _ASCII_F_RANGE_CO(I, J) _ASCII_X_RANGE_CO(I, J, false)
+#define _ASCII_F_RANGE_OO(I, J) _ASCII_X_RANGE_OO(I, J, false)
+
+#define _ASCII_RANGE_T_VOWEL(I, J) [I] = true, _ASCII_F_RANGE_OO(I, J)
+#define _ASCII_RANGE_F_VOWEL(I, J) _ASCII_T_RANGE_OO(I, J), [J] = false
+
+#define _ASCII_LETTER_SWEEP(B, A, E, I, O, U, Y)			\
+	_ASCII_RANGE_ ## B ## _VOWEL(A, E),				\
+	_ASCII_RANGE_ ## B ## _VOWEL(E, I),				\
+	_ASCII_RANGE_ ## B ## _VOWEL(I, O),				\
+	_ASCII_RANGE_ ## B ## _VOWEL(O, U),				\
+	_ASCII_RANGE_ ## B ## _VOWEL(U, Y)
+
+#define _ASCII_CONSONANT_SWEEP(A, E, I, O, U, Y, Z)			\
+	_ASCII_LETTER_SWEEP(F, A, E, I, O, U, Y), [Z] = true
+
+#define _ASCII_VOWEL_SWEEP(A, E, I, O, U, Y)				\
+	_ASCII_LETTER_SWEEP(T, A, E, I, O, U, Y), [Y] = true
+
 /* letters */
 static const bool ASCII_LETTER_SET[] = {
-	[	 0 ... ('A' - 1)] = false,
-	[      'A' ...	     'Z'] = true,
-	[('Z' + 1) ... ('a' - 1)] = false,
-	[      'a' ...	     'z'] = true,
-	[('z' + 1) ... ASCII_MAX] = false
+	_ASCII_F_RANGE_CO(0,	     'A'),
+	_ASCII_T_RANGE_CC('A',       'Z'),
+	_ASCII_F_RANGE_OO('Z',       'a'),
+	_ASCII_T_RANGE_CC('a',       'z'),
+	_ASCII_F_RANGE_OC('z', ASCII_MAX)
 };
 
 /* consonants */
 static const bool ASCII_CONSONANT_SET[] = {
-	[	 0 ... ('A' - 1)] = true, ['A'] = false,
-	[('A' + 1) ... ('E' - 1)] = true, ['E'] = false,
-	[('E' + 1) ... ('I' - 1)] = true, ['I'] = false,
-	[('I' + 1) ... ('O' - 1)] = true, ['O'] = false,
-	[('O' + 1) ... ('U' - 1)] = true, ['U'] = false,
-	[('U' + 1) ... ('Y' - 1)] = true, ['Y'] = false,
-	[('Y' + 1) ... ('a' - 1)] = true, ['a'] = false,
-	[('a' + 1) ... ('e' - 1)] = true, ['e'] = false,
-	[('e' + 1) ... ('i' - 1)] = true, ['i'] = false,
-	[('i' + 1) ... ('o' - 1)] = true, ['o'] = false,
-	[('o' + 1) ... ('u' - 1)] = true, ['u'] = false,
-	[('u' + 1) ... ('y' - 1)] = true, ['y'] = false,
-	[('y' + 1) ... ASCII_MAX] = true
+	_ASCII_F_RANGE_CC(0,   'A'),
+	_ASCII_CONSONANT_SWEEP('A', 'E', 'I', 'O', 'U', 'Y', 'Z'),
+	_ASCII_F_RANGE_OC('Z', 'a'),
+	_ASCII_CONSONANT_SWEEP('a', 'e', 'i', 'o', 'u', 'y', 'z'),
+	_ASCII_F_RANGE_OC('z', ASCII_MAX)
 };
 
 /* vowels */
 static const bool ASCII_VOWEL_SET[] = {
-	[	 0 ... ('A' - 1)] = false, ['A'] = true,
-	[('A' + 1) ... ('E' - 1)] = false, ['E'] = true,
-	[('E' + 1) ... ('I' - 1)] = false, ['I'] = true,
-	[('I' + 1) ... ('O' - 1)] = false, ['O'] = true,
-	[('O' + 1) ... ('U' - 1)] = false, ['U'] = true,
-	[('U' + 1) ... ('Y' - 1)] = false, ['Y'] = true,
-	[('Y' + 1) ... ('a' - 1)] = false, ['a'] = true,
-	[('a' + 1) ... ('e' - 1)] = false, ['e'] = true,
-	[('e' + 1) ... ('i' - 1)] = false, ['i'] = true,
-	[('i' + 1) ... ('o' - 1)] = false, ['o'] = true,
-	[('o' + 1) ... ('u' - 1)] = false, ['u'] = true,
-	[('u' + 1) ... ('y' - 1)] = false, ['y'] = true,
-	[('y' + 1) ... ASCII_MAX] = false
+	_ASCII_F_RANGE_CO(0, 'A'),
+	_ASCII_VOWEL_SWEEP('A', 'E', 'I', 'O', 'U', 'Y'),
+	_ASCII_F_RANGE_CO('Z', 'a'),
+	_ASCII_VOWEL_SWEEP('a', 'e', 'i', 'o', 'u', 'y'),
+	_ASCII_F_RANGE_CC('z', ASCII_MAX)
 };
-
 
 /* ASCII maps ('code' maps to 'MAP[code]')
  * ========================================================================== */
