@@ -1,5 +1,5 @@
-#ifndef STRING_STRING_H_
-#define STRING_STRING_H_
+#ifndef STRING_GENERATE_H_
+#define STRING_GENERATE_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -12,9 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <string/ascii.h>		/* ascii_t */
-#include <string/split_string.h>	/* split_string */
-#include <string/generate.h>		/* string generators */
+#include <rand/rand.h>	/* random number generator */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -22,6 +20,40 @@ extern "C" {
  *
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+enum VerbType {
+	INTRANSITIVE = 0,
+	TRANSITIVE   = 1
+};
+
+enum Mood {
+	INDICATIVE  = 0,
+	SUBJUNCTIVE = 1,
+	CONDITIONAL = 2
+};
+
+enum Tense {
+	PAST	 = 0,
+	PRESENT	 = 1,
+	FUTURE	 = 2
+};
+
+enum Plurality {
+	SINGULAR = 0,
+	PLURAL	 = 1
+};
+
+enum Person {
+	FIRST  = 0,
+	SECOND = 1,
+	THIRD  = 2
+};
+
+enum Gender {
+	MASCULINE = 0,
+	FEMININE  = 1,
+	NEUTRAL	  = 2
+};
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  *
@@ -53,4 +85,4 @@ extern "C" {
 }
 #endif
 
-#endif /* ifndef STRING_STRING_H_ */
+#endif /* ifndef STRING_GENERATE_H_ */
