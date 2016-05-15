@@ -92,7 +92,7 @@ BHEAP_SRC  = $(addprefix $(BHEAP_DIR)/, $(addsuffix .c, $(BHEAP)))
 BHEAP_HDR  = $(addprefix $(BHEAP_DIR)/, $(addsuffix .h, $(BHEAP)))
 BHEAP_OBJ  = $(addprefix $(OBJ_DIR)/, 	$(addsuffix .o, $(BHEAP)))
 BHEAP_LIB  = $(addprefix $(LIB_DIR)/,   $(addsuffix .a, $(addprefix lib, $(BHEAP))))
-BHEAP_ODEP = $(BHEAP_SRC) $(BHEAP_HDR) $(UTILS_HDR)
+BHEAP_ODEP = $(BHEAP_SRC) $(BHEAP_HDR) $(UTILS_ODEP)
 BHEAP_LDEP = $(BHEAP_OBJ) $(UTILS_OBJ)
 
 # root/lib/big_o.a
@@ -117,16 +117,33 @@ UNITY_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(UNITY)
 UNITY_ODEP = $(UNITY_SRC) $(UNITY_HDR) $(UNITY_IHDR) $(UNITY_CHDR)
 UNITY_LDEP = $(UNITY_OBJ)
 
-# root/lib/ascii.a
-ASCII	   = ascii
-ASCII_DIR  = $(addprefix $(SRC_DIR)/,   $(ASCII))
-ASCII_SRC  = $(addprefix $(ASCII_DIR)/, $(addsuffix .c, $(ASCII)))
-ASCII_HDR  = $(addprefix $(ASCII_DIR)/, $(addsuffix .h, $(ASCII)))
-ASCII_LHDR = $(patsubst %.h, %_lookup.h, $(ASCII_HDR))
-ASCII_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(ASCII)))
-ASCII_LIB  = $(addprefix $(LIB_DIR)/,  $(addsuffix .a, $(addprefix lib, $(ASCII))))
-ASCII_ODEP = $(ASCII_SRC) $(ASCII_HDR) $(ASCII_LHDR)
-ASCII_LDEP = $(ASCII_OBJ)
+
+MODULE_DIR  = $(addprefix $(SRC_DIR)/, $1)
+MODULE_FILE = $(addprefix $1/, $(addsuffix .$3, $2))
+MODULE_SRC  = $(call MODULE_FILE,$1,$2,c)
+MODULE_HDR  = $(call MODULE_FILE,$1,$2,h)
+MODULE_OBJ  = $(call MODULE_FILE,$(OBJ_DIR),$1,o)
+MODULE_LIB  = $(call MODULE_FILE,$(LIB_DIR),$(addprefix lib, $1),a)
+
+# root/lib/string.a
+STRING		  = string
+ASCII		  = ascii
+SPLIT_STRING	  = split_string
+STRING_DIR	  = $(call MODULE_DIR,$(STRING))
+STRING_SRC	  = $(call MODULE_SRC,$(STRING_DIR),$(STRING))
+STRING_HDR	  = $(call MODULE_HDR,$(STRING_DIR),$(STRING))
+ASCII_SRC	  = $(call MODULE_SRC,$(STRING_DIR),$(ASCII))
+ASCII_HDR	  = $(call MODULE_HDR,$(STRING_DIR),$(ASCII))
+SPLIT_STRING_SRC  = $(call MODULE_SRC,$(STRING_DIR),$(SPLIT_STRING))
+SPLIT_STRING_HDR  = $(call MODULE_HDR,$(STRING_DIR),$(SPLIT_STRING))
+STRING_OBJ	  = $(call MODULE_OBJ,$(STRING))
+ASCII_OBJ	  = $(call MODULE_OBJ,$(ASCII))
+SPLIT_STRING_OBJ  = $(call MODULE_OBJ,$(SPLIT_STRING))
+STRING_LIB	  = $(call MODULE_LIB,$(STRING))
+ASCII_ODEP        = $(ASCII_SRC)	$(ASCII_HDR)
+SPLIT_STRING_ODEP = $(SPLIT_STRING_SRC) $(SPLIT_STRING_HDR)
+STRING_ODEP       = $(STRING_SRC) $(STRING_HDR) $(ASCII_ODEP) $(SPLIT_STRING_ODEP)
+STRING_LDEP	  = $(STRING_OBJ) $(ASCII_OBJ) $(SPLIT_STRING_OBJ)
 
 
 # tests
@@ -190,7 +207,7 @@ BIG_O_TEST_BDEP = $(BIG_O_TEST_OBJ) $(GTEST_MAIN_LIB)
 
 # convenience groupings
 # USER_ITEMS  = UTILS RAND PARAL BHEAP BIG_O
-USER_ITEMS  = UTILS RAND PARAL BHEAP UNITY ASCII
+USER_ITEMS  = UTILS RAND PARAL BHEAP UNITY ASCII SPLIT_STRING STRING
 GTEST_ITEMS = GTEST_ALL GTEST_MAIN
 ALL_ITEMS   = $(USER_ITEMS) $(GTEST_ITEMS)
 
@@ -226,7 +243,7 @@ $(BIG_O_LIB): $(BIG_O_LDEP)
 $(UNITY_LIB): $(UNITY_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(ASCII_LIB): $(ASCII_LDEP)
+$(STRING_LIB): $(STRING_LDEP)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(GTEST_ALL_LIB): $(GTEST_ALL_LDEP)
@@ -272,6 +289,12 @@ $(UNITY_OBJ): $(UNITY_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(ASCII_OBJ): $(ASCII_ODEP)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(SPLIT_STRING_OBJ): $(SPLIT_STRING_ODEP)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(STRING_OBJ): $(STRING_ODEP)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(GTEST_ALL_OBJ): $(GTEST_ALL_ODEP)

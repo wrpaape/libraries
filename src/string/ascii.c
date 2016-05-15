@@ -1,4 +1,4 @@
-#include <ascii/ascii_lookup.h> /* ascii_t, lookup tables */
+#include <string/ascii.h> /* ascii_t, lookup tables */
 
 /* character map case */
 extern inline ascii_t lowercase_ascii(ascii_t ascii);

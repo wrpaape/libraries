@@ -1,5 +1,5 @@
-#ifndef ASCII_ASCII_LOOKUP_H_
-#define ASCII_ASCII_LOOKUP_H_
+#ifndef STRING_ASCII_H_
+#define STRING_ASCII_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -8,10 +8,13 @@ extern "C" {
 #endif
 #endif
 
+
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <ascii/ascii.h>	/* ascii_t, limits */
+#include <stdint.h>	/* uint8_t */
+#include <limits.h>	/* UINT8_MAX */
+#include <stdbool.h>	/* bool */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -19,12 +22,23 @@ extern "C" {
  *
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+typedef uint8_t ascii_t;
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  *
  *
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+/* ASCII limits, bounds
+ * ========================================================================== */
+#define ASCII_VALID_MAX 127
+#define ASCII_MAX UINT8_MAX
+
+#define PRINTABLE_MIN ' '
+#define PRINTABLE_MAX '~'
 
 /* ASCII group macros
  * ========================================================================== */
@@ -300,8 +314,20 @@ inline void togglecase_ascii_string(ascii_t *restrict string)
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * HELPER FUNCTIONS */
 
+/* undefine group macros */
+#undef _ASCII_BEFORE_UPPERCASE
+#undef _ASCII_UPPERCASE
+#undef _ASCII_BETWEEN_CASES
+#undef _ASCII_LOWERCASE
+#undef _ASCII_AFTER_LOWERCASE
+#undef _ASCII_INVALID
+#undef _ASCII_UPPERCASE_CONSONANTS
+#undef _ASCII_LOWERCASE_CONSONANTS
+#undef _ASCII_UPPERCASE_VOWELS
+#undef _ASCII_LOWERCASE_VOWEL
+
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif
 
-#endif /* ifndef ASCII_ASCII_LOOKUP_H_ */
+#endif /* ifndef STRING_ASCII_H_ */
