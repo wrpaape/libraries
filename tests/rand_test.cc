@@ -2,7 +2,7 @@
 #include <ctime>
 
 extern "C" {
-#include <utils/rand.c>
+#include <rand/rand.c>
 }
 
 class RandTest : public testing::Test

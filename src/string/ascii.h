@@ -188,16 +188,13 @@ static const ascii_t ASCII_LOWERCASE_VOWEL_GROUP[] = {
 };
 
 
-/* ASCII group sets (boolean indicates membership)
+/* ASCII set macros
  * ========================================================================== */
-
 #define _ASCII_X_RANGE_CC(I, J, X) [(I) ... (J)] = (X)
 #define _ASCII_X_RANGE_OC(I, J, X) _ASCII_X_RANGE_CC((I) + 1, J,       X)
 #define _ASCII_X_RANGE_CO(I, J, X) _ASCII_X_RANGE_CC(I,       (J) - 1, X)
 #define _ASCII_X_RANGE_OO(I, J, X) _ASCII_X_RANGE_CC((I) + 1, (J) - 1, X)
 #define _ASCII_T_RANGE_CC(I, J) _ASCII_X_RANGE_CC(I, J, true)
-#define _ASCII_T_RANGE_OC(I, J) _ASCII_X_RANGE_OC(I, J, true)
-#define _ASCII_T_RANGE_CO(I, J) _ASCII_X_RANGE_CO(I, J, true)
 #define _ASCII_T_RANGE_OO(I, J) _ASCII_X_RANGE_OO(I, J, true)
 #define _ASCII_F_RANGE_CC(I, J) _ASCII_X_RANGE_CC(I, J, false)
 #define _ASCII_F_RANGE_OC(I, J) _ASCII_X_RANGE_OC(I, J, false)
@@ -220,12 +217,15 @@ static const ascii_t ASCII_LOWERCASE_VOWEL_GROUP[] = {
 #define _ASCII_VOWEL_SWEEP(A, E, I, O, U, Y)				\
 	_ASCII_LETTER_SWEEP(T, A, E, I, O, U, Y), [Y] = true
 
+
+/* ASCII sets (boolean indicates membership)
+ * ========================================================================== */
 /* letters */
 static const bool ASCII_LETTER_SET[] = {
-	_ASCII_F_RANGE_CO(0,	     'A'),
-	_ASCII_T_RANGE_CC('A',       'Z'),
-	_ASCII_F_RANGE_OO('Z',       'a'),
-	_ASCII_T_RANGE_CC('a',       'z'),
+	_ASCII_F_RANGE_CO(0,   'A'),
+	_ASCII_T_RANGE_CC('A', 'Z'),
+	_ASCII_F_RANGE_OO('Z', 'a'),
+	_ASCII_T_RANGE_CC('a', 'z'),
 	_ASCII_F_RANGE_OC('z', ASCII_MAX)
 };
 
@@ -337,7 +337,24 @@ inline void togglecase_ascii_string(ascii_t *restrict string)
 #undef _ASCII_UPPERCASE_CONSONANTS
 #undef _ASCII_LOWERCASE_CONSONANTS
 #undef _ASCII_UPPERCASE_VOWELS
-#undef _ASCII_LOWERCASE_VOWEL
+#undef _ASCII_LOWERCASE_VOWELS
+
+/* undefine set macros */
+#undef _ASCII_X_RANGE_CC
+#undef _ASCII_X_RANGE_OC
+#undef _ASCII_X_RANGE_CO
+#undef _ASCII_X_RANGE_OO
+#undef _ASCII_T_RANGE_CC
+#undef _ASCII_T_RANGE_OO
+#undef _ASCII_F_RANGE_CC
+#undef _ASCII_F_RANGE_OC
+#undef _ASCII_F_RANGE_CO
+#undef _ASCII_F_RANGE_OO
+#undef _ASCII_RANGE_T_VOWEL
+#undef _ASCII_RANGE_F_VOWEL
+#undef _ASCII_LETTER_SWEEP
+#undef _ASCII_CONSONANT_SWEEP
+#undef _ASCII_VOWEL_SWEEP
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }

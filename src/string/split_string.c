@@ -3,30 +3,32 @@
 char **split_string(char *restrict string,
 		    const char split)
 {
-	char **split_strings;
+	char **split_segment;
 
 	const size_t seg_count = count_segments(string,
 						split);
 
-	HANDLE_MALLOC(split_strings,
+	HANDLE_MALLOC(split_segment,
 		      sizeof(char *) * (seg_count + 1ul));
 
-	split_strings[0] = string;
+	char **const split_strings = split_segment;
+	char **const null_segment  = split_strings + seg_count;
 
-	for (size_t i = 1ul; i < seg_count; ++i) {
+	while (1) {
+		*split_segment = string;
+		++split_segment;
+
+		if (split_segment == null_segment) {
+			*null_segment = NULL;
+			return split_strings;
+		}
 
 		while (*string != split)
 			++string;
 
 		*string = '\0';
 		++string;
-
-		split_strings[i] = string;
 	}
-
-	split_strings[seg_count] = NULL;
-
-	return split_strings;
 }
 
 
