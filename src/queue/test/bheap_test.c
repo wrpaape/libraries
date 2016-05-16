@@ -1,5 +1,5 @@
-#include <unity/unity.h>
-#include <queue/bheap.h>
+#include <unity.h>
+#include <bheap.h>
 
 void setUp(void)
 {

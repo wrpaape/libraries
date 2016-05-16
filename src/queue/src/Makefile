@@ -40,6 +40,7 @@ STATIC_DIR   = $(call PATH_JOIN,$(ROOT_DIR) $(STATIC))
 # ==============================================================================
 LIB_PFX	 = lib
 TEST_SFX = _test
+TRNR_SFX = $(call CONCAT,$(TEST_SFX) _runner)
 
 SRC_PFX      = $(EMPTY)
 HDR_PFX      = $(EMPTY)
@@ -47,6 +48,8 @@ TEST_SRC_PFX = $(EMPTY)
 TRNR_SRC_PFX = $(EMPTY)
 OBJ_PFX      = $(EMPTY)
 PIC_OBJ_PFX  = pic_
+TRNR_OBJ_PFX = $(EMPTY)
+TEST_OBJ_PFX = $(EMPTY)
 BIN_PFX	     = $(EMPTY)
 TEST_BIN_PFX = $(EMPTY)
 SHARED_PFX   = $(LIB_PFX)
@@ -55,14 +58,15 @@ STATIC_PFX   = $(LIB_PFX)
 SRC_SFX      = .c
 HDR_SFX      = .h
 TEST_SRC_SFX = $(call CONCAT,$(TEST_SFX) $(SRC_SFX))
-TRNR_SRC_SFX = $(call CONCAT,$(TEST_SFX) _runner $(SRC_SFX))
+TRNR_SRC_SFX = $(call CONCAT,$(TRNR_SFX) $(SRC_SFX))
 OBJ_SFX      = .o
 PIC_OBJ_SFX  = $(OBJ_SFX)
+TEST_OBJ_SFX = $(call CONCAT,$(TEST_SFX) $(OBJ_SFX))
+TRNR_OBJ_SFX = $(call CONCAT,$(TRNR_SFX) $(OBJ_SFX))
 BIN_SFX	     = $(EMPTY)
 TEST_BIN_SFX = $(TEST_SFX)
 SHARED_SFX   = $(call CONCAT,_ $(SHARED) .so)
 STATIC_SFX   = $(call CONCAT,_ $(STATIC) .a)
-
 
 # utility config
 # ==============================================================================
@@ -74,7 +78,9 @@ PIC_FLAG    = -fpic
 SHARED_FLAG = -shared
 RUBY	    = ruby
 # library dependencies
-BUILD_LFLAGS  = $(call CONCAT,-l $1)
+# BUILD_LFLAGS = $(call IF_EXISTS,$1,$(call CONCAT,-l $1))
+BUILD_LFLAGS = $(if $1,$(call CONCAT,-l $1),$(EMPTY))
+
 DEP_LIBS      =
 TEST_DEP_LIBS = unity
 LFLAGS	      = $(call BUILD_LFLAGS,$(DEP_LIBS))
@@ -89,13 +95,13 @@ GEN_TRNR_ABS  = $(call PATH_JOIN,$(GEN_TRNR_DIR) $(GEN_TRNR_BASE))
 # make recipes
 # ==============================================================================
 TRNR_SRC_RECIPE	= $(RUBY) $(GEN_TRNR_ABS) $$< $$@
-OBJ_RECIPE 	= $(CC) $(CFLAGS) -c -o $@ $< $(LFLAGS)
+OBJ_RECIPE 	= $(CC) $(CFLAGS) -c -o $$@ $$< $(LFLAGS)
 PIC_OBJ_RECIPE  = $(OBJ_RECIPE) $(PIC_FLAG)
 TRNR_OBJ_RECIPE = $(OBJ_RECIPE)
 TEST_OBJ_RECIPE = $(OBJ_RECIPE)
-BIN_RECIPE 	= $(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+BIN_RECIPE 	= $(CC) $(CFLAGS) -o $$@ $$^ $(LFLAGS)
 TEST_BIN_RECIPE = $(BIN_RECIPE) $(TEST_LFLAGS)
-STATIC_RECIPE 	= $(AR) $(ARFLAGS) $@ $^
+STATIC_RECIPE 	= $(AR) $(ARFLAGS) $$@ $$^
 SHARED_RECIPE 	= $(BIN_RECIPE) $(SHARED_FLAG)
 
 # convenience variables
@@ -107,6 +113,7 @@ define NEWLINE
 
 
 endef
+CMD_SPACE = $(NEWLINE)$(TAB)
 VAR_DELIM = _
 PATH_DELIM = /
 
@@ -116,7 +123,6 @@ JOIN	  = $(subst $(SPACE),$2,$(strip $1))
 CONCAT    = $(call JOIN,$1,$(EMPTY))
 PATH_JOIN = $(call JOIN,$1,$(PATH_DELIM))
 VAR_JOIN  = $(call JOIN,$1,$(VAR_DELIM))
-
 
 
 
@@ -130,9 +136,8 @@ EXPAND_SFX 	= $(call EXPAND_VAR,$1 SFX)
 EXPAND_BASE	= $(call CONCAT,$(call EXPAND_PFX,$2) $1 $(call EXPAND_SFX,$2))
 EXPAND_PATH	= $(call PATH_JOIN,$(call EXPAND_DIR,$2) $(call EXPAND_BASE,$1,$2))
 EXPAND_DEP_LINE = $(call EXPAND_VAR,$1 $2): $(call EXPAND_VAR,$1 $2 DEP)
-EXPAND_RECIPE	= $(TAB)$(call EXPAND_VAR,$1 RECIPE)
-
-MAKE_TARGET = $(call EXPAND_DEP_LINE,$1,$2)$(NEWLINE)$(call EXPAND_RECIPE,$2)
+EXPAND_RECIPE	= $(call EXPAND_VAR,$1 RECIPE)
+EXPAND_RULE 	= $(call EXPAND_DEP_LINE,$1,$2)$(CMD_SPACE)$(call EXPAND_RECIPE,$2)
 
 
 # make queue
@@ -148,12 +153,12 @@ QUEUE_TEST_SRC = $(call EXPAND_PATH,$(QUEUE),TEST_SRC)
 QUEUE_TRNR_SRC = $(call EXPAND_PATH,$(QUEUE),TRNR_SRC)
 QUEUE_OBJ      = $(call EXPAND_PATH,$(QUEUE),OBJ)
 QUEUE_PIC_OBJ  = $(call EXPAND_PATH,$(QUEUE),PIC_OBJ)
-QUEUE_TEST_OBJ = $(call EXPAND_PATH,$(QUEUE),TEST_OBJ)
 QUEUE_TRNR_OBJ = $(call EXPAND_PATH,$(QUEUE),TRNR_OBJ)
+QUEUE_TEST_OBJ = $(call EXPAND_PATH,$(QUEUE),TEST_OBJ)
 QUEUE_BIN      = $(call EXPAND_PATH,$(QUEUE),BIN)
 QUEUE_TEST_BIN = $(call EXPAND_PATH,$(QUEUE),TEST_BIN)
-QUEUE_SHARED      = $(call EXPAND_PATH,$(QUEUE),SHARED)
-QUEUE_STATIC      = $(call EXPAND_PATH,$(QUEUE),STATIC)
+QUEUE_SHARED   = $(call EXPAND_PATH,$(QUEUE),SHARED)
+QUEUE_STATIC   = $(call EXPAND_PATH,$(QUEUE),STATIC)
 
 # make dependencies
 QUEUE_TRNR_SRC_DEP = $(QUEUE_TEST_SRC)
@@ -166,16 +171,16 @@ QUEUE_TEST_BIN_DEP = $(QUEUE_TEST_OBJ) $(QUEUE_TRNR_OBJ)
 QUEUE_SHARED_DEP   = $(QUEUE_PIC_OBJ)
 QUEUE_STATIC_DEP   = $(QUEUE_OBJ)
 
-# update target groups
-TRNR_SRC_MODULES += QUEUE
-OBJ_MODULES      += QUEUE
-PIC_OBJ_MODULES  += QUEUE
-TRNR_OBJ_MODULES += QUEUE
-TEST_OBJ_MODULES += QUEUE
-BIN_MODULES      += QUEUE
-TEST_BIN_MODULES += QUEUE
-SHARED_MODULES   += QUEUE
-STATIC_MODULES   += QUEUE
+# target group chart
+TRNR_SRC_MODULES = QUEUE
+OBJ_MODULES      = QUEUE
+PIC_OBJ_MODULES  = QUEUE
+TRNR_OBJ_MODULES = QUEUE
+TEST_OBJ_MODULES = QUEUE
+BIN_MODULES      = QUEUE
+TEST_BIN_MODULES = QUEUE
+SHARED_MODULES   = QUEUE
+STATIC_MODULES   = QUEUE
 
 TARGET_TYPES   = TRNR_SRC OBJ PIC_OBJ TRNR_OBJ TEST_OBJ BIN TEST_BIN SHARED STATIC
 EXPAND_MODULES = $(call EXPAND_VAR,$1 MODULES)
@@ -183,26 +188,45 @@ EXPAND_TARGETS = $(foreach module,$(call EXPAND_MODULES,$1),$(call EXPAND_VAR,$(
 ALL_TARGETS    = $(foreach type,$(TARGET_TYPES),$(call EXPAND_TARGETS,$(type)))
 
 
-
-
-
 # make targets
 # ==============================================================================
 all: $(ALL_TARGETS)
 
-$(eval $(call MAKE_TARGET,QUEUE,TRNR_SRC))
-
 # unity test runners
 # root/test/test_runners/*_test_runner.c
-# $(foreach module,TRNR_SRC_MODULES,$(eval $(call MAKE_TARGET,$(module),TRNR_SRC)))
+$(foreach module,$(TRNR_SRC_MODULES),$(eval $(call EXPAND_RULE,$(module),TRNR_SRC)))
 
-# module objects
+# objects
 # root/obj/*.o
-# $(foreach module,OBJ_MODULES,$(eval $(call MAKE_TARGET,$(module),OBJ)))
+$(foreach module,$(OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),OBJ)))
 
-# module objects
+# "position independent code" objects
 # root/obj/pic_*.o
-# $(foreach module,PIC_OBJ_MODULES,$(eval $(call MAKE_TARGET,$(module),PIC_OBJ)))
+$(foreach module,$(PIC_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),PIC_OBJ)))
+
+# unity test runner objects
+# root/obj/*_test_runner.o
+$(foreach module,$(TRNR_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),TRNR_OBJ)))
+
+# unity test objects
+# root/obj/*_test.o
+$(foreach module,$(TEST_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),TEST_OBJ)))
+
+# binary files
+# root/bin/*
+$(foreach module,$(BIN_MODULES),$(eval $(call EXPAND_RULE,$(module),BIN)))
+
+# test binary files
+# root/test/*_test
+$(foreach module,$(TEST_BIN_MODULES),$(eval $(call EXPAND_RULE,$(module),TEST_BIN)))
+
+# dynamic (shared) libraries
+# root/shared/lib*_shared.so
+$(foreach module,$(SHARED_MODULES),$(eval $(call EXPAND_RULE,$(module),SHARED)))
+
+# archive (static) libraries
+# root/shared/lib*_static.a
+$(foreach module,$(STATIC_MODULES),$(eval $(call EXPAND_RULE,$(module),STATIC)))
 
 clean:
 	$(RM) $(ALL_TARGETS)
