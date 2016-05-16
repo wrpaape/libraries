@@ -97,11 +97,7 @@ SHL_RECIPE 	= $(BIN_RECIPE) $(SHL_FLAG)
 EMPTY =
 SPACE = $(EMPTY) $(EMPTY)
 VAR_DELIM = _
-
-# system config
-# ==============================================================================
 PATH_DELIM = /
-
 
 # convenience functions
 # ==============================================================================
@@ -110,8 +106,6 @@ CONCAT    = $(call JOIN,$1,$(EMPTY))
 PATH_JOIN = $(call JOIN,$1,$(PATH_DELIM))
 VAR_JOIN  = $(call JOIN,$1,$(VAR_DELIM))
 
-EXPAND_VAR   = $($(call VAR_JOIN,$1))
-EXPAND_GROUP = $(foreach module,$1,$(call EXPAND_VAR,$(module) $2))
 
 
 # library dependencies
@@ -126,14 +120,22 @@ TEST_LFLAGS = $(call BUILD_LFLAGS,$(TEST_LIBS))
 
 
 
-
-# file expansion functions
+# expansion functions
 # ==============================================================================
-EXPAND_DIR  = $(call EXPAND_VAR,$1 DIR)
-EXPAND_PRE  = $(call EXPAND_VAR,$1 PRE)
-EXPAND_EXT  = $(call EXPAND_VAR,$1 EXT)
-EXPAND_BASE = $(call CONCAT,$(call EXPAND_PRE,$2) $1 $(call EXPAND_EXT,$2))
-EXPAND_PATH = $(call PATH_JOIN,$(call EXPAND_DIR,$2) $(call EXPAND_BASE,$1,$2))
+EXPAND_VAR   	= $($(call VAR_JOIN,$1))
+EXPAND_GROUP	= $(foreach module,$1,$(call EXPAND_VAR,$(module) $2))
+EXPAND_DIR 	= $(call EXPAND_VAR,$1 DIR)
+EXPAND_PRE 	= $(call EXPAND_VAR,$1 PRE)
+EXPAND_EXT 	= $(call EXPAND_VAR,$1 EXT)
+EXPAND_BASE	= $(call CONCAT,$(call EXPAND_PRE,$2) $1 $(call EXPAND_EXT,$2))
+EXPAND_PATH	= $(call PATH_JOIN,$(call EXPAND_DIR,$2) $(call EXPAND_BASE,$1,$2))
+EXPAND_DEP_LINE = $(call EXPAND_VAR,$1 $2): $(call EXPAND_VAR,$1 $2 DEP)
+define MAKE_TARGET =
+$(call EXPAND_DEP_LINE,$1,$2)
+	$(call EXPAND_VAR,$2 RECIPE)
+endef
+
+
 
 # make queue
 # ==============================================================================
@@ -167,58 +169,42 @@ QUEUE_SHL_DEP	   = $(QUEUE_PIC_OBJ)
 QUEUE_STL_DEP	   = $(QUEUE_OBJ)
 
 # update target groups
-MAKE_TRNR_SRCS += QUEUE
-MAKE_OBJS      += QUEUE
-MAKE_PIC_OBJS  += QUEUE
-MAKE_TRNR_OBJS += QUEUE
-MAKE_TEST_OBJS += QUEUE
-MAKE_BINS      += QUEUE
-MAKE_TEST_BINS += QUEUE
-MAKE_SHLS      += QUEUE
-MAKE_STLS      += QUEUE
+TRNR_SRC_MODULES += QUEUE
+OBJ_MODULES      += QUEUE
+PIC_OBJ_MODULES  += QUEUE
+TRNR_OBJ_MODULES += QUEUE
+TEST_OBJ_MODULES += QUEUE
+BIN_MODULES      += QUEUE
+TEST_BIN_MODULES += QUEUE
+SHL_MODULES      += QUEUE
+STL_MODULES      += QUEUE
 
+TARGET_TYPES   = TRNR_SRC OBJ PIC_OBJ TRNR_OBJ TEST_OBJ BIN TEST_BIN SHL STL
+EXPAND_MODULES = $(call EXPAND_VAR,$1 MODULES)
+EXPAND_TARGETS = $(foreach module,$(call EXPAND_MODULES,$1),$(call EXPAND_VAR,$(module) $1))
+ALL_TARGETS    = $(foreach type,$(TARGET_TYPES),$(call EXPAND_TARGETS,$(type)))
 
-
-# make object
-# ==============================================================================
-EXPAND_DEP_LINE = $(call EXPAND_VAR,$1 $2): $(call EXPAND_VAR,$1 $2 DEP)
-define MAKE_TARGET =
-$(call EXPAND_DEP_LINE,$1,$2)
-	$(call EXPAND_VAR,$2 RECIPE)
-endef
-
-# root/obj/queue.o
-
-# QUEUE_SRC  = $(addprefix $(QUEUE_DIR)/, $(addsuffix .c, $(QUEUE)))
-# QUEUE_HDR  = $(addprefix $(QUEUE_DIR)/, $(addsuffix .h, $(QUEUE)))
-# QUEUE_OBJ  = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(QUEUE)))
-# QUEUE_BIN  = $(addprefix $(BIN_DIR)/, $(QUEUE))
-
-# # root/test/queue_test
-
-# QUEUE_TEST      = $(addsuffix _test, $(QUEUE))
-# QUEUE_TRNR      = $(addsuffix _runner, $(QUEUE_TEST))
-# QUEUE_TEST_DIR  = $(TEST_DIR)
-# QUEUE_TEST_SRC  = $(addprefix $(QUEUE_TEST_DIR)/, $(addsuffix .c, $(QUEUE_TEST)))
-# QUEUE_TRNR_SRC  = $(addprefix $(TRNR_DIR)/, $(addsuffix .c, $(QUEUE_TRNR)))
-# QUEUE_TEST_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(QUEUE_TEST)))
-# QUEUE_TRNR_OBJ  = $(addprefix $(OBJ_DIR)/,  $(addsuffix .o, $(QUEUE_TRNR)))
-# QUEUE_TEST_BIN  = $(addprefix $(TEST_DIR)/, $(QUEUE_TEST))
-# QUEUE_TEST_ODEP = $(QUEUE_TEST_SRC) $(QUEUE_ODEP)
-# QUEUE_TRNR_ODEP = $(QUEUE_TRNR_SRC)
-# QUEUE_TEST_BDEP = $(QUEUE_TEST_OBJ) $(QUEUE_TRNR_OBJ)
-
-
-# # target groups
-# # ==============================================================================
-# ALL_TARGETS = $(SRC_OBJS) $(SRC_BINS) $(TRNR_SRCS) $(TRNR_OBJS) $(TEST_OBJS) $(TEST_BINS)
+$(info $(ALL_TARGETS))
+$(info $(ALL_TARGETS))
+$(info $(ALL_TARGETS))
+$(info $(ALL_TARGETS))
 
 
 # make targets
 # ==============================================================================
 all: $(ALL_TARGETS)
 
+# unity test runners
+# root/test/test_runners/*_test_runner.c
+$(foreach module,TRNR_SRC_TARGETS,$(eval $(call MAKE_TARGET,$(module),TRNR_SRC)))
 
+# module objects
+# root/obj/*.o
+$(foreach module,OBJ_TARGETS,$(eval $(call MAKE_TARGET,$(module),OBJ)))
+
+# module objects
+# root/obj/pic_*.o
+$(foreach module,PIC_OBJ_TARGETS,$(eval $(call MAKE_TARGET,$(module),PIC_OBJ)))
 
 clean:
 	$(RM) $(ALL_TARGETS)
