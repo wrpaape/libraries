@@ -1,4 +1,4 @@
-#include <queue/queue.h>
+#include "queue.h"
 
 extern inline struct Queue *init_queue(void);
 

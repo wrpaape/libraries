@@ -9,14 +9,29 @@ extern "C" {
 #endif
 
 
+/* EXTERNAL DEPENDENCIES
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+#include <utils/utils.h>	/* malloc, free */
+
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * EXTERNAL DEPENDENCIES
+ *
+ *
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 struct BHeap {
-	size_t count;	/* count of occupied nodes */
-	size_t alloc;	/* count of allocated nodes */
-	size_t width;	/* byte size per node */
-	void *nodes;
-	int (*compare)(const void *,
+	size_t count;			/* count of occupied nodes */
+	size_t alloc;			/* count of allocated nodes */
+	size_t width;			/* byte size per node */
+	void *nodes;			/* array of heap nodes */
+	int (*compare)(const void *,	/* node comparison function */
 		       const void *);
 };
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS */
+
 
 /* initialize, destroy, resize
  ******************************************************************************/

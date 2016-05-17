@@ -22,7 +22,7 @@ CP    = cp
 RM    = rm
 
 # library dependencies
-DEP_LIBS      =
+DEP_LIBS      = rand_static
 TEST_DEP_LIBS = unity_shared
 
 # flags
@@ -230,6 +230,44 @@ CP_HDR_MODULES    += NLP
 CP_BIN_MODULES    += NLP
 CP_SHARED_MODULES += NLP
 CP_STATIC_MODULES += NLP
+
+
+# nlg config
+# ==============================================================================
+# module name
+NLG = nlg
+
+# source files
+NLG_SRC      = $(call EXPAND_DIR_PATH,$(NLG),SRC)
+NLG_HDR      = $(call EXPAND_DIR_PATH,$(NLG),HDR)
+NLG_TEST_SRC = $(call EXPAND_DIR_PATH,$(NLG),TEST_SRC)
+
+# module targets
+NLG_TRNR_SRC  = $(call EXPAND_DIR_PATH,$(NLG),TRNR_SRC)
+NLG_OBJ       = $(call EXPAND_DIR_PATH,$(NLG),OBJ)
+NLG_PIC_OBJ   = $(call EXPAND_DIR_PATH,$(NLG),PIC_OBJ)
+NLG_TRNR_OBJ  = $(call EXPAND_DIR_PATH,$(NLG),TRNR_OBJ)
+NLG_TEST_OBJ  = $(call EXPAND_DIR_PATH,$(NLG),TEST_OBJ)
+NLG_TEST_BIN  = $(call EXPAND_DIR_PATH,$(NLG),TEST_BIN)
+NLG_CP_HDR    = $(call EXPAND_PATH,$(NLP_MKDIR_HDR),$(NLG),HDR)
+
+# module target dependencies
+NLG_TRNR_SRC_DEP  = $(NLG_TEST_SRC)
+NLG_OBJ_DEP       = $(NLG_SRC) $(NLG_HDR)
+NLG_PIC_OBJ_DEP   = $(NLG_OBJ_DEP)
+NLG_TRNR_OBJ_DEP  = $(NLG_TRNR_SRC)
+NLG_TEST_OBJ_DEP  = $(NLG_TEST_SRC) $(NLG_OBJ_DEP)
+NLG_TEST_BIN_DEP  = $(NLG_TEST_OBJ) $(NLG_TRNR_OBJ)
+NLG_CP_HDR_DEP    = $(NLG_HDR) $(NLP_MKDIR_HDR)
+
+# update target groups
+TRNR_SRC_MODULES += NLG
+OBJ_MODULES      += NLG
+PIC_OBJ_MODULES  += NLG
+TRNR_OBJ_MODULES += NLG
+TEST_OBJ_MODULES += NLG
+TEST_BIN_MODULES += NLG
+CP_HDR_MODULES   += NLG
 
 
 # make rules

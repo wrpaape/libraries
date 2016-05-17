@@ -1,4 +1,4 @@
-#include "nlp.h"
+#include "nlg.h"
 
 extern inline char *
 sample_word_group(const struct WordGroup *const restrict group);

@@ -49,49 +49,37 @@ typedef uint8_t ascii_t;
 #define ASCII_PUNCTUATION_CNT 18ul
 #define ASCII_MISC_SYMBOL_CNT 15ul
 #define ASCII_CONTROL_CNT 33ul
-
-
 #define ASCII_PRINTABLE_MIN ' '
 #define ASCII_PRINTABLE_MAX '~'
 
-/* ASCII group macros
+/* ASCII block macros
  * ========================================================================== */
 #define _ASCII_CONTROL_BLOCK						\
   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,	\
  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,	\
  28,  29,  30,  31
-
 #define _ASCII_SYMBOL_BLOCK_A						\
 ' ',  '!',  '"',  '#',  '$',  '%',  '&',  '\'', '(',  ')',  '*',  '+',	\
 ',',  '-',  '.',  '/'
-
 #define _ASCII_NUMBER_BLOCK						\
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-
 #define _ASCII_SYMBOL_BLOCK_B						\
 ':',  ';',  '<',  '=',  '>',  '?',  '@'
-
 #define _ASCII_UPPER_BLOCK						\
 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',	\
 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-
 #define _ASCII_SYMBOL_BLOCK_C						\
 '[', '\\', ']',  '^',  '_',  '`'
-
 #define _ASCII_LOWER_BLOCK						\
 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',	\
 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-
 #define _ASCII_SYMBOL_BLOCK_D						\
 '{',  '|',  '}',  '~'
-
 #define _ASCII_DELETE ASCII_VALID_MAX
-
 #define _ASCII_VALID_BLOCK						\
 _ASCII_CONTROL_BLOCK,							\
 _ASCII_PRINTABLE_BLOCK(UPPER, LOWER),					\
 _ASCII_DELETE
-
 #define _ASCII_INVALID_BLOCK						\
 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141,	\
 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,	\
@@ -103,18 +91,14 @@ _ASCII_DELETE
 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,	\
 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253,	\
 254, 255
-
 #define _ASCII_UPPER_CONSONANTS_BLOCK					\
 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R',	\
 'S', 'T', 'V', 'W', 'X', 'Z'
-
 #define _ASCII_LOWER_CONSONANTS_BLOCK					\
 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r',	\
 's', 't', 'v', 'w', 'x', 'z'
-
 #define _ASCII_UPPER_VOWEL_BLOCK					\
 'A', 'E', 'I', 'O', 'U', 'Y'
-
 #define _ASCII_LOWER_VOWEL_BLOCK					\
 'a', 'e', 'i', 'o', 'u', 'y'
 
@@ -131,20 +115,16 @@ _ASCII_DELETE
 #define _ASCII_F_RANGE_OC(I, J) _ASCII_X_RANGE_OC(I, J, false)
 #define _ASCII_F_RANGE_CO(I, J) _ASCII_X_RANGE_CO(I, J, false)
 #define _ASCII_F_RANGE_OO(I, J) _ASCII_X_RANGE_OO(I, J, false)
-
 #define _ASCII_RANGE_T_VOWEL(I, J) [I] = true, _ASCII_F_RANGE_OO(I, J)
 #define _ASCII_RANGE_F_VOWEL(I, J) _ASCII_T_RANGE_OO(I, J), [J] = false
-
 #define _ASCII_LETTER_SWEEP(B, A, E, I, O, U, Y)			\
 	_ASCII_RANGE_ ## B ## _VOWEL(A, E),				\
 	_ASCII_RANGE_ ## B ## _VOWEL(E, I),				\
 	_ASCII_RANGE_ ## B ## _VOWEL(I, O),				\
 	_ASCII_RANGE_ ## B ## _VOWEL(O, U),				\
 	_ASCII_RANGE_ ## B ## _VOWEL(U, Y)
-
 #define _ASCII_CONSONANT_SWEEP(A, E, I, O, U, Y, Z)			\
 	_ASCII_LETTER_SWEEP(F, A, E, I, O, U, Y), [Z] = true
-
 #define _ASCII_VOWEL_SWEEP(A, E, I, O, U, Y)				\
 	_ASCII_LETTER_SWEEP(T, A, E, I, O, U, Y), [Y] = true
 
@@ -159,7 +139,6 @@ _ASCII_ ## UPPER_MAP ## _BLOCK,						\
 _ASCII_SYMBOL_BLOCK_C,							\
 _ASCII_ ## LOWER_MAP ## _BLOCK,						\
 _ASCII_SYMBOL_BLOCK_D
-
 #define _ASCII_MAP(UPPER_MAP, LOWER_MAP)				\
 {									\
 	_ASCII_PRINTABLE_BLOCK(UPPER_MAP, LOWER_MAP),			\
@@ -189,7 +168,7 @@ _ASCII_SYMBOL_BLOCK_D
 #define _ASCII_LOWER_CONSONANTS() { _ASCII_LOWER_CONSONANTS_BLOCK }
 #define _ASCII_UPPER_VOWELS() { _ASCII_UPPER_VOWEL_BLOCK }
 #define _ASCII_LOWER_VOWELS() { _ASCII_LOWER_VOWEL_BLOCK }
-#define _ASCII_PUNCTUATION()					\
+#define _ASCII_PUNCTUATION()						\
 {									\
 	' ',  '!', '"',  '\'', '(',  ')',  ',',  '-',  '.',  '/',	\
 	':',  ';', '?',  '[', '\\',  ']',  '{',  '}'			\

@@ -21,8 +21,8 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-struct NounPhrase {
-};
+/* struct NounPhrase { */
+/* }; */
 
 struct VerbPhrase {
 	char *main;
@@ -37,7 +37,8 @@ struct Clause {
 enum VerbType {
 	INTRANSITIVE = 0,
 	TRANSITIVE   = 1,
-	DITRANSITIVE = 2
+	DITRANSITIVE = 2,
+	DOUBLETRANSI
 };
 
 enum Mood {
@@ -134,6 +135,7 @@ inline char *sample_word_group(const struct WordGroup *const group)
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * HELPER FUNCTIONS */
+
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }

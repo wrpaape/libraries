@@ -14,7 +14,7 @@ extern "C" {
 #include <time.h>		/* unique seed */
 #include <stdbool.h>		/* true, false */
 #include <utils/utils.h>	/* malloc, memcpy, ptrdiff_t */
-#include <rand/pcg_basic.h>	/* psuedorandom number generator */
+#include "pcg_basic.h"		/* psuedorandom number generator */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 

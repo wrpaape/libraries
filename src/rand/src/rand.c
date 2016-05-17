@@ -1,4 +1,4 @@
-#include <rand/rand.h>
+#include "rand.h"
 
 extern inline void init_rng(void);
 

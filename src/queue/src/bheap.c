@@ -1,5 +1,5 @@
 #include <utils/utils.h>
-#include <bheap/bheap.h>
+#include "bheap.h"
 
 /* initialize, destroy, resize
  ******************************************************************************/

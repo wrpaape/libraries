@@ -11,9 +11,9 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <utils/time.h>		/* real time clock, time types, structs, fns */
-#include "handle_pthread.h"	/* pthead API, error handler macros */
-#include "handle_semaphore.h"	/* sem_t, error handler macros */
+#include <time_utils/time_utils.h>	/* real time clock, time types, fns */
+#include "handle_pthread.h"		/* pthead API, error handler macros */
+#include "handle_semaphore.h"		/* sem_t, error handler macros */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 

@@ -152,7 +152,7 @@ ALL_TARGETS  = $(foreach type,$(TARGET_TYPES),$(call EXPAND_TARGETS,$(type)))
 
 # make recipes
 TRNR_SRC_RECIPE  = $(RUBY) $(GENERATE_TEST_RUNNER) $$< $$@
-OBJ_RECIPE       = $(CC) $(CFLAGS) -c -o $$@ $$< $(LFLAGS)
+OBJ_RECIPE       = $(CC) $(CFLAGS) -c -o $$@ $$<
 PIC_OBJ_RECIPE   = $(OBJ_RECIPE) $(PIC_FLAG)
 TRNR_OBJ_RECIPE  = $(OBJ_RECIPE)
 TEST_OBJ_RECIPE  = $(OBJ_RECIPE)
