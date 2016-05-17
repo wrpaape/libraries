@@ -11,10 +11,10 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <utils/utils.h>	/* EXIT_ON_FAILURE */
-#include <unistd.h>		/* getcwd */
-#include <sys/param.h>		/* MAXPATHLEN */
-#include <sys/stat.h>		/* mkdir */
+#include "utils.h"	/* EXIT_ON_FAILURE */
+#include <unistd.h>	/* getcwd */
+#include <sys/param.h>	/* MAXPATHLEN */
+#include <sys/stat.h>	/* mkdir */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 

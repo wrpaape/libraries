@@ -1,5 +1,5 @@
 #include <unity/unity.h>
-#include "utils.h"
+#include "token.h"
 
 void setUp(void)
 {
@@ -9,7 +9,7 @@ void tearDown(void)
 {
 }
 
-void test_utils(void)
+void test_token(void)
 {
 	TEST_IGNORE();
 }

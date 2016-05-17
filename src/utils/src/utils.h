@@ -153,6 +153,7 @@ inline void mem_swap(void *__restrict__ x,
 	memcpy(y,	    &buffer[0l], width);
 }
 
+
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif

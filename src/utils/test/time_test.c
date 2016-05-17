@@ -1,5 +1,5 @@
 #include <unity/unity.h>
-#include "utils.h"
+#include "time.h"
 
 void setUp(void)
 {
@@ -9,7 +9,7 @@ void tearDown(void)
 {
 }
 
-void test_utils(void)
+void test_time(void)
 {
 	TEST_IGNORE();
 }

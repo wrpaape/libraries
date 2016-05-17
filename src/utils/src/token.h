@@ -1,6 +1,14 @@
 #ifndef UTILS_TOKEN_H_
 #define UTILS_TOKEN_H_
 
+#ifdef __cplusplus /* ensure C linkage */
+extern "C" {
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
+#define restrict __restrict__
+#endif
+#endif
+
+
 /*			- token.h -
  * macros for printing multi-byte characters to char pointer 'PTR'
  */
@@ -199,5 +207,10 @@ do {				\
 
 /* ◯ */
 #define PUT_LARGE_CIRCLE(PTR) _GEO_CIRC(PTR, 175)
+
+
+#ifdef __cplusplus /* close 'extern "C" {' */
+}
+#endif
 
 #endif /* ifndef UTILS_TOKEN_H_ */
