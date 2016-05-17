@@ -171,64 +171,64 @@ VAR_DELIM  = _
 PATH_DELIM = /
 
 
-# queue config
+# unity config
 # ==============================================================================
 # module name
-QUEUE = queue
+UNITY = unity
 
 # source files
-QUEUE_SRC      = $(call EXPAND_DIR_PATH,$(QUEUE),SRC)
-QUEUE_HDR      = $(call EXPAND_DIR_PATH,$(QUEUE),HDR)
-QUEUE_TEST_SRC = $(call EXPAND_DIR_PATH,$(QUEUE),TEST_SRC)
+UNITY_SRC      = $(call EXPAND_DIR_PATH,$(UNITY),SRC)
+UNITY_HDR      = $(call EXPAND_DIR_PATH,$(UNITY),HDR)
+UNITY_TEST_SRC = $(call EXPAND_DIR_PATH,$(UNITY),TEST_SRC)
 
 # module targets
-QUEUE_TRNR_SRC  = $(call EXPAND_DIR_PATH,$(QUEUE),TRNR_SRC)
-QUEUE_OBJ       = $(call EXPAND_DIR_PATH,$(QUEUE),OBJ)
-QUEUE_PIC_OBJ   = $(call EXPAND_DIR_PATH,$(QUEUE),PIC_OBJ)
-QUEUE_TRNR_OBJ  = $(call EXPAND_DIR_PATH,$(QUEUE),TRNR_OBJ)
-QUEUE_TEST_OBJ  = $(call EXPAND_DIR_PATH,$(QUEUE),TEST_OBJ)
-QUEUE_BIN       = $(call EXPAND_DIR_PATH,$(QUEUE),BIN)
-QUEUE_TEST_BIN  = $(call EXPAND_DIR_PATH,$(QUEUE),TEST_BIN)
-QUEUE_SHARED    = $(call EXPAND_DIR_PATH,$(QUEUE),SHARED)
-QUEUE_STATIC    = $(call EXPAND_DIR_PATH,$(QUEUE),STATIC)
-QUEUE_MKDIR_HDR = $(call EXPAND_PATH,$(C_LIBRARY_HEADERS),$(QUEUE),MKDIR_HDR)
-QUEUE_CP_HDR    = $(call EXPAND_PATH,$(QUEUE_MKDIR_HDR),$(QUEUE),HDR)
-QUEUE_CP_BIN    = $(call EXPAND_PATH,$(USER_BIN),$(QUEUE),BIN)
-QUEUE_CP_SHARED = $(call EXPAND_PATH,$(C_SHARED_LIBRARIES),$(QUEUE),SHARED)
-QUEUE_CP_STATIC = $(call EXPAND_PATH,$(C_STATIC_LIBRARIES),$(QUEUE),STATIC)
+UNITY_TRNR_SRC  = $(call EXPAND_DIR_PATH,$(UNITY),TRNR_SRC)
+UNITY_OBJ       = $(call EXPAND_DIR_PATH,$(UNITY),OBJ)
+UNITY_PIC_OBJ   = $(call EXPAND_DIR_PATH,$(UNITY),PIC_OBJ)
+UNITY_TRNR_OBJ  = $(call EXPAND_DIR_PATH,$(UNITY),TRNR_OBJ)
+UNITY_TEST_OBJ  = $(call EXPAND_DIR_PATH,$(UNITY),TEST_OBJ)
+UNITY_BIN       = $(call EXPAND_DIR_PATH,$(UNITY),BIN)
+UNITY_TEST_BIN  = $(call EXPAND_DIR_PATH,$(UNITY),TEST_BIN)
+UNITY_SHARED    = $(call EXPAND_DIR_PATH,$(UNITY),SHARED)
+UNITY_STATIC    = $(call EXPAND_DIR_PATH,$(UNITY),STATIC)
+UNITY_MKDIR_HDR = $(call EXPAND_PATH,$(C_LIBRARY_HEADERS),$(UNITY),MKDIR_HDR)
+UNITY_CP_HDR    = $(call EXPAND_PATH,$(UNITY_MKDIR_HDR),$(UNITY),HDR)
+UNITY_CP_BIN    = $(call EXPAND_PATH,$(USER_BIN),$(UNITY),BIN)
+UNITY_CP_SHARED = $(call EXPAND_PATH,$(C_SHARED_LIBRARIES),$(UNITY),SHARED)
+UNITY_CP_STATIC = $(call EXPAND_PATH,$(C_STATIC_LIBRARIES),$(UNITY),STATIC)
 
 
 # module target dependencies
-QUEUE_TRNR_SRC_DEP  = $(QUEUE_TEST_SRC)
-QUEUE_OBJ_DEP       = $(QUEUE_SRC) $(QUEUE_HDR)
-QUEUE_PIC_OBJ_DEP   = $(QUEUE_OBJ_DEP)
-QUEUE_TRNR_OBJ_DEP  = $(QUEUE_TRNR_SRC)
-QUEUE_TEST_OBJ_DEP  = $(QUEUE_TEST_SRC) $(QUEUE_OBJ_DEP)
-QUEUE_BIN_DEP       = $(QUEUE_OBJ)
-QUEUE_TEST_BIN_DEP  = $(QUEUE_TEST_OBJ) $(QUEUE_TRNR_OBJ)
-QUEUE_SHARED_DEP    = $(QUEUE_PIC_OBJ)
-QUEUE_STATIC_DEP    = $(QUEUE_OBJ)
-QUEUE_MKDIR_HDR_DEP = $(EMPTY)
-QUEUE_CP_HDR_DEP    = $(QUEUE_HDR) $(QUEUE_MKDIR_HDR)
-QUEUE_CP_BIN_DEP    = $(QUEUE_BIN)
-QUEUE_CP_SHARED_DEP = $(QUEUE_SHARED)
-QUEUE_CP_STATIC_DEP = $(QUEUE_STATIC)
+UNITY_TRNR_SRC_DEP  = $(UNITY_TEST_SRC)
+UNITY_OBJ_DEP       = $(UNITY_SRC) $(UNITY_HDR)
+UNITY_PIC_OBJ_DEP   = $(UNITY_OBJ_DEP)
+UNITY_TRNR_OBJ_DEP  = $(UNITY_TRNR_SRC)
+UNITY_TEST_OBJ_DEP  = $(UNITY_TEST_SRC) $(UNITY_OBJ_DEP)
+UNITY_BIN_DEP       = $(UNITY_OBJ)
+UNITY_TEST_BIN_DEP  = $(UNITY_TEST_OBJ) $(UNITY_TRNR_OBJ)
+UNITY_SHARED_DEP    = $(UNITY_PIC_OBJ)
+UNITY_STATIC_DEP    = $(UNITY_OBJ)
+UNITY_MKDIR_HDR_DEP = $(EMPTY)
+UNITY_CP_HDR_DEP    = $(UNITY_HDR) $(UNITY_MKDIR_HDR)
+UNITY_CP_BIN_DEP    = $(UNITY_BIN)
+UNITY_CP_SHARED_DEP = $(UNITY_SHARED)
+UNITY_CP_STATIC_DEP = $(UNITY_STATIC)
 
 # update target groups
-TRNR_SRC_MODULES  += QUEUE
-OBJ_MODULES       += QUEUE
-PIC_OBJ_MODULES   += QUEUE
-TRNR_OBJ_MODULES  += QUEUE
-TEST_OBJ_MODULES  += QUEUE
-BIN_MODULES       += QUEUE
-TEST_BIN_MODULES  += QUEUE
-SHARED_MODULES    += QUEUE
-STATIC_MODULES    += QUEUE
-MKDIR_HDR_MODULES += QUEUE
-CP_HDR_MODULES    += QUEUE
-CP_BIN_MODULES    += QUEUE
-CP_SHARED_MODULES += QUEUE
-CP_STATIC_MODULES += QUEUE
+TRNR_SRC_MODULES  += UNITY
+OBJ_MODULES       += UNITY
+PIC_OBJ_MODULES   += UNITY
+TRNR_OBJ_MODULES  += UNITY
+TEST_OBJ_MODULES  += UNITY
+BIN_MODULES       += UNITY
+TEST_BIN_MODULES  += UNITY
+SHARED_MODULES    += UNITY
+STATIC_MODULES    += UNITY
+MKDIR_HDR_MODULES += UNITY
+CP_HDR_MODULES    += UNITY
+CP_BIN_MODULES    += UNITY
+CP_SHARED_MODULES += UNITY
+CP_STATIC_MODULES += UNITY
 
 
 # make commands
@@ -237,39 +237,39 @@ CP_STATIC_MODULES += QUEUE
 all: $(ALL_TARGETS)
 
 # unity test runners
-# queue/test/test_runners/<module>_test_runner.c
+# unity/test/test_runners/<module>_test_runner.c
 $(foreach module,$(TRNR_SRC_MODULES),$(eval $(call EXPAND_RULE,$(module),TRNR_SRC)))
 
 # objects
-# queue/obj/<module>.o
+# unity/obj/<module>.o
 $(foreach module,$(OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),OBJ)))
 
 # "position independent code" objects
-# queue/obj/pic_<module>.o
+# unity/obj/pic_<module>.o
 $(foreach module,$(PIC_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),PIC_OBJ)))
 
 # unity test runner objects
-# queue/obj/<module>_test_runner.o
+# unity/obj/<module>_test_runner.o
 $(foreach module,$(TRNR_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),TRNR_OBJ)))
 
 # unity test objects
-# queue/obj/<module>_test.o
+# unity/obj/<module>_test.o
 $(foreach module,$(TEST_OBJ_MODULES),$(eval $(call EXPAND_RULE,$(module),TEST_OBJ)))
 
 # binary files
-# queue/bin/<module>
+# unity/bin/<module>
 $(foreach module,$(BIN_MODULES),$(eval $(call EXPAND_RULE,$(module),BIN)))
 
 # test binary files
-# queue/test/<module>_test
+# unity/test/<module>_test
 $(foreach module,$(TEST_BIN_MODULES),$(eval $(call EXPAND_RULE,$(module),TEST_BIN)))
 
 # dynamic (shared) libraries
-# queue/shared/lib<module>_shared.so
+# unity/shared/lib<module>_shared.so
 $(foreach module,$(SHARED_MODULES),$(eval $(call EXPAND_RULE,$(module),SHARED)))
 
 # archive (static) libraries
-# queue/shared/lib<module>_static.a
+# unity/shared/lib<module>_static.a
 $(foreach module,$(STATIC_MODULES),$(eval $(call EXPAND_RULE,$(module),STATIC)))
 
 # make directories at root of header file include path, 'C_LIBRARY_HEADERS'

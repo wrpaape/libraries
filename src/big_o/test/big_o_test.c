@@ -1,5 +1,5 @@
 #include <unity/unity.h>
-#include "queue.h"
+#include "big_o.h"
 
 void setUp(void)
 {
@@ -9,7 +9,7 @@ void tearDown(void)
 {
 }
 
-void test_queue(void)
+void test_big_o(void)
 {
 	TEST_IGNORE();
 }
