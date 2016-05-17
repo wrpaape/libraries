@@ -1,10 +1,10 @@
 #ifndef STRING_UTILS_ASCII_H_
 #define STRING_UTILS_ASCII_H_
 
-#ifdef __cplusplus /* ensure C linkage */
+#ifdef _cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
-#define restrict __restrict__
+#ifndef restrict /* replace 'restrict' with c++ compatible '_restrict_' */
+#define restrict _restrict_
 #endif
 #endif
 
@@ -36,7 +36,20 @@ typedef uint8_t ascii_t;
  * ========================================================================== */
 #define ASCII_VALID_MAX 127
 #define ASCII_MAX UINT8_MAX
-#define ASCII_COUNT 128
+#define ASCII_CNT (ASCII_MAX + 1ul)
+#define ASCII_VALID_CNT (ASCII_VALID_MAX + 1ul)
+#define ASCII_PRINTABLE_CNT (ASCII_VALID_CNT - ASCII_CONTROL_CNT)
+#define ASCII_NUMBER_CNT 10ul
+#define ASCII_LETTER_CNT (ASCII_CASE_LETTER_CNT * 2ul)
+#define ASCII_CONSONANT_CNT (ASCII_CASE_CONSONANT_CNT * 2ul)
+#define ASCII_VOWEL_CNT (ASCII_CASE_VOWEL_CNT * 2ul)
+#define ASCII_CASE_LETTER_CNT 26ul
+#define ASCII_CASE_CONSONANT_CNT (ASCII_CASE_LETTER_CNT - ASCII_CASE_VOWEL_CNT)
+#define ASCII_CASE_VOWEL_CNT 6ul
+#define ASCII_PUNCTUATION_CNT 18ul
+#define ASCII_MISC_SYMBOL_CNT 15ul
+#define ASCII_CONTROL_CNT 33ul
+
 
 #define ASCII_PRINTABLE_MIN ' '
 #define ASCII_PRINTABLE_MAX '~'
@@ -58,21 +71,26 @@ typedef uint8_t ascii_t;
 #define _ASCII_SYMBOL_BLOCK_B						\
 ':',  ';',  '<',  '=',  '>',  '?',  '@'
 
-#define _ASCII_UPPERCASE_BLOCK						\
+#define _ASCII_UPPER_BLOCK						\
 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',	\
 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 
 #define _ASCII_SYMBOL_BLOCK_C						\
 '[', '\\', ']',  '^',  '_',  '`'
 
-#define _ASCII_LOWERCASE_BLOCK						\
+#define _ASCII_LOWER_BLOCK						\
 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',	\
 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
 
 #define _ASCII_SYMBOL_BLOCK_D						\
 '{',  '|',  '}',  '~'
 
-#define _ASCII_DELETE 127
+#define _ASCII_DELETE ASCII_VALID_MAX
+
+#define _ASCII_VALID_BLOCK						\
+_ASCII_CONTROL_BLOCK,							\
+_ASCII_PRINTABLE_BLOCK(UPPER, LOWER),					\
+_ASCII_DELETE
 
 #define _ASCII_INVALID_BLOCK						\
 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141,	\
@@ -86,18 +104,18 @@ typedef uint8_t ascii_t;
 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253,	\
 254, 255
 
-#define _ASCII_UPPERCASE_CONSONANTS					\
+#define _ASCII_UPPER_CONSONANTS_BLOCK					\
 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R',	\
 'S', 'T', 'V', 'W', 'X', 'Z'
 
-#define _ASCII_LOWERCASE_CONSONANTS					\
+#define _ASCII_LOWER_CONSONANTS_BLOCK					\
 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r',	\
 's', 't', 'v', 'w', 'x', 'z'
 
-#define _ASCII_UPPERCASE_VOWELS						\
+#define _ASCII_UPPER_VOWEL_BLOCK					\
 'A', 'E', 'I', 'O', 'U', 'Y'
 
-#define _ASCII_LOWERCASE_VOWELS						\
+#define _ASCII_LOWER_VOWEL_BLOCK					\
 'a', 'e', 'i', 'o', 'u', 'y'
 
 
@@ -133,93 +151,59 @@ typedef uint8_t ascii_t;
 
 /* ASCII map macros
  * ========================================================================== */
-#define _ASCII_PRINTABLE_CASE_BLOCK(UPPER_MAP, LOWER_MAP)		\
+#define _ASCII_PRINTABLE_BLOCK(UPPER_MAP, LOWER_MAP)			\
 _ASCII_SYMBOL_BLOCK_A,							\
 _ASCII_NUMBER_BLOCK,							\
 _ASCII_SYMBOL_BLOCK_B,							\
-_ASCII_ ## UPPER_MAP ## CASE_BLOCK,					\
+_ASCII_ ## UPPER_MAP ## _BLOCK,						\
 _ASCII_SYMBOL_BLOCK_C,							\
-_ASCII_ ## LOWER_MAP ## CASE_BLOCK,					\
+_ASCII_ ## LOWER_MAP ## _BLOCK,						\
 _ASCII_SYMBOL_BLOCK_D
 
-#define _ASCII_CASE_BLOCK(UPPER_MAP, LOWER_MAP)				\
-_ASCII_CONTROL_BLOCK,							\
-_ASCII_PRINTABLE_CASE_BLOCK(UPPER_MAP, LOWER_MAP),			\
-_ASCII_DELETE
-
-#define _ASCII_CASE_MAP(UPPER_MAP, LOWER_MAP)				\
+#define _ASCII_MAP(UPPER_MAP, LOWER_MAP)				\
 {									\
-	_ASCII_CASE_BLOCK(UPPER_MAP, LOWER_MAP),			\
+	_ASCII_PRINTABLE_BLOCK(UPPER_MAP, LOWER_MAP),			\
 	_ASCII_INVALID_BLOCK						\
 }
 
 
 /* ASCII lookup table initializers
  * ========================================================================== */
-#define _ASCII_VALID_COUNT (ASCII_VALID_MAX + 1ul)
-#define _ASCII_VALID_GROUP() { _ASCII_CASE_BLOCK(UPPER, LOWER) }
-
-#define _ASCII_PRINTABLE_COUNT (ASCII_PRINTABLE_MAX + 1ul - ASCII_PRINTABLE_MIN)
-#define _ASCII_PRINTABLE_COUNT 96ul
-#define _ASCII_PRINTABLE_GROUP() { _ASCII_PRINTABLE_CASE_BLOCK(UPPER, LOWER) }
-
-#define _ASCII_NUMBER_COUNT 10ul
-#define _ASCII_NUMBER_GROUP() { _ASCII_NUMBER_BLOCK }
-
-#define _ASCII_LETTER_COUNT (_ASCII_LOWERCASE_LETTER_COUNT * 2ul)
-#define _ASCII_LETTER_GROUP() { _ASCII_UPPERCASE_BLOCK, _ASCII_LOWERCASE_BLOCK }
-
-#define _ASCII_CONSONANT_COUNT (_ASCII_LOWERCASE_CONSONANT_COUNT * 2ul)
-#define _ASCII_CONSONANT_GROUP()					\
+#define _ASCII_VALIDS() { _ASCII_VALID_BLOCK }
+#define _ASCII_PRINTABLES() { _ASCII_PRINTABLE_BLOCK(UPPER, LOWER) }
+#define _ASCII_NUMBERS() { _ASCII_NUMBER_BLOCK }
+#define _ASCII_LETTERS() { _ASCII_UPPER_BLOCK, _ASCII_LOWER_BLOCK }
+#define _ASCII_CONSONANTS()						\
 {									\
-	_ASCII_UPPERCASE_CONSONANTS,					\
-	_ASCII_LOWERCASE_CONSONANTS					\
+	_ASCII_UPPER_CONSONANTS_BLOCK,					\
+	_ASCII_LOWER_CONSONANTS_BLOCK					\
 }
-#define _ASCII_VOWEL_COUNT (_ASCII_LOWERCASE_VOWEL_COUNT * 2ul)
-#define _ASCII_VOWEL_GROUP()						\
+#define _ASCII_VOWELS()							\
 {									\
-	_ASCII_UPPERCASE_VOWELS,					\
-	_ASCII_LOWERCASE_VOWELS						\
+	_ASCII_UPPER_VOWEL_BLOCK,					\
+	_ASCII_LOWER_VOWEL_BLOCK					\
 }
-
-#define _ASCII_UPPERCASE_LETTER_COUNT _ASCII_LOWERCASE_LETTER_COUNT
-#define _ASCII_UPPERCASE_LETTER_GROUP() { _ASCII_UPPERCASE_BLOCK }
-
-#define _ASCII_LOWERCASE_LETTER_COUNT (_ASCII_LOWERCASE_CONSONANT_COUNT \
-				       + _ASCII_LOWERCASE_VOWEL_COUNT)
-#define _ASCII_LOWERCASE_LETTER_GROUP() { _ASCII_LOWERCASE_BLOCK }
-
-#define _ASCII_UPPERCASE_CONSONANT_COUNT _ASCII_LOWERCASE_CONSONANT_COUNT
-#define _ASCII_UPPERCASE_CONSONANT_GROUP() { _ASCII_UPPERCASE_CONSONANTS }
-
-#define _ASCII_LOWERCASE_CONSONANT_COUNT 20ul
-#define _ASCII_LOWERCASE_CONSONANT_GROUP() { _ASCII_LOWERCASE_CONSONANTS }
-
-#define _ASCII_UPPERCASE_VOWEL_COUNT _ASCII_LOWERCASE_VOWEL_COUNT
-#define _ASCII_UPPERCASE_VOWEL_GROUP() { _ASCII_UPPERCASE_VOWELS }
-
-#define _ASCII_LOWERCASE_VOWEL_COUNT 6ul
-#define _ASCII_LOWERCASE_VOWEL_GROUP() { _ASCII_LOWERCASE_VOWELS }
-
-#define _ASCII_PUNCTUATION_COUNT 18ul
-#define _ASCII_PUNCTUATION_GROUP()					\
+#define _ASCII_UPPER_LETTERS() { _ASCII_UPPER_BLOCK }
+#define _ASCII_LOWER_LETTERS() { _ASCII_LOWER_BLOCK }
+#define _ASCII_UPPER_CONSONANTS() { _ASCII_UPPER_CONSONANTS_BLOCK }
+#define _ASCII_LOWER_CONSONANTS() { _ASCII_LOWER_CONSONANTS_BLOCK }
+#define _ASCII_UPPER_VOWELS() { _ASCII_UPPER_VOWEL_BLOCK }
+#define _ASCII_LOWER_VOWELS() { _ASCII_LOWER_VOWEL_BLOCK }
+#define _ASCII_PUNCTUATION()					\
 {									\
 	' ',  '!', '"',  '\'', '(',  ')',  ',',  '-',  '.',  '/',	\
 	':',  ';', '?',  '[', '\\',  ']',  '{',  '}'			\
 }
-
-#define _ASCII_MISC_SYMBOL_COUNT 15ul
-#define _ASCII_MISC_SYMBOL_GROUP()					\
+#define _ASCII_MISC_SYMBOLS()					\
 {									\
 	'#', '$', '%', '&', '*', '+', '<', '=', '>', '@', '^', '_',	\
 	'`', '|', '~'							\
 }
-#define _ASCII_CONTROL_COUNT 33ul
-#define _ASCII_CONTROL_GROUP() { _ASCII_CONTROL_BLOCK, _ASCII_DELETE }
+#define _ASCII_CONTROLS() { _ASCII_CONTROL_BLOCK, _ASCII_DELETE }
 
-#define _ASCII_LOWERCASE_MAP() _ASCII_CASE_MAP(LOWER, LOWER)
-#define _ASCII_UPPERCASE_MAP() _ASCII_CASE_MAP(UPPER, UPPER)
-#define _ASCII_TOGGLECASE_MAP() _ASCII_CASE_MAP(LOWER, UPPER)
+#define _ASCII_LOWER_MAP() _ASCII_MAP(LOWER, LOWER)
+#define _ASCII_UPPER_MAP() _ASCII_MAP(UPPER, UPPER)
+#define _ASCII_TOGGLE_MAP() _ASCII_MAP(LOWER, UPPER)
 #define _ASCII_LETTER_SET()						\
 {									\
 	_ASCII_F_RANGE_CO(0,   'A'),					\
@@ -249,31 +233,31 @@ _ASCII_DELETE
 /* ASCII lookup tables
  * ========================================================================== */
 /* ordered groups */
-extern const ascii_t ASCII_VALID_GROUP[_ASCII_VALID_COUNT];
-extern const ascii_t ASCII_PRINTABLE_GROUP[_ASCII_PRINTABLE_COUNT];
-extern const ascii_t ASCII_NUMBER_GROUP[_ASCII_NUMBER_COUNT];
-extern const ascii_t ASCII_LETTER_GROUP[_ASCII_LETTER_COUNT];
-extern const ascii_t ASCII_CONSONANT_GROUP[_ASCII_CONSONANT_COUNT];
-extern const ascii_t ASCII_VOWEL_GROUP[_ASCII_VOWEL_COUNT];
-extern const ascii_t ASCII_UPPERCASE_LETTER_GROUP[_ASCII_UPPERCASE_LETTER_COUNT];
-extern const ascii_t ASCII_LOWERCASE_LETTER_GROUP[_ASCII_LOWERCASE_LETTER_COUNT];
-extern const ascii_t ASCII_UPPERCASE_CONSONANT_GROUP[_ASCII_UPPERCASE_CONSONANT_COUNT];
-extern const ascii_t ASCII_LOWERCASE_CONSONANT_GROUP[_ASCII_LOWERCASE_CONSONANT_COUNT];
-extern const ascii_t ASCII_UPPERCASE_VOWEL_GROUP[_ASCII_UPPERCASE_VOWEL_COUNT];
-extern const ascii_t ASCII_LOWERCASE_VOWEL_GROUP[_ASCII_LOWERCASE_VOWEL_COUNT];
-extern const ascii_t ASCII_PUNCTUATION_GROUP[_ASCII_PUNCTUATION_COUNT];
-extern const ascii_t ASCII_MISC_SYMBOL_GROUP[_ASCII_MISC_SYMBOL_COUNT];
-extern const ascii_t ASCII_CONTROL_GROUP[_ASCII_CONTROL_COUNT];
+extern const ascii_t ASCII_VALIDS[ASCII_VALID_CNT];
+extern const ascii_t ASCII_PRINTABLES[ASCII_PRINTABLE_CNT];
+extern const ascii_t ASCII_NUMBERS[ASCII_NUMBER_CNT];
+extern const ascii_t ASCII_LETTERS[ASCII_LETTER_CNT];
+extern const ascii_t ASCII_CONSONANTS[ASCII_CONSONANT_CNT];
+extern const ascii_t ASCII_VOWELS[ASCII_VOWEL_CNT];
+extern const ascii_t ASCII_UPPER_LETTERS[ASCII_CASE_LETTER_CNT];
+extern const ascii_t ASCII_LOWER_LETTERS[ASCII_CASE_LETTER_CNT];
+extern const ascii_t ASCII_UPPER_CONSONANTS[ASCII_CASE_CONSONANT_CNT];
+extern const ascii_t ASCII_LOWER_CONSONANTS[ASCII_CASE_CONSONANT_CNT];
+extern const ascii_t ASCII_UPPER_VOWELS[ASCII_CASE_VOWEL_CNT];
+extern const ascii_t ASCII_LOWER_VOWELS[ASCII_CASE_VOWEL_CNT];
+extern const ascii_t ASCII_PUNCTUATION[ASCII_PUNCTUATION_CNT];
+extern const ascii_t ASCII_MISC_SYMBOLS[ASCII_MISC_SYMBOL_CNT];
+extern const ascii_t ASCII_CONTROLS[ASCII_CONTROL_CNT];
 
 /* sets */
-extern const bool ASCII_LETTER_SET[ASCII_COUNT];
-extern const bool ASCII_CONSONANT_SET[ASCII_COUNT];
-extern const bool ASCII_VOWEL_SET[ASCII_COUNT];
+extern const bool ASCII_LETTER_SET[ASCII_CNT];
+extern const bool ASCII_CONSONANT_SET[ASCII_CNT];
+extern const bool ASCII_VOWEL_SET[ASCII_CNT];
 
 /* maps */
-extern const ascii_t ASCII_LOWERCASE_MAP[ASCII_COUNT];
-extern const ascii_t ASCII_UPPERCASE_MAP[ASCII_COUNT];
-extern const ascii_t ASCII_TOGGLECASE_MAP[ASCII_COUNT];
+extern const ascii_t ASCII_LOWER_MAP[ASCII_CNT];
+extern const ascii_t ASCII_UPPER_MAP[ASCII_CNT];
+extern const ascii_t ASCII_TOGGLE_MAP[ASCII_CNT];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -291,17 +275,17 @@ extern const ascii_t ASCII_TOGGLECASE_MAP[ASCII_COUNT];
 /* character map case */
 inline ascii_t lowercase_ascii(ascii_t ascii)
 {
-	return ASCII_LOWERCASE_MAP[ascii];
+	return ASCII_LOWER_MAP[ascii];
 }
 
 inline ascii_t uppercase_ascii(ascii_t ascii)
 {
-	return ASCII_UPPERCASE_MAP[ascii];
+	return ASCII_UPPER_MAP[ascii];
 }
 
 inline ascii_t togglecase_ascii(ascii_t ascii)
 {
-	return ASCII_TOGGLECASE_MAP[ascii];
+	return ASCII_TOGGLE_MAP[ascii];
 }
 
 inline void uppercase_ascii_string(ascii_t *restrict string)
@@ -341,23 +325,8 @@ inline void togglecase_ascii_string(ascii_t *restrict string)
 /* undefine group macros */
 
 /* undefine set macros */
-/* #undef _ASCII_X_RANGE_CC */
-/* #undef _ASCII_X_RANGE_OC */
-/* #undef _ASCII_X_RANGE_CO */
-/* #undef _ASCII_X_RANGE_OO */
-/* #undef _ASCII_T_RANGE_CC */
-/* #undef _ASCII_T_RANGE_OO */
-/* #undef _ASCII_F_RANGE_CC */
-/* #undef _ASCII_F_RANGE_OC */
-/* #undef _ASCII_F_RANGE_CO */
-/* #undef _ASCII_F_RANGE_OO */
-/* #undef _ASCII_RANGE_T_VOWEL */
-/* #undef _ASCII_RANGE_F_VOWEL */
-/* #undef _ASCII_LETTER_SWEEP */
-/* #undef _ASCII_CONSONANT_SWEEP */
-/* #undef _ASCII_VOWEL_SWEEP */
 
-#ifdef __cplusplus /* close 'extern "C" {' */
+#ifdef _cplusplus /* close 'extern "C" {' */
 }
 #endif
 
