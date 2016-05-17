@@ -1,4 +1,4 @@
-#include <parallel/parallel.h>
+#include "parallel.h"
 
 
 /* processes a task in a cancellable thread */

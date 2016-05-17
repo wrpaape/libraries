@@ -1,5 +1,5 @@
-#ifndef PARALLEL_PTHREAD_H_
-#define PARALLEL_PTHREAD_H_
+#ifndef PARALLEL_HANDLE_PTHREAD_H_
+#define PARALLEL_HANDLE_PTHREAD_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -869,4 +869,4 @@ do {									\
 }
 #endif
 
-#endif /* ifndef PARALLEL_PTHREAD_H_ */
+#endif /* ifndef PARALLEL_HANDLE_PTHREAD_H_ */

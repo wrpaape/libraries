@@ -1,5 +1,5 @@
-#ifndef PARALLEL_PTHREAD_H_
-#define PARALLEL_PTHREAD_H_
+#ifndef PARALLEL_HANDLE_SEMAPHORE_H_
+#define PARALLEL_HANDLE_SEMAPHORE_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -8,9 +8,10 @@ extern "C" {
 #endif
 #endif
 
+
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <semaphore.h>
+#include <semaphore.h>	/* sem_t, 'sem_X' semaphore API */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -19,15 +20,16 @@ extern "C" {
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 
-inline void semaphore_wait(sem_t *semaphore)
+inline void sem_wait_loop(sem_t *sem)
 {
-	while (sem_wait(semaphore) != 0);
+	while (sem_wait(sem) != 0);
 	/* > 0  failed to acquire lock after decrement
 	 *  -1  failed to decrement semaphore */
 }
+
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
 #endif
 
-#endif /* ifndef PARALLEL_PTHREAD_H_ */
+#endif /* ifndef PARALLEL_HANDLE_SEMAPHORE_H_ */
