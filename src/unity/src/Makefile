@@ -23,7 +23,7 @@ RM    = rm
 
 # library dependencies
 DEP_LIBS      =
-TEST_DEP_LIBS = unity
+TEST_DEP_LIBS = unity_shared
 
 # flags
 CFLAGS      = -g -I$(HDR_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__
@@ -61,6 +61,8 @@ TRNR   = test_runners
 ROOT_DIR      = ..
 SRC_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(SRC))
 HDR_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(HDR))
+IHDR_DIR      = $(HDR_DIR)
+CHDR_DIR      = $(HDR_DIR)
 TEST_SRC_DIR  = $(call PATH_JOIN,$(ROOT_DIR) $(TEST))
 TRNR_SRC_DIR  = $(call PATH_JOIN,$(TEST_SRC_DIR) $(TRNR))
 OBJ_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(OBJ))
@@ -76,12 +78,16 @@ STATIC_DIR    = $(call PATH_JOIN,$(ROOT_DIR) $(STATIC))
 # filename config
 # ==============================================================================
 LIB_PFX  = lib
+INT_SFX  = _internals
+CFG_SFX  = _config
 TEST_SFX = _test
 TRNR_SFX = _test_runner
 
 # prefixes
 SRC_PFX       = $(EMPTY)
 HDR_PFX       = $(EMPTY)
+IHDR_PFX      = $(HDR_PFX)
+CHDR_PFX      = $(HDR_PFX)
 TEST_SRC_PFX  = $(EMPTY)
 TRNR_SRC_PFX  = $(EMPTY)
 OBJ_PFX       = $(EMPTY)
@@ -97,6 +103,8 @@ MKDIR_HDR_PFX = $(EMPTY)
 # suffixes (including extensions)
 SRC_SFX       = .c
 HDR_SFX       = .h
+IHDR_SFX      = $(call CONCAT,$(INT_SFX) $(HDR_SFX))
+CHDR_SFX      = $(call CONCAT,$(CFG_SFX) $(HDR_SFX))
 TEST_SRC_SFX  = $(call CONCAT,$(TEST_SFX) $(SRC_SFX))
 TRNR_SRC_SFX  = $(call CONCAT,$(TRNR_SFX) $(SRC_SFX))
 OBJ_SFX       = .o
@@ -154,6 +162,8 @@ STATIC_RECIPE    = $(AR) $(ARFLAGS) $$@ $$^
 SHARED_RECIPE    = $(BIN_RECIPE) $(SHARED_FLAG)
 MKDIR_HDR_RECIPE = $(MKDIR) $$@
 CP_HDR_RECIPE    = $(CP) $$< $$@
+CP_IHDR_RECIPE   = $(CP_HDR_RECIPE)
+CP_CHDR_RECIPE   = $(CP_HDR_RECIPE)
 CP_BIN_RECIPE    = $(CP_HDR_RECIPE)
 CP_SHARED_RECIPE = $(CP_HDR_RECIPE)
 CP_STATIC_RECIPE = $(CP_HDR_RECIPE)
@@ -179,6 +189,8 @@ UNITY = unity
 # source files
 UNITY_SRC      = $(call EXPAND_DIR_PATH,$(UNITY),SRC)
 UNITY_HDR      = $(call EXPAND_DIR_PATH,$(UNITY),HDR)
+UNITY_IHDR     = $(call EXPAND_DIR_PATH,$(UNITY),IHDR)
+UNITY_CHDR     = $(call EXPAND_DIR_PATH,$(UNITY),CHDR)
 UNITY_TEST_SRC = $(call EXPAND_DIR_PATH,$(UNITY),TEST_SRC)
 
 # module targets
@@ -193,6 +205,8 @@ UNITY_SHARED    = $(call EXPAND_DIR_PATH,$(UNITY),SHARED)
 UNITY_STATIC    = $(call EXPAND_DIR_PATH,$(UNITY),STATIC)
 UNITY_MKDIR_HDR = $(call EXPAND_PATH,$(C_LIBRARY_HEADERS),$(UNITY),MKDIR_HDR)
 UNITY_CP_HDR    = $(call EXPAND_PATH,$(UNITY_MKDIR_HDR),$(UNITY),HDR)
+UNITY_CP_IHDR   = $(call EXPAND_PATH,$(UNITY_MKDIR_HDR),$(UNITY),IHDR)
+UNITY_CP_CHDR   = $(call EXPAND_PATH,$(UNITY_MKDIR_HDR),$(UNITY),CHDR)
 UNITY_CP_BIN    = $(call EXPAND_PATH,$(USER_BIN),$(UNITY),BIN)
 UNITY_CP_SHARED = $(call EXPAND_PATH,$(C_SHARED_LIBRARIES),$(UNITY),SHARED)
 UNITY_CP_STATIC = $(call EXPAND_PATH,$(C_STATIC_LIBRARIES),$(UNITY),STATIC)
@@ -200,16 +214,18 @@ UNITY_CP_STATIC = $(call EXPAND_PATH,$(C_STATIC_LIBRARIES),$(UNITY),STATIC)
 
 # module target dependencies
 UNITY_TRNR_SRC_DEP  = $(UNITY_TEST_SRC)
-UNITY_OBJ_DEP       = $(UNITY_SRC) $(UNITY_HDR)
+UNITY_OBJ_DEP       = $(UNITY_SRC) $(UNITY_CP_HDR) $(UNITY_CP_IHDR) $(UNITY_CP_CHDR)
 UNITY_PIC_OBJ_DEP   = $(UNITY_OBJ_DEP)
-UNITY_TRNR_OBJ_DEP  = $(UNITY_TRNR_SRC)
-UNITY_TEST_OBJ_DEP  = $(UNITY_TEST_SRC) $(UNITY_OBJ_DEP)
+UNITY_TRNR_OBJ_DEP  = $(UNITY_TRNR_SRC) $(UNITY_CP_SHARED)
+UNITY_TEST_OBJ_DEP  = $(UNITY_TEST_SRC) $(UNITY_CP_SHARED) $(UNITY_OBJ_DEP)
 UNITY_BIN_DEP       = $(UNITY_OBJ)
 UNITY_TEST_BIN_DEP  = $(UNITY_TEST_OBJ) $(UNITY_TRNR_OBJ)
 UNITY_SHARED_DEP    = $(UNITY_PIC_OBJ)
 UNITY_STATIC_DEP    = $(UNITY_OBJ)
 UNITY_MKDIR_HDR_DEP = $(EMPTY)
 UNITY_CP_HDR_DEP    = $(UNITY_HDR) $(UNITY_MKDIR_HDR)
+UNITY_CP_IHDR_DEP   = $(UNITY_IHDR) $(UNITY_MKDIR_HDR)
+UNITY_CP_CHDR_DEP   = $(UNITY_CHDR) $(UNITY_MKDIR_HDR)
 UNITY_CP_BIN_DEP    = $(UNITY_BIN)
 UNITY_CP_SHARED_DEP = $(UNITY_SHARED)
 UNITY_CP_STATIC_DEP = $(UNITY_STATIC)
@@ -220,13 +236,13 @@ OBJ_MODULES       += UNITY
 PIC_OBJ_MODULES   += UNITY
 TRNR_OBJ_MODULES  += UNITY
 TEST_OBJ_MODULES  += UNITY
-BIN_MODULES       += UNITY
 TEST_BIN_MODULES  += UNITY
 SHARED_MODULES    += UNITY
 STATIC_MODULES    += UNITY
 MKDIR_HDR_MODULES += UNITY
 CP_HDR_MODULES    += UNITY
-CP_BIN_MODULES    += UNITY
+CP_IHDR_MODULES   += UNITY
+CP_CHDR_MODULES   += UNITY
 CP_SHARED_MODULES += UNITY
 CP_STATIC_MODULES += UNITY
 
@@ -274,11 +290,19 @@ $(foreach module,$(STATIC_MODULES),$(eval $(call EXPAND_RULE,$(module),STATIC)))
 
 # make directories at root of header file include path, 'C_LIBRARY_HEADERS'
 # ~C_LIBRARY_HEADERS/<module>
-$(foreach module,$(CP_HDR_MODULES),$(eval $(call EXPAND_RULE,$(module),MKDIR_HDR)))
+$(foreach module,$(MKDIR_HDR_MODULES),$(eval $(call EXPAND_RULE,$(module),MKDIR_HDR)))
 
 # copy header files to module include path
 # ~C_LIBRARY_HEADERS/<module>/<module>.h
 $(foreach module,$(CP_HDR_MODULES),$(eval $(call EXPAND_RULE,$(module),CP_HDR)))
+
+# copy internals header files to module include path
+# ~C_LIBRARY_HEADERS/<module>/<module>_internals.h
+$(foreach module,$(CP_IHDR_MODULES),$(eval $(call EXPAND_RULE,$(module),CP_IHDR)))
+
+# copy config header files to module include path
+# ~C_LIBRARY_HEADERS/<module>/<module>_config.h
+$(foreach module,$(CP_IHDR_MODULES),$(eval $(call EXPAND_RULE,$(module),CP_CHDR)))
 
 # copy binary files to 'USER_BIN'
 # ~USER_BIN/<module>
