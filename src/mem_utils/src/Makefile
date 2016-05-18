@@ -25,7 +25,7 @@ DEP_LIBS      =
 TEST_DEP_LIBS = unity_shared
 
 # flags
-C_FLAGS      = -g -I$(HDR_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__
+C_FLAGS      = -g -I$(HDR_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__ -DUNITY_INCLUDE_CONFIG_H
 LD_FLAGS     = -L$(C_STATIC_LIBRARIES) -L$(C_SHARED_LIBRARIES) -Wl,-rpath,$(C_SHARED_LIBRARIES)
 AR_FLAGS     = rcs
 PIC_FLAG     = -fpic

@@ -32,15 +32,10 @@ typedef uint_fast32_t ByteBuff4;
 typedef uint_fast64_t ByteBuff8;
 
 /* uncommon widths (backed by an array of 'WIDTH' bytes) */
-#define _DECLARE_BYTE_BUFF_TYPEDEF(WIDTH)	\
-typedef struct ByteBuff ## WIDTH {		\
-	ByteBuff1 bytes[WIDTH];		\
-} ByteBuff ## WIDTH
-_DECLARE_BYTE_BUFF_TYPEDEF(3);
-_DECLARE_BYTE_BUFF_TYPEDEF(5);
-_DECLARE_BYTE_BUFF_TYPEDEF(6);
-_DECLARE_BYTE_BUFF_TYPEDEF(7);
-#undef _DECLARE_BYTE_BUFF_TYPEDEF
+typedef struct ByteBuff3 { ByteBuff1 bytes[3]; } ByteBuff3;
+typedef struct ByteBuff5 { ByteBuff1 bytes[5]; } ByteBuff5;
+typedef struct ByteBuff6 { ByteBuff1 bytes[6]; } ByteBuff6;
+typedef struct ByteBuff7 { ByteBuff1 bytes[7]; } ByteBuff7;
 
 /* swap memory for a particular byte width */
 typedef void MemSwap(void *restrict,
@@ -49,14 +44,14 @@ typedef void MemSwap(void *restrict,
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  *
- *
+
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #define MAX_BYTE_BUFF_WIDTH 8
-#define _FOR_ALL_BYTE_BUFF_WIDTHS(MACRO, DELIM)				\
-	MACRO(1) DELIM MACRO(2) DELIM MACRO(3) DELIM MACRO(4) DELIM	\
-	MACRO(5) DELIM MACRO(6) DELIM MACRO(7) DELIM MACRO(8)
+#define _FOR_ALL_BYTE_BUFF_WIDTHS(MACRO, DELIM)			\
+MACRO(1) DELIM MACRO(2) DELIM MACRO(3) DELIM MACRO(4) DELIM	\
+MACRO(5) DELIM MACRO(6) DELIM MACRO(7) DELIM MACRO(8)
 
 
 /* lookup for 'assign_mem_swap' (+1 for extra NULL slot) */
