@@ -107,7 +107,7 @@ extern "C"
  *
  * Example:
  */
-/* #define UNITY_POINTER_WIDTH 64 */
+#define UNITY_POINTER_WIDTH 64
 
 /* Unity will automatically include 64-bit support if it auto-detects it, or if
  * your `int`, `long`, or pointer widths are greater than 32-bits. Define this
@@ -115,7 +115,7 @@ extern "C"
  * There can be a significant size and speed impact to enabling 64-bit support
  * on small targets, so don't define it if you don't need it.
  */
-/* #define UNITY_INCLUDE_64 */
+#define UNITY_INCLUDE_64
 
 
 /* *************************** FLOATING POINT TYPES ****************************
@@ -133,9 +133,9 @@ extern "C"
   * the include and exclude options here. You may include neither, either, or
   * both, as suits your needs.
   */
-/* #define UNITY_INCLUDE_FLOAT  */
+#define UNITY_INCLUDE_FLOAT
 /* #define UNITY_EXCLUDE_FLOAT  */
-/* #define UNITY_INCLUDE_DOUBLE */
+#define UNITY_INCLUDE_DOUBLE
 /* #define UNITY_EXCLUDE_DOUBLE */
 
 /* For features that are enabled, the following floating point options also
@@ -155,8 +155,8 @@ extern "C"
  * that this feature requires the use of `sprintf` so might not be desirable in
  * all cases.
  */
-/* #define UNITY_FLOAT_VERBOSE  */
-/* #define UNITY_DOUBLE_VERBOSE */
+#define UNITY_FLOAT_VERBOSE
+#define UNITY_DOUBLE_VERBOSE
 
 /* If enabled, Unity assumes you want your `FLOAT` asserts to compare standard C
  * floats. If your compiler supports a specialty floating point type, you can
@@ -189,8 +189,8 @@ extern "C"
  *
  * Example:
  */
-/* #define UNITY_FLOAT_PRECISION 0.001f  */
-/* #define UNITY_DOUBLE_PRECISION 0.001f */
+#define UNITY_FLOAT_PRECISION 0.001f
+#define UNITY_DOUBLE_PRECISION 0.001f
 
 
 /* *************************** TOOLSET CUSTOMIZATION ***************************
