@@ -1,6 +1,4 @@
-# .SECONDEXPANSION:
 include $(MAKEFILE_SCAFFOLD)
-
 
 UNITY_HEADERS_DIR := $(call EXPORT_HEADER_DIRECTORY,unity)
 SUPPORT_HDRS	  := $(foreach spec,internals config,\
@@ -10,6 +8,7 @@ $(foreach header,$(SUPPORT_HDRS),\
 	$(call COPY_FILE_TO_DIRECTORY,$(header),$(UNITY_HEADERS_DIR)))
 
 $(call USER_LIBRARIES,unity,$(SUPPORT_HDRS))
+$(call TEST_BINARY,unity,$(SUPPORT_HDRS))
 endef
 
 $(eval $(RULES))
