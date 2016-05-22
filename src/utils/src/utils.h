@@ -105,21 +105,6 @@ do {									\
 /* returns maximum of 'X' and 'Y' */
 #define MAX(X, Y) THIS_OR_THAT(X, Y, >)
 
-/* swap variables (same type) */
-#define VAR_SWAP(X, Y)				\
-do {						\
-	const __typeof__(X) __swap_tmp = X;	\
-	X = Y;					\
-	Y = __swap_tmp;				\
-} while(0)
-
-/* swap elements of 'ARRAY' at indices 'I', 'J' */
-#define EL_SWAP(ARRAY, I, J)				\
-do {							\
-	const __typeof__(*ARRAY) __swap_tmp = ARRAY[I];	\
-	ARRAY[I] = ARRAY[J];				\
-	ARRAY[J] =  __swap_tmp;				\
-} while(0)
 
 /* print elements of 'ARRAY' */
 #define PRINT_ARRAY(ARRAY, LENGTH, FORMAT)		\
@@ -142,17 +127,6 @@ inline size_t log_base_two(const size_t num)
 {
 	return __builtin_ctzl(num);
 }
-
-inline void mem_swap(void *__restrict__ x,
-		     void *__restrict__ y,
-		     const size_t width)
-{
-	char buffer[width];
-	memcpy(&buffer[0l], x,		 width);
-	memcpy(x,	    y,		 width);
-	memcpy(y,	    &buffer[0l], width);
-}
-
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
