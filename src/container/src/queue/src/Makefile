@@ -1,4 +1,3 @@
-
 .PHONY: all clean
 
 
@@ -26,7 +25,7 @@ DEP_LIBS      = utils_static
 TEST_DEP_LIBS = unity_shared
 
 # flags
-C_FLAGS      = -g -I$(HDR_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__
+C_FLAGS      = -g -I$(HDR_DIR) -std=c99 -Wall -D__USE_FIXED_PROTOTYPES__ -DUNITY_INCLUDE_CONFIG_H
 LD_FLAGS     = -L$(C_STATIC_LIBRARIES) -L$(C_SHARED_LIBRARIES) -Wl,-rpath,$(C_SHARED_LIBRARIES)
 AR_FLAGS     = rcs
 PIC_FLAG     = -fpic
@@ -62,8 +61,9 @@ TRNR_SRC = test_runners
 
 # paths relative project root, 'ROOT_DIR'
 ROOT_DIR      = ..
-SRC_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(SRC))
 HDR_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(HDR))
+SRC_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(SRC))
+MAIN_SRC_DIR  = $(call PATH_JOIN,$(ROOT_DIR) $(MAIN_SRC))
 TEST_SRC_DIR  = $(call PATH_JOIN,$(ROOT_DIR) $(TEST))
 TRNR_SRC_DIR  = $(call PATH_JOIN,$(TEST_SRC_DIR) $(TRNR_SRC))
 OBJ_DIR       = $(call PATH_JOIN,$(ROOT_DIR) $(OBJ))
@@ -93,7 +93,7 @@ OBJ_PFX       = $(EMPTY)
 PIC_OBJ_PFX   = pic_
 TRNR_OBJ_PFX  = $(EMPTY)
 TEST_OBJ_PFX  = $(EMPTY)
-BIN_PFX	      = $(EMPTY)
+BIN_PFX       = $(EMPTY)
 TEST_BIN_PFX  = $(EMPTY)
 SHARED_PFX    = $(LIB_PFX)
 STATIC_PFX    = $(LIB_PFX)
@@ -109,7 +109,7 @@ OBJ_SFX       = .o
 PIC_OBJ_SFX   = $(OBJ_SFX)
 TEST_OBJ_SFX  = $(call CONCAT,$(TEST_SFX) $(OBJ_SFX))
 TRNR_OBJ_SFX  = $(call CONCAT,$(TRNR_SFX) $(OBJ_SFX))
-BIN_SFX	      = $(EMPTY)
+BIN_SFX       = $(EMPTY)
 TEST_BIN_SFX  = $(TEST_SFX)
 SHARED_SFX    = $(call CONCAT,_ $(SHARED) .so)
 STATIC_SFX    = $(call CONCAT,_ $(STATIC) .a)
@@ -119,10 +119,10 @@ MKDIR_HDR_SFX = $(EMPTY)
 # functions
 # ==============================================================================
 # string operations
-JOIN       = $(subst $(SPACE),$2,$(strip $1))
-CONCAT     = $(call JOIN,$1,$(EMPTY))
-PATH_JOIN  = $(call JOIN,$1,$(PATH_DELIM))
-VAR_JOIN   = $(call JOIN,$1,$(VAR_DELIM))
+JOIN        = $(subst $(SPACE),$2,$(strip $1))
+CONCAT      = $(call JOIN,$1,$(EMPTY))
+PATH_JOIN   = $(call JOIN,$1,$(PATH_DELIM))
+VAR_JOIN    = $(call JOIN,$1,$(VAR_DELIM))
 MAP_L_FLAGS = $(foreach lib,$1,$(call CONCAT,-l $(lib)))
 
 # variable generation, expansion

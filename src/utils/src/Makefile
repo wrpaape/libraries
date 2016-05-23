@@ -6,7 +6,6 @@ $(call TEST_BINARY,utils)
 endef
 
 $(eval $(RULES))
-# $(info $(TARGETS))
 
 all: $(TARGETS)
 

@@ -9,7 +9,8 @@ extern "C" {
 #endif
 
 
-/* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* EXTERNAL DEPENDENCIES
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <time.h>
 #include <sys/time.h>
@@ -19,14 +20,38 @@ extern "C" {
 #include <mach/mach.h>
 #endif
 
-/* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * EXTERNAL DEPENDENCIES
+ *
+ *
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
+ *
+ *
+ * CONSTANTS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+#define ONE_BILLION 1000000000l
+
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * CONSTANTS
+ *
+ *
+ * FUNCTION-LIKE MACROS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * FUNCTION-LIKE MACROS
+ *
+ *
+ * TOP-LEVEL FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* taken from stackoverflow user 'jbenet''s answer to
  * https://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
  * https://gist.github.com/jbenet/1087739A (source) */
-
-
-inline void get_real_time(struct timespec *restrict time)
+inline void timespec_now(struct timespec *restrict time)
 {
 #ifdef __MACH__ /* OS X does not have clock_gettime, use clock_get_time */
 	clock_serv_t calendar_clock;
@@ -45,16 +70,35 @@ inline void get_real_time(struct timespec *restrict time)
 #endif
 }
 
-
-inline void set_time_limit(struct timespec *restrict time_limit,
-			   const struct timespec *restrict timeout)
+inline long timespec_diff_nano(const struct timespec *const restrict time0,
+			       const struct timespec *const restrict time1)
 {
-	get_real_time(time_limit);
-
-	time_limit->tv_sec  += timeout->tv_sec;
-	time_limit->tv_nsec += timeout->tv_nsec;
+	return ((time1->tv_sec  - time0->tv_sec) * ONE_BILLION)
+	     +  (time1->tv_nsec - time0->tv_nsec);
 }
 
+inline void timespec_offset(struct timespec *const restrict time,
+			    const struct timespec *const restrict offset)
+{
+	time->tv_sec  += offset->tv_sec;
+	time->tv_nsec += offset->tv_nsec;
+}
+
+inline void timespec_offset_now(struct timespec *restrict time,
+				const struct timespec *const restrict offset)
+{
+	timespec_now(time);
+	timespec_offset(time, offset);
+}
+
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * TOP-LEVEL FUNCTIONS
+ *
+ *
+ * HELPER FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * HELPER FUNCTIONS */
 
 
 #ifdef __cplusplus /* close 'extern "C" {' */

@@ -1,5 +1,5 @@
-#ifndef STRING_PROCESS_SPLIT_STRING_H_
-#define STRING_PROCESS_SPLIT_STRING_H_
+#ifndef STRING_UTILS_SPLIT_STRING_H_
+#define STRING_UTILS_SPLIT_STRING_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -60,4 +60,4 @@ static inline size_t count_segments(const char *restrict string,
 }
 #endif
 
-#endif /* ifndef STRING_PROCESS_SPLIT_STRING_H_ */
+#endif /* ifndef STRING_UTILS_SPLIT_STRING_H_ */

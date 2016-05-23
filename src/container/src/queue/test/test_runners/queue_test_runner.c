@@ -27,7 +27,11 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_queue(void);
+extern void test_queue_pop_empty(void);
+extern void test_queue_push_peek(void);
+extern void test_queue_push_peek_pop(void);
+extern void test_queue_fifo_load_then_traverse(void);
+extern void test_queue_fifo_load_with_traverse(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +47,11 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/queue_test.c");
-  RUN_TEST(test_queue, 16);
+  RUN_TEST(test_queue_pop_empty, 16);
+  RUN_TEST(test_queue_push_peek, 21);
+  RUN_TEST(test_queue_push_peek_pop, 27);
+  RUN_TEST(test_queue_fifo_load_then_traverse, 37);
+  RUN_TEST(test_queue_fifo_load_with_traverse, 49);
 
   return (UnityEnd());
 }

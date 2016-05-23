@@ -21,6 +21,7 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+/* implemented as singly linked-list with a pointer to last element's tail */
 struct Queue {
 	struct SLinkNode *head;
 	struct SLinkNode **last;
@@ -45,7 +46,7 @@ struct Queue {
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* basic LIFO queue implementation */
+/* basic LIFO implementation */
 
 inline struct Queue *queue_alloc(void)
 {
