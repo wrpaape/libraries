@@ -43,8 +43,8 @@ void spawn_timeout_task(struct Task *const restrict task,
 
 	HANDLE_PTHREAD_MUTEX_LOCK(&processing_task);
 
-	set_time_limit(&time_limit,
-		       timeout);
+	timespec_offset_now(&time_limit,
+			    timeout);
 
 	HANDLE_PTHREAD_CREATE(&task_thread,
 			      NULL,
