@@ -30,12 +30,20 @@ typedef uint_fast8_t ByteBuff1;
 typedef uint_fast16_t ByteBuff2;
 typedef uint_fast32_t ByteBuff4;
 typedef uint_fast64_t ByteBuff8;
+typedef __uint128_t ByteBuff16;
 
 /* uncommon widths (backed by an array of 'WIDTH' bytes) */
 typedef struct ByteBuff3 { ByteBuff1 bytes[3]; } ByteBuff3;
 typedef struct ByteBuff5 { ByteBuff1 bytes[5]; } ByteBuff5;
 typedef struct ByteBuff6 { ByteBuff1 bytes[6]; } ByteBuff6;
 typedef struct ByteBuff7 { ByteBuff1 bytes[7]; } ByteBuff7;
+typedef struct ByteBuff9 { ByteBuff1 bytes[9]; } ByteBuff9;
+typedef struct ByteBuff10 { ByteBuff1 bytes[10]; } ByteBuff10;
+typedef struct ByteBuff11 { ByteBuff1 bytes[11]; } ByteBuff11;
+typedef struct ByteBuff12 { ByteBuff1 bytes[12]; } ByteBuff12;
+typedef struct ByteBuff13 { ByteBuff1 bytes[13]; } ByteBuff13;
+typedef struct ByteBuff14 { ByteBuff1 bytes[14]; } ByteBuff14;
+typedef struct ByteBuff15 { ByteBuff1 bytes[15]; } ByteBuff15;
 
 /* swap memory for a particular byte width */
 typedef void MemSwap(void *restrict,
@@ -48,10 +56,12 @@ typedef void MemSwap(void *restrict,
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define MAX_BYTE_BUFF_WIDTH 8
+#define MAX_BYTE_BUFF_WIDTH 16
 #define _FOR_ALL_BYTE_BUFF_WIDTHS(MACRO, DELIM)			\
-MACRO(1) DELIM MACRO(2) DELIM MACRO(3) DELIM MACRO(4) DELIM	\
-MACRO(5) DELIM MACRO(6) DELIM MACRO(7) DELIM MACRO(8)
+MACRO( 1) DELIM MACRO( 2) DELIM MACRO( 3) DELIM MACRO( 4) DELIM	\
+MACRO( 5) DELIM MACRO( 6) DELIM MACRO( 7) DELIM MACRO( 8) DELIM	\
+MACRO( 9) DELIM MACRO(10) DELIM MACRO(11) DELIM MACRO(12) DELIM	\
+MACRO(13) DELIM MACRO(14) DELIM MACRO(15) DELIM MACRO(16)
 
 
 /* lookup for 'assign_mem_swap' (+1 for extra NULL slot) */
@@ -89,9 +99,9 @@ do {							\
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* memory swap arbitrary byte size, 'width' */
-inline void mem_swap(void *restrict x,
-		     void *restrict y,
-		     const size_t width)
+inline void mem_swap_width(void *restrict x,
+			   void *restrict y,
+			   const size_t width)
 {
 	ByteBuff1 buffer[width];
 	memcpy(&buffer[0l], x,		 width);
@@ -126,8 +136,9 @@ _FOR_ALL_BYTE_BUFF_WIDTHS(_DEFINE_MEM_SWAP, _EMPTY)
  * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline void (*assign_mem_swap(const size_t width))(void *restrict,
-						   void *restrict)
+/* inline void (*assign_mem_swap(const size_t width))(void *restrict, */
+/* 						   void *restrict) */
+inline MemSwap *assign_mem_swap(const size_t width)
 {
 	return (width > MAX_BYTE_BUFF_WIDTH) ? NULL : MEM_SWAP_MAP[width];
 }
