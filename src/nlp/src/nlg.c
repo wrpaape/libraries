@@ -401,7 +401,8 @@ static const char *const ARTICLES[] = {
 	"the", "a", "an"
 };
 
-static const char *const PERSONAL_PRONOUNS[]
+static const char *const PERSONAL_PRONOUNS[] = {
+};
 
 
 /* To get a Sentence, append a Noun-Phrase and a Verb-Phrase To get a Noun-Phrase, append a n Article and a Noun */

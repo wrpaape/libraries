@@ -1,3 +1,0 @@
-# rand
-
-## TODO: everything

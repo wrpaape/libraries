@@ -3,20 +3,23 @@
 
 /* initialize, destroy, resize
  ******************************************************************************/
-extern inline struct BHeap *init_bheap(const size_t width,
-				       int (*compare)(const void *,
+extern inline struct BHeap *bheap_alloc(const size_t capacity);
+
+extern inline void bheap_init(struct BHeap *heap,
+			      int (*compare)(const void *,
+					     const void *));
+
+extern inline struct BHeap *bheap_create(const size_t width,
+					 int (*compare)(const void *,
 						      const void *));
 
-extern inline struct BHeap *init_sized_bheap(const size_t width,
-					     const size_t size,
-					     int (*compare)(const void *,
-							    const void *));
+extern inline void bheap_clear(struct BHeap *heap);
 
-extern inline void free_bheap(struct BHeap *heap);
+extern inline void bheap_free(struct BHeap *heap);
 
 
-extern inline void realloc_bheap(struct BHeap *heap,
-				 const size_t size);
+extern inline void bheap_realloc(struct BHeap *heap,
+				 const size_t new_capacity);
 
 /* insertion
  ******************************************************************************/
@@ -32,8 +35,8 @@ void bheap_insert_array(struct BHeap *heap,
 	const size_t width = heap->width;
 	const size_t next_count = count + length;
 
-	if (heap->alloc < next_count)
-		realloc_bheap(heap, next_pow_two(next_count));
+	if (heap->capacity < next_count)
+		bheap_realloc(heap, next_pow_two(next_count));
 
 	int (*compare)(const void *,
 		       const void *) = heap->compare;
