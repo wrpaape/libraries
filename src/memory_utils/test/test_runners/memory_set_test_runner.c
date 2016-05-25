@@ -45,7 +45,7 @@ int main(void)
 {
   UnityBegin("../test/memory_set_test.c");
   RUN_TEST(test_assign_memory_set, 12);
-  RUN_TEST(test_assign_memory_set_then_set, 65);
+  RUN_TEST(test_assign_memory_set_then_set, 67);
 
   return (UnityEnd());
 }

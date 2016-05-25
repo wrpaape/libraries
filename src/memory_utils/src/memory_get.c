@@ -3,7 +3,7 @@
 extern inline MemoryGet *assign_memory_get(const size_t width);
 
 /* define lookup for 'assign_memory_get' (zero-width maps to NULL) */
-MemoryGet *const MEMORY_GET_MAP[BYTE_WIDTH_MAX + 1ul] = {
+MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul] = {
 	NULL,
 	&memory_get1,  &memory_get2,  &memory_get3,  &memory_get4,
 	&memory_get5,  &memory_get6,  &memory_get7,  &memory_get8,
@@ -11,6 +11,10 @@ MemoryGet *const MEMORY_GET_MAP[BYTE_WIDTH_MAX + 1ul] = {
 	&memory_get13, &memory_get14, &memory_get15, &memory_get16,
 };
 
+/* access 'i'th member of 'array' having elements of size 'width' */
+extern inline void *memory_get_width(const void *const restrict array,
+				     const ptrdiff_t i,
+				     const size_t width);
 
 /* declare all memory_get<WIDTH> functions extern */
 extern inline void *memory_get1(const void *const restrict array,

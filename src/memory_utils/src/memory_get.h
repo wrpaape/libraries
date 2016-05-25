@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h" /* ByteWidth<WIDTH> */
+#include "memory_utils.h" /* Width<WIDTH> */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -33,7 +33,7 @@ typedef void *MemoryGet(const void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_get' (+1 for extra NULL slot) */
-extern MemoryGet *const MEMORY_GET_MAP[BYTE_WIDTH_MAX + 1ul];
+extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -48,106 +48,114 @@ extern MemoryGet *const MEMORY_GET_MAP[BYTE_WIDTH_MAX + 1ul];
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline MemoryGet *assign_memory_get(const size_t width)
+/* access 'i'th member of 'array' having elements of size 'width' */
+inline void *memory_get_width(const void *const restrict array,
+			      const ptrdiff_t i,
+			      const size_t width)
 {
-	return (width > BYTE_WIDTH_MAX) ? NULL : MEMORY_GET_MAP[width];
+	return (void *) (&((const Width1 *const restrict) array)[i * width]);
 }
 
-/* define memory_get<WIDTH> functions for WIDTH = 1 .. BYTE_WIDTH_MAX */
+inline MemoryGet *assign_memory_get(const size_t width)
+{
+	return (width > WIDTH_MAX) ? NULL : MEMORY_GET_MAP[width];
+}
+
+/* define memory_get<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
 inline void *memory_get1(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth1 *const restrict) array)[i]);
+	return (void *) (&((const Width1 *const restrict) array)[i]);
 }
 
 inline void *memory_get2(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth2 *const restrict) array)[i]);
+	return (void *) (&((const Width2 *const restrict) array)[i]);
 }
 
 inline void *memory_get3(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth3 *const restrict) array)[i]);
+	return (void *) (&((const Width3 *const restrict) array)[i]);
 }
 
 inline void *memory_get4(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth4 *const restrict) array)[i]);
+	return (void *) (&((const Width4 *const restrict) array)[i]);
 }
 
 inline void *memory_get5(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth5 *const restrict) array)[i]);
+	return (void *) (&((const Width5 *const restrict) array)[i]);
 }
 
 inline void *memory_get6(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth6 *const restrict) array)[i]);
+	return (void *) (&((const Width6 *const restrict) array)[i]);
 }
 
 inline void *memory_get7(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth7 *const restrict) array)[i]);
+	return (void *) (&((const Width7 *const restrict) array)[i]);
 }
 
 inline void *memory_get8(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth8 *const restrict) array)[i]);
+	return (void *) (&((const Width8 *const restrict) array)[i]);
 }
 
 inline void *memory_get9(const void *const restrict array,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth9 *const restrict) array)[i]);
+	return (void *) (&((const Width9 *const restrict) array)[i]);
 }
 
 inline void *memory_get10(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth10 *const restrict) array)[i]);
+	return (void *) (&((const Width10 *const restrict) array)[i]);
 }
 
 inline void *memory_get11(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth11 *const restrict) array)[i]);
+	return (void *) (&((const Width11 *const restrict) array)[i]);
 }
 
 inline void *memory_get12(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth12 *const restrict) array)[i]);
+	return (void *) (&((const Width12 *const restrict) array)[i]);
 }
 
 inline void *memory_get13(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth13 *const restrict) array)[i]);
+	return (void *) (&((const Width13 *const restrict) array)[i]);
 }
 
 inline void *memory_get14(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth14 *const restrict) array)[i]);
+	return (void *) (&((const Width14 *const restrict) array)[i]);
 }
 
 inline void *memory_get15(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth15 *const restrict) array)[i]);
+	return (void *) (&((const Width15 *const restrict) array)[i]);
 }
 
 inline void *memory_get16(const void *const restrict array,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const ByteWidth16 *const restrict) array)[i]);
+	return (void *) (&((const Width16 *const restrict) array)[i]);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

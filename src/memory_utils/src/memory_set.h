@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h" /* ByteWidth<WIDTH> */
+#include "memory_utils.h" /* Width<WIDTH> */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -33,7 +33,7 @@ typedef void MemorySet(void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_set' (+1 for extra NULL slot) */
-extern MemorySet *const MEMORY_SET_MAP[BYTE_WIDTH_MAX + 1ul];
+extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -52,104 +52,104 @@ extern MemorySet *const MEMORY_SET_MAP[BYTE_WIDTH_MAX + 1ul];
 
 inline MemorySet *assign_memory_set(const size_t width)
 {
-	return (width > BYTE_WIDTH_MAX) ? NULL : MEMORY_SET_MAP[width];
+	return (width > WIDTH_MAX) ? NULL : MEMORY_SET_MAP[width];
 }
 
-/* define memory_set<WIDTH> functions for WIDTH = 1 .. BYTE_WIDTH_MAX */
+/* define memory_set<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
 inline void memory_set1(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth1 *) x) = *((ByteWidth1 *) y);
+	*((Width1 *const restrict) x) = *((const Width1 *const restrict) y);
 }
 
 inline void memory_set2(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth2 *) x) = *((ByteWidth2 *) y);
+	*((Width2 *const restrict) x) = *((const Width2 *const restrict) y);
 }
 
 inline void memory_set3(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth3 *) x) = *((ByteWidth3 *) y);
+	*((Width3 *const restrict) x) = *((const Width3 *const restrict) y);
 }
 
 inline void memory_set4(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth4 *) x) = *((ByteWidth4 *) y);
+	*((Width4 *const restrict) x) = *((const Width4 *const restrict) y);
 }
 
 inline void memory_set5(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth5 *) x) = *((ByteWidth5 *) y);
+	*((Width5 *const restrict) x) = *((const Width5 *const restrict) y);
 }
 
 inline void memory_set6(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth6 *) x) = *((ByteWidth6 *) y);
+	*((Width6 *const restrict) x) = *((const Width6 *const restrict) y);
 }
 
 inline void memory_set7(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth7 *) x) = *((ByteWidth7 *) y);
+	*((Width7 *const restrict) x) = *((const Width7 *const restrict) y);
 }
 
 inline void memory_set8(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth8 *) x) = *((ByteWidth8 *) y);
+	*((Width8 *const restrict) x) = *((const Width8 *const restrict) y);
 }
 
 inline void memory_set9(void *const restrict x,
 			const void *const restrict y)
 {
-	*((ByteWidth9 *) x) = *((ByteWidth9 *) y);
+	*((Width9 *const restrict) x) = *((const Width9 *const restrict) y);
 }
 
 inline void memory_set10(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth10 *) x) = *((ByteWidth10 *) y);
+	*((Width10 *const restrict) x) = *((const Width10 *const restrict) y);
 }
 
 inline void memory_set11(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth11 *) x) = *((ByteWidth11 *) y);
+	*((Width11 *const restrict) x) = *((const Width11 *const restrict) y);
 }
 
 inline void memory_set12(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth12 *) x) = *((ByteWidth12 *) y);
+	*((Width12 *const restrict) x) = *((const Width12 *const restrict) y);
 }
 
 inline void memory_set13(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth13 *) x) = *((ByteWidth13 *) y);
+	*((Width13 *const restrict) x) = *((const Width13 *const restrict) y);
 }
 
 inline void memory_set14(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth14 *) x) = *((ByteWidth14 *) y);
+	*((Width14 *const restrict) x) = *((const Width14 *const restrict) y);
 }
 
 inline void memory_set15(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth15 *) x) = *((ByteWidth15 *) y);
+	*((Width15 *const restrict) x) = *((const Width15 *const restrict) y);
 }
 
 inline void memory_set16(void *const restrict x,
 			 const void *const restrict y)
 {
-	*((ByteWidth16 *) x) = *((ByteWidth16 *) y);
+	*((Width16 *const restrict) x) = *((const Width16 *const restrict) y);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

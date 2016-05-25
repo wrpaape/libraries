@@ -26,7 +26,7 @@ $(call PIC_OBJECT,memory_utils)
 
 $(call TEST_BINARY,memory_utils)
 
-$(foreach module,memory_swap memory_set,\
+$(foreach module,memory_swap memory_set memory_get,\
 	$(call MEMORY_MODULE,$(module)))
 
 $(call EXPORT_ALL_HEADERS,memory_utils)

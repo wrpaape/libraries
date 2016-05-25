@@ -14,52 +14,54 @@ void test_assign_memory_set(void)
 	TEST_ASSERT_NULL(assign_memory_set(0));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set1,
-			      assign_memory_set(sizeof(ByteWidth1)));
+			      assign_memory_set(sizeof(Width1)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set2,
-			      assign_memory_set(sizeof(ByteWidth2)));
+			      assign_memory_set(sizeof(Width2)));
+
 	TEST_ASSERT_EQUAL_PTR(&memory_set3,
-			      assign_memory_set(sizeof(ByteWidth3)));
+			      assign_memory_set(sizeof(Width3)));
+
 	TEST_ASSERT_EQUAL_PTR(&memory_set4,
-			      assign_memory_set(sizeof(ByteWidth4)));
+			      assign_memory_set(sizeof(Width4)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set5,
-			      assign_memory_set(sizeof(ByteWidth5)));
+			      assign_memory_set(sizeof(Width5)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set6,
-			      assign_memory_set(sizeof(ByteWidth6)));
+			      assign_memory_set(sizeof(Width6)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set7,
-			      assign_memory_set(sizeof(ByteWidth7)));
+			      assign_memory_set(sizeof(Width7)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set8,
-			      assign_memory_set(sizeof(ByteWidth8)));
+			      assign_memory_set(sizeof(Width8)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set9,
-			      assign_memory_set(sizeof(ByteWidth9)));
+			      assign_memory_set(sizeof(Width9)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set10,
-			      assign_memory_set(sizeof(ByteWidth10)));
+			      assign_memory_set(sizeof(Width10)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set11,
-			      assign_memory_set(sizeof(ByteWidth11)));
+			      assign_memory_set(sizeof(Width11)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set12,
-			      assign_memory_set(sizeof(ByteWidth12)));
+			      assign_memory_set(sizeof(Width12)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set13,
-			      assign_memory_set(sizeof(ByteWidth13)));
+			      assign_memory_set(sizeof(Width13)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set14,
-			      assign_memory_set(sizeof(ByteWidth14)));
+			      assign_memory_set(sizeof(Width14)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set15,
-			      assign_memory_set(sizeof(ByteWidth15)));
+			      assign_memory_set(sizeof(Width15)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_set16,
-			      assign_memory_set(sizeof(ByteWidth16)));
+			      assign_memory_set(sizeof(Width16)));
 
-	TEST_ASSERT_NULL(assign_memory_set(BYTE_WIDTH_MAX + 1ul));
+	TEST_ASSERT_NULL(assign_memory_set(WIDTH_MAX + 1ul));
 }
 
 void test_assign_memory_set_then_set(void)

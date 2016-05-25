@@ -21,27 +21,27 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* byte buffers where sizeof(ByteWidth<WIDTH>) = WIDTH
+/* byte buffers where sizeof(Width<WIDTH>) = WIDTH
  * ========================================================================== */
 /* common byte widths */
-typedef uint_fast8_t ByteWidth1;
-typedef uint_fast16_t ByteWidth2;
-typedef uint_fast32_t ByteWidth4;
-typedef uint_fast64_t ByteWidth8;
-typedef __uint128_t ByteWidth16;
+typedef uint_fast8_t Width1;
+typedef uint_fast16_t Width2;
+typedef uint_fast32_t Width4;
+typedef uint_fast64_t Width8;
+typedef __uint128_t Width16;
 
 /* uncommon widths (backed by an array of 'WIDTH' bytes) */
-typedef struct ByteWidth3  { ByteWidth1 bytes[ 3]; } ByteWidth3;
-typedef struct ByteWidth5  { ByteWidth1 bytes[ 5]; } ByteWidth5;
-typedef struct ByteWidth6  { ByteWidth1 bytes[ 6]; } ByteWidth6;
-typedef struct ByteWidth7  { ByteWidth1 bytes[ 7]; } ByteWidth7;
-typedef struct ByteWidth9  { ByteWidth1 bytes[ 9]; } ByteWidth9;
-typedef struct ByteWidth10 { ByteWidth1 bytes[10]; } ByteWidth10;
-typedef struct ByteWidth11 { ByteWidth1 bytes[11]; } ByteWidth11;
-typedef struct ByteWidth12 { ByteWidth1 bytes[12]; } ByteWidth12;
-typedef struct ByteWidth13 { ByteWidth1 bytes[13]; } ByteWidth13;
-typedef struct ByteWidth14 { ByteWidth1 bytes[14]; } ByteWidth14;
-typedef struct ByteWidth15 { ByteWidth1 bytes[15]; } ByteWidth15;
+typedef struct Width3  { Width1 bytes[ 3]; } Width3;
+typedef struct Width5  { Width1 bytes[ 5]; } Width5;
+typedef struct Width6  { Width1 bytes[ 6]; } Width6;
+typedef struct Width7  { Width1 bytes[ 7]; } Width7;
+typedef struct Width9  { Width1 bytes[ 9]; } Width9;
+typedef struct Width10 { Width1 bytes[10]; } Width10;
+typedef struct Width11 { Width1 bytes[11]; } Width11;
+typedef struct Width12 { Width1 bytes[12]; } Width12;
+typedef struct Width13 { Width1 bytes[13]; } Width13;
+typedef struct Width14 { Width1 bytes[14]; } Width14;
+typedef struct Width15 { Width1 bytes[15]; } Width15;
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -50,7 +50,7 @@ typedef struct ByteWidth15 { ByteWidth1 bytes[15]; } ByteWidth15;
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define BYTE_WIDTH_MAX 16ul
+#define WIDTH_MAX 16ul
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
