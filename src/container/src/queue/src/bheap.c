@@ -3,7 +3,8 @@
 
 /* initialize, destroy, resize
  ******************************************************************************/
-extern inline struct BHeap *bheap_alloc(const size_t capacity);
+extern inline struct BHeap *bheap_alloc(const size_t capacity,
+					const size_t width);
 
 extern inline void bheap_init(struct BHeap *heap,
 			      int (*compare)(const void *,
@@ -12,8 +13,6 @@ extern inline void bheap_init(struct BHeap *heap,
 extern inline struct BHeap *bheap_create(const size_t width,
 					 int (*compare)(const void *,
 						      const void *));
-
-extern inline void bheap_clear(struct BHeap *heap);
 
 extern inline void bheap_free(struct BHeap *heap);
 
@@ -24,7 +23,7 @@ extern inline void bheap_realloc(struct BHeap *heap,
 /* insertion
  ******************************************************************************/
 extern inline void bheap_insert(struct BHeap *heap,
-				void *const next);
+				const void *const next);
 
 void bheap_insert_array(struct BHeap *heap,
 			void *const array,

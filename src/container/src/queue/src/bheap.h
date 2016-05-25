@@ -12,7 +12,9 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <mem_utils/mem_swap.h>	/* MemSwap, <utils/utils> */
+#include <memory_utils/memory_set.h>	/* MemorySet */
+#include <memory_utils/memory_set.h>	/* MemoryGet */
+#include <memory_utils/memory_swap.h>	/* MemorySwap */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -22,11 +24,13 @@ extern "C" {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 struct BHeap {
+	void *nodes;			/* byte array buffer */
+	size_t count;			/* count of occupied nodes */
 	size_t capacity;		/* count of allocated nodes */
 	size_t width;			/* byte size per node */
-	size_t count;			/* count of occupied nodes */
-	void *nodes;			/* array of heap nodes */
-	MemSwap *swap;			/* memory swapping function */
+	MemoryGet *get;			/* array access function */
+	MemorySet *set;			/* memory setting function */
+	MemorySwap *swap;		/* memory swapping function */
 	int (*compare)(const void *,	/* node comparison function */
 		       const void *);
 };
@@ -47,8 +51,11 @@ inline struct BHeap *bheap_alloc(const size_t capacity,
 
 	heap->capacity = capacity;
 	heap->width    = width;
-	--(heap->nodes); /* sentinel node at index 0, i.e. 'nodes[1]' points to
-			    first valid node, 'nodes[0]' is illegal */
+
+	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
+	 * 'nodes[0]' is illegal */
+	heap->nodes = pointer_offset(heap->nodes, -width);
+
 	return heap;
 }
 
@@ -57,15 +64,17 @@ inline void bheap_init(struct BHeap *heap,
 				      const void *))
 {
 
-	heap->swap = assign_mem_swap(heap->width);
+	heap->get     = assign_memory_get(heap->width);
 
-	if (heap->swap == NULL)
+	if (heap->get == NULL)
 		EXIT_ON_FAILURE("BHeap node width of %zu bytes exceeds "
 				"maximum supported width of %zu bytes",
-				width, MAX_BYTE_BUFF_WIDTH);
-	heap->count   = 0ul;
-	heap->width   = width;
+				heap->width, WIDTH_MAX);
+
+	heap->set     = assign_memory_set(heap->width);
+	heap->swap    = assign_memory_swap(heap->width);
 	heap->compare = compare;
+	heap->count   = 0ul;
 }
 
 inline struct BHeap *bheap_create(const size_t width,
@@ -79,27 +88,29 @@ inline struct BHeap *bheap_create(const size_t width,
 	return heap;
 }
 
-
-inline void bheap_clear(struct BHeap *heap)
-{
-	heap->count = 0ul;
-}
-
 inline void bheap_free(struct BHeap *heap)
 {
-	free(&heap->nodes[1l]);
+	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
+	 * 'nodes[0]' is illegal */
+	free(pointer_offset(heap->nodes,
+			    heap->width));
 	free(heap);
 }
 
 inline void bheap_realloc(struct BHeap *heap,
 			  const size_t new_capacity)
 {
-	void *nodes = realloc(&heap->nodes[1l], heap->width * new_capacity);
+	void *nodes = realloc(pointer_offset(heap->nodes,
+					     heap->width),
+			      heap->width * new_capacity);
 
 	if (nodes == NULL)
-		EXIT_ON_FAILURE("failed to reallocate number of nodes"
+		EXIT_ON_FAILURE("failed to reallocate node capacity "
 				"from %lu to %lu",
 				heap->capacity, new_capacity);
+
+	heap->nodes = pointer_offset(nodes,
+				     -(heap->width));
 
 	heap->capacity = new_capacity;
 }
@@ -120,14 +131,33 @@ void bheap_insert_array(struct BHeap *heap,
 			const size_t length);
 
 inline void bheap_insert(struct BHeap *heap,
-			 void *const next)
+			 const void *const next)
 {
 	++(heap->count);
 
 	if (heap->count == heap->capacity)
-		bheap_realloc(heap, heap->capacity * 2ul);
+		bheap_realloc(heap,
+			      heap->capacity * 2ul);
+
+	size_t i_next = heap->count;
+
+	size_t i_parent;
+
+	void *parent;
 
 	while (1) {
+
+		if (i_next == 1ul) {
+			heap->set(heap->get(heap->nodes,
+					    1l),
+				  next);
+			return;
+		}
+
+		i_parent = i_next / 2ul;
+
+
+
 		heap->swap(&heap->nodes[1l],next)
 	}
 }
