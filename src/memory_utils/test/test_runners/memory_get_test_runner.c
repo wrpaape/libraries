@@ -28,7 +28,7 @@
 extern void setUp(void);
 extern void tearDown(void);
 extern void test_assign_memory_get(void);
-extern void test_memory_get_width_basic_primitive_types(void);
+extern void test_memory_get_width(void);
 extern void test_assign_memory_get_then_get(void);
 
 
@@ -46,8 +46,8 @@ int main(void)
 {
   UnityBegin("../test/memory_get_test.c");
   RUN_TEST(test_assign_memory_get, 12);
-  RUN_TEST(test_memory_get_width_basic_primitive_types, 67);
-  RUN_TEST(test_assign_memory_get_then_get, 72);
+  RUN_TEST(test_memory_get_width, 67);
+  RUN_TEST(test_assign_memory_get_then_get, 156);
 
   return (UnityEnd());
 }

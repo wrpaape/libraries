@@ -64,9 +64,93 @@ void test_assign_memory_get(void)
 	TEST_ASSERT_NULL(assign_memory_get(WIDTH_MAX + 1ul));
 }
 
-void test_memory_get_width_basic_primitive_types(void)
+void test_memory_get_width(void)
 {
-	TEST_IGNORE();
+	struct Name {
+		char *first;
+		char *middle;
+		char *last;
+	};
+
+	struct Age {
+		uint64_t years;
+		uint64_t months;
+		uint64_t days;
+	};
+
+	struct Height {
+		uint64_t feet;
+		uint64_t inches;
+	};
+
+	struct Weight {
+		uint64_t pounds;
+		uint64_t ounces;
+	};
+
+	typedef struct BigBoy {
+		struct Name name;
+		struct Age age;
+		struct Height height;
+		struct Weight weight;
+	} BigBoy;
+
+
+	BigBoy boys[] = {
+		[0] = {
+			{ "Timmy", "Thomas", "Turner" },
+			{ 2u, 11u, 205u },
+			{ 2u, 7u },
+			{ 30u, 7u }
+		},
+		[1] = {
+			{ "Johnny", "Jordan", "Johanson" },
+			{ 7u, 1u, 57u },
+			{ 4u, 7u },
+			{ 72u, 15u }
+		},
+		[2] = {
+			{ "Bobby", "Bartholomew", "Barker" },
+			{ 4u, 0u, 12u },
+			{ 3u, 8u },
+			{ 45u, 1u }
+		},
+	};
+
+	BigBoy *boy_act;
+	BigBoy *boy_exp;
+
+	for (ptrdiff_t i = 0l; i < 3l; ++i) {
+
+		boy_exp = &boys[i];
+		boy_act = (BigBoy *) memory_get_width(&boys[0],
+						      i,
+						      sizeof(BigBoy));
+
+		TEST_ASSERT_EQUAL_STRING(boy_exp->name.first,
+					 boy_act->name.first);
+		TEST_ASSERT_EQUAL_STRING(boy_exp->name.middle,
+					 boy_act->name.middle);
+		TEST_ASSERT_EQUAL_STRING(boy_exp->name.last,
+					 boy_act->name.last);
+
+		TEST_ASSERT_EQUAL_INT64(boy_exp->age.years,
+					boy_act->age.years);
+		TEST_ASSERT_EQUAL_INT64(boy_exp->age.months,
+					boy_act->age.months);
+		TEST_ASSERT_EQUAL_INT64(boy_exp->age.days,
+					boy_act->age.days);
+
+		TEST_ASSERT_EQUAL_INT64(boy_exp->height.feet,
+					boy_act->height.feet);
+		TEST_ASSERT_EQUAL_INT64(boy_exp->height.inches,
+					boy_act->height.inches);
+
+		TEST_ASSERT_EQUAL_INT64(boy_exp->weight.pounds,
+					boy_act->weight.pounds);
+		TEST_ASSERT_EQUAL_INT64(boy_exp->weight.ounces,
+					boy_act->weight.ounces);
+	}
 }
 
 void test_assign_memory_get_then_get(void)
