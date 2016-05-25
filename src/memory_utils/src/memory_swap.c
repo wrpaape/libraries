@@ -11,60 +11,60 @@ MemorySwap *const MEMORY_SWAP_MAP[BYTE_WIDTH_MAX + 1ul] = {
 	&memory_swap13, &memory_swap14, &memory_swap15, &memory_swap16,
 };
 
-extern inline void memory_swap_width(void *restrict x,
-				     void *restrict y,
+extern inline void memory_swap_width(void *const restrict x,
+				     void *const restrict y,
 				     const size_t width);
 
-extern inline void memory_swap_buffer(void *restrict x,
-				      void *restrict y,
-				      void *restrict buffer,
+extern inline void memory_swap_buffer(void *const restrict x,
+				      void *const restrict y,
+				      void *const restrict buffer,
 				      const size_t width);
 
 /* declare all memory_swap<WIDTH> functions extern */
-extern inline void memory_swap1(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap1(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap2(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap2(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap3(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap3(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap4(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap4(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap5(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap5(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap6(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap6(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap7(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap7(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap8(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap8(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap9(void *restrict x,
-				void *restrict y);
+extern inline void memory_swap9(void *const restrict x,
+				void *const restrict y);
 
-extern inline void memory_swap10(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap10(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap11(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap11(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap12(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap12(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap13(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap13(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap14(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap14(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap15(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap15(void *const restrict x,
+				 void *const restrict y);
 
-extern inline void memory_swap16(void *restrict x,
-				 void *restrict y);
+extern inline void memory_swap16(void *const restrict x,
+				 void *const restrict y);
