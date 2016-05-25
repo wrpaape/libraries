@@ -120,52 +120,52 @@ void test_assign_memory_swap(void)
 	TEST_ASSERT_NULL(assign_memory_swap(0));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap1,
-			      assign_memory_swap(sizeof(ByteBuffer1)));
+			      assign_memory_swap(sizeof(ByteWidth1)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap2,
-			      assign_memory_swap(sizeof(ByteBuffer2)));
+			      assign_memory_swap(sizeof(ByteWidth2)));
 	TEST_ASSERT_EQUAL_PTR(&memory_swap3,
-			      assign_memory_swap(sizeof(ByteBuffer3)));
+			      assign_memory_swap(sizeof(ByteWidth3)));
 	TEST_ASSERT_EQUAL_PTR(&memory_swap4,
-			      assign_memory_swap(sizeof(ByteBuffer4)));
+			      assign_memory_swap(sizeof(ByteWidth4)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap5,
-			      assign_memory_swap(sizeof(ByteBuffer5)));
+			      assign_memory_swap(sizeof(ByteWidth5)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap6,
-			      assign_memory_swap(sizeof(ByteBuffer6)));
+			      assign_memory_swap(sizeof(ByteWidth6)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap7,
-			      assign_memory_swap(sizeof(ByteBuffer7)));
+			      assign_memory_swap(sizeof(ByteWidth7)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap8,
-			      assign_memory_swap(sizeof(ByteBuffer8)));
+			      assign_memory_swap(sizeof(ByteWidth8)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap9,
-			      assign_memory_swap(sizeof(ByteBuffer9)));
+			      assign_memory_swap(sizeof(ByteWidth9)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap10,
-			      assign_memory_swap(sizeof(ByteBuffer10)));
+			      assign_memory_swap(sizeof(ByteWidth10)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap11,
-			      assign_memory_swap(sizeof(ByteBuffer11)));
+			      assign_memory_swap(sizeof(ByteWidth11)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap12,
-			      assign_memory_swap(sizeof(ByteBuffer12)));
+			      assign_memory_swap(sizeof(ByteWidth12)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap13,
-			      assign_memory_swap(sizeof(ByteBuffer13)));
+			      assign_memory_swap(sizeof(ByteWidth13)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap14,
-			      assign_memory_swap(sizeof(ByteBuffer14)));
+			      assign_memory_swap(sizeof(ByteWidth14)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap15,
-			      assign_memory_swap(sizeof(ByteBuffer15)));
+			      assign_memory_swap(sizeof(ByteWidth15)));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap16,
-			      assign_memory_swap(sizeof(ByteBuffer16)));
+			      assign_memory_swap(sizeof(ByteWidth16)));
 
-	TEST_ASSERT_NULL(assign_memory_swap(BYTE_BUFFER_MAX_WIDTH + 1ul));
+	TEST_ASSERT_NULL(assign_memory_swap(BYTE_WIDTH_MAX + 1ul));
 }
 
 void test_assign_memory_swap_then_swap(void)

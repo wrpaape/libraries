@@ -4,6 +4,21 @@ MEMORY_UTILS_CC_DEPS := $(call SOURCE_HEADER_PATHS,memory_utils)
 MEMORY_UTILS_PIC_OBJ := $(call PIC_OBJECT_PATH,memory_utils)
 MEMORY_UTILS_OBJ     := $(call OBJECT_PATH,memory_utils)
 
+define MEMORY_MODULE
+$(call LIBRARIES,$(module),\
+		 $(MEMORY_UTILS_CC_DEPS),\
+		 $(EMPTY),\
+		 $(MEMORY_UTILS_PIC_OBJ),\
+		 $(MEMORY_UTILS_OBJ))
+
+$(call EXPORT_LIBRARIES,$(module))
+
+$(call TEST_BINARY,$(module),\
+		   $(MEMORY_UTILS_CC_DEPS),\
+		   $(EMPTY),\
+		   $(MEMORY_UTILS_OBJ))
+endef
+
 define RULES
 $(call OBJECT,memory_utils)
 
@@ -11,18 +26,8 @@ $(call PIC_OBJECT,memory_utils)
 
 $(call TEST_BINARY,memory_utils)
 
-$(call LIBRARIES,memory_swap,\
-		 $(MEMORY_UTILS_CC_DEPS),\
-		 $(EMPTY),\
-		 $(MEMORY_UTILS_PIC_OBJ),\
-		 $(MEMORY_UTILS_OBJ))
-
-$(call EXPORT_LIBRARIES,memory_swap)
-
-$(call TEST_BINARY,memory_swap,\
-		   $(MEMORY_UTILS_CC_DEPS),\
-		   $(EMPTY),\
-		   $(MEMORY_UTILS_OBJ))
+$(foreach module,memory_swap memory_set,\
+	$(call MEMORY_MODULE,$(module)))
 
 $(call EXPORT_ALL_HEADERS,memory_utils)
 endef
