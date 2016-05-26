@@ -27,7 +27,8 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_bheap(void);
+extern void test_bheap_extract_empty(void);
+extern void test_bheap_min_heap(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +44,8 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/bheap_test.c");
-  RUN_TEST(test_bheap, 12);
+  RUN_TEST(test_bheap_extract_empty, 35);
+  RUN_TEST(test_bheap_min_heap, 43);
 
   return (UnityEnd());
 }
