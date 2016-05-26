@@ -71,16 +71,16 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 		heap->set(heap->get(heap->nodes,
 				    i_next),
 			  node);
-		return;
+	} else {
+
+		heap->set(heap->get(heap->nodes,
+				    i_next),
+			  parent);
+
+		bheap_do_insert(heap,
+				node,
+				i_parent);
 	}
-
-	heap->set(heap->get(heap->nodes,
-			    i_next),
-		  parent);
-
-	bheap_do_insert(heap,
-			node,
-			i_parent);
 }
 
 
@@ -88,7 +88,8 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 
 /* extraction
  ******************************************************************************/
-extern inline void *bheap_extract(struct BHeap *const restrict heap);
+extern inline bool bheap_extract(struct BHeap *const restrict heap,
+				 void *const restrict buffer);
 
 void bheap_do_shift(const struct BHeap *const restrict heap,
 		    void *const restrict node,

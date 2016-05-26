@@ -14,6 +14,7 @@ extern "C" {
 
 #include <memory_utils/memory_set.h>	/* MemorySet */
 #include <memory_utils/memory_get.h>	/* MemoryGet */
+#include <stdbool.h>			/* bool */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -148,13 +149,15 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 		    void *const restrict node,
 		    const size_t i_next);
 
-inline void *bheap_extract(struct BHeap *const restrict heap)
+inline bool bheap_extract(struct BHeap *const restrict heap,
+			  void *const restrict buffer)
 {
 	if (heap->count == 0ul)
-		return NULL;
+		return false;
 
-	void *const restrict root = heap->get(heap->nodes,
-					      1ul);
+	heap->set(buffer,
+		  heap->get(heap->nodes,
+			    1ul));
 
 	void *const restrict base = heap->get(heap->nodes,
 					      heap->count);
@@ -164,7 +167,7 @@ inline void *bheap_extract(struct BHeap *const restrict heap)
 	bheap_do_shift(heap,
 		       base,
 		       1ul);
-	return root;
+	return true;
 }
 
 

@@ -45,7 +45,7 @@ int main(void)
 {
   UnityBegin("../test/bheap_test.c");
   RUN_TEST(test_bheap_extract_empty, 35);
-  RUN_TEST(test_bheap_min_heap, 43);
+  RUN_TEST(test_bheap_min_heap, 45);
 
   return (UnityEnd());
 }

@@ -34,10 +34,12 @@ void tearDown(void)
 
 void test_bheap_extract_empty(void)
 {
+	int buffer;
 	heap = bheap_create(sizeof(int),
 			    &int_less_than);
 
-	TEST_ASSERT_NULL(bheap_extract(heap));
+	TEST_ASSERT_FALSE(bheap_extract(heap,
+					&buffer));
 }
 
 void test_bheap_min_heap(void)
@@ -48,29 +50,12 @@ void test_bheap_min_heap(void)
 	char insert[] = "JCFGBIADHE";
 	char extract[sizeof(insert)];
 
-	char *pointer = &insert[0];
+	char *pointer;
 
-	/* for (i = 0ul; i < (sizeof(insert) - 1ul); ++i) */
-
-	do {
+	for (pointer = &insert[0]; *pointer != '\0'; ++pointer)
 		bheap_insert(heap, pointer);
-		++pointer;
-	} while (*pointer != '\0');
 
-	size_t i = 0ul;
-
-	while (1) {
-		pointer = (char *) bheap_extract(heap);
-
-		if (pointer == NULL)
-			break;
-
-		extract[i] = *pointer;
-		++i;
-	}
-	extract[i] = '\0';
-
-
+	for (pointer = &extract[0]; bheap_extract(heap, pointer); ++pointer);
 
 	TEST_ASSERT_EQUAL_STRING("ABCDEFGHIJ", &extract[0]);
 }
