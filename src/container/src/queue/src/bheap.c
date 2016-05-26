@@ -6,7 +6,7 @@
 extern inline struct BHeap *bheap_alloc(const size_t capacity,
 					const size_t width);
 
-extern inline void bheap_init(const struct BHeap *const restrict heap,
+extern inline void bheap_init(struct BHeap *const restrict heap,
 			      int (*compare)(const void *,
 					     const void *));
 
@@ -14,38 +14,38 @@ extern inline struct BHeap *bheap_create(const size_t width,
 					 int (*compare)(const void *,
 						      const void *));
 
-extern inline void bheap_free(const struct BHeap *const restrict heap);
+extern inline void bheap_free(struct BHeap *restrict heap);
 
 
-extern inline void bheap_realloc(const struct BHeap *const restrict heap,
+extern inline void bheap_realloc(struct BHeap *const restrict heap,
 				 const size_t new_capacity);
 
 /* insertion
  ******************************************************************************/
 extern inline void bheap_insert(struct BHeap *const restrict heap,
-				const void *const next);
+				void *const restrict next);
 
-void bheap_insert_array(const struct BHeap *const restrict heap,
-			void *const array,
-			const size_t length)
-{
-	void *const nodes  = heap->nodes;
-	const size_t count = heap->count;
-	const size_t width = heap->width;
-	const size_t next_count = count + length;
+/* void bheap_insert_array(struct BHeap *const restrict heap, */
+/* 			void *const array, */
+/* 			const size_t length) */
+/* { */
+/* 	void *const nodes  = heap->nodes; */
+/* 	const size_t count = heap->count; */
+/* 	const size_t width = heap->width; */
+/* 	const size_t next_count = count + length; */
 
-	if (heap->capacity < next_count)
-		bheap_realloc(heap, next_pow_two(next_count));
+/* 	if (heap->capacity < next_count) */
+/* 		bheap_realloc(heap, next_pow_two(next_count)); */
 
-	int (*compare)(const void *,
-		       const void *) = heap->compare;
+/* 	int (*compare)(const void *, */
+/* 		       const void *) = heap->compare; */
 
 
-	for (size_t i = 0ul; i < length; ++i)
-		do_insert(nodes, &array[i], count + i, width, compare);
+/* 	for (size_t i = 0ul; i < length; ++i) */
+/* 		do_insert(nodes, &array[i], count + i, width, compare); */
 
-	heap->count = next_count;
-}
+/* 	heap->count = next_count; */
+/* } */
 
 
 
@@ -222,7 +222,7 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 	const void *const restrict nodes = heap->nodes;
 
-	const MemoryGet *get = heap->get;
+	MemoryGet *const get = heap->get;
 
 	for (size_t i = 1ul; i <= count; ++i) {
 		node_to_string(&buffer[0],

@@ -1,38 +1,33 @@
 include $(MAKEFILE_SCAFFOLD)
 
-PROJECT_ROOT := ../..
-
-
-MEMORY_UTILS_CC_DEPS := $(call SOURCE_HEADER_PATHS,memory_utils)
-MEMORY_UTILS_PIC_OBJ := $(call PIC_OBJECT_PATH,memory_utils)
-MEMORY_UTILS_OBJ     := $(call OBJECT_PATH,memory_utils)
 
 define QUEUE_MODULE
-$(call LIBRARIES,$(module),\
-		 $(MEMORY_UTILS_CC_DEPS),\
+$(call LIBRARIES,$1,\
 		 $(EMPTY),\
-		 $(MEMORY_UTILS_PIC_OBJ),\
-		 $(MEMORY_UTILS_OBJ))
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $2,$3)
 
-$(call EXPORT_LIBRARIES,$(module))
+$(call EXPORT_LIBRARIES,$1)
 
-$(call TEST_BINARY,$(module),\
-		   $(MEMORY_UTILS_CC_DEPS),\
-		   $(EMPTY),\
-		   $(MEMORY_UTILS_OBJ))
+$(call TEST_BINARY,$1,\
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $2)
 endef
 
 define RULES
-$(call OBJECT,memory_utils)
+$(call QUEUE_MODULE,queue,\
+		    -lmemory_utils_shared,\
+		    -lmemory_utils_static)
 
-$(call PIC_OBJECT,memory_utils)
+$(call QUEUE_MODULE,bheap,\
+		    -lmemory_get_shared -lmemory_set_shared,\
+		    -lmemory_get_static -lmemory_set_static)
 
-$(call TEST_BINARY,memory_utils)
-
-$(foreach module,queue bheap,\
-	$(call QUEUE_MODULE,$(module)))
-
-$(call EXPORT_ALL_HEADERS,memory_utils)
+$(call EXPORT_ALL_HEADERS,container/queue)
 endef
 
 $(eval $(RULES))

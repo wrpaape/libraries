@@ -86,7 +86,7 @@ inline struct BHeap *bheap_create(const size_t width,
 	return heap;
 }
 
-inline void bheap_free(const struct BHeap *const restrict heap)
+inline void bheap_free(struct BHeap *restrict heap)
 {
 	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
 	 * 'nodes[0]' is illegal */
@@ -107,8 +107,8 @@ inline void bheap_realloc(struct BHeap *const restrict heap,
 				"from %lu to %lu",
 				heap->capacity, new_capacity);
 
-	heap->nodes = pointer_offset(nodes,
-				     -(heap->width));
+	heap->nodes = memory_offset(nodes,
+				    -(heap->width));
 
 	heap->capacity = new_capacity;
 }
@@ -126,7 +126,7 @@ void bheap_insert_array(const struct BHeap *const restrict heap,
 			const size_t length);
 
 inline void bheap_insert(struct BHeap *const restrict heap,
-			 const void *const node)
+			 void *const restrict node)
 {
 	++(heap->count);
 
@@ -144,13 +144,17 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 
 /* extraction
  ******************************************************************************/
+void bheap_do_shift(const struct BHeap *const restrict heap,
+		    void *const restrict node,
+		    const size_t i_next);
+
 inline void *bheap_extract(struct BHeap *const restrict heap)
 {
 	if (heap->count == 0ul)
 		return NULL;
 
-	const void *const restrict root = heap->get(heap->nodes,
-						    1ul);
+	void *const restrict root = heap->get(heap->nodes,
+					      1ul);
 
 	void *const restrict base = heap->get(heap->nodes,
 					      heap->count);
@@ -162,10 +166,6 @@ inline void *bheap_extract(struct BHeap *const restrict heap)
 		       1ul);
 	return root;
 }
-
-void bheap_do_shift(const struct BHeap *const restrict heap,
-		    void *const restrict node,
-		    const size_t i_next);
 
 
 
