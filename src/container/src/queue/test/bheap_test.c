@@ -48,7 +48,7 @@ void test_bheap_empty_peek_and_extract(void)
 	bheap_free(heap);
 }
 
-void test_bheap_peek_extract_peek(void)
+void test_bheap_peek_extract(void)
 {
 	long buffer;
 	struct BHeap *heap = bheap_create(sizeof(long),
@@ -60,28 +60,19 @@ void test_bheap_peek_extract_peek(void)
 	bheap_insert(heap, &small);
 	bheap_insert(heap, &large);
 
-	TEST_ASSERT_TRUE(bheap_peek(heap,
-				     &buffer));
-	TEST_ASSERT_EQUAL_HEX(large,
-			      buffer);
+	TEST_ASSERT_TRUE(bheap_peek(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(large, buffer);
 
-	TEST_ASSERT_TRUE(bheap_extract(heap,
-					&buffer));
-	TEST_ASSERT_EQUAL_HEX(large,
-			      buffer);
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(large, buffer);
 
-	TEST_ASSERT_TRUE(bheap_peek(heap,
-				     &buffer));
-	TEST_ASSERT_EQUAL_HEX(small,
-			      buffer);
+	TEST_ASSERT_TRUE(bheap_peek(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(small, buffer);
 
-	TEST_ASSERT_TRUE(bheap_extract(heap,
-					&buffer));
-	TEST_ASSERT_EQUAL_HEX(small,
-			      buffer);
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(small, buffer);
 
-	TEST_ASSERT_FALSE(bheap_peek(heap,
-				     &buffer));
+	TEST_ASSERT_FALSE(bheap_peek(heap, &buffer));
 	bheap_free(heap);
 }
 
@@ -92,16 +83,26 @@ void test_bheap_min_heap(void)
 	char insert[] = "JCFGBIADHE";
 	char extract[sizeof(insert) / sizeof(char)];
 
-	char *pointer;
+	char *ptr;
 
-	for (pointer = &insert[0]; *pointer != '\0'; ++pointer)
-		bheap_insert(heap, pointer);
+	for (ptr = &insert[0]; *ptr != '\0'; ++ptr)
+		bheap_insert(heap, ptr);
 
-	for (pointer = &extract[0]; bheap_extract(heap, pointer); ++pointer);
+	for (ptr = &extract[0]; bheap_extract(heap, ptr); ++ptr);
 
-	*pointer = '\0';
+	*ptr = '\0';
 
 	TEST_ASSERT_EQUAL_STRING("ABCDEFGHIJ", &extract[0]);
+
+	/* inverted min heap */
+	heap->count = 0ul;
+
+	for (size_t i = 0ul; i < (sizeof(insert) / sizeof(char)); ++i)
+		inv_bheap_insert(heap, &insert[i]);
+
+	for (ptr = &extract[0]; inv_bheap_extract(heap, ptr); ++ptr);
+
+	TEST_ASSERT_EQUAL_STRING("JIHGFEDCBA", &extract[0]);
 
 	bheap_free(heap);
 }
@@ -281,8 +282,7 @@ void test_bheap_sort(void)
 	bheap_heapsort(&shuffled_strings[0],
 		       6ul,
 		       sizeof(char *),
-		       /* &strcmp); */
-	&string_compare);
+		       &string_compare);
 
 	TEST_ASSERT_EQUAL_STRING_ARRAY(&sorted_strings[0],
 				       &shuffled_strings[0], 6ul);

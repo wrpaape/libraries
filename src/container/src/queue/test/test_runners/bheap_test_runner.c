@@ -28,7 +28,7 @@
 extern void setUp(void);
 extern void tearDown(void);
 extern void test_bheap_empty_peek_and_extract(void);
-extern void test_bheap_peek_extract_peek(void);
+extern void test_bheap_peek_extract(void);
 extern void test_bheap_min_heap(void);
 extern void test_bheap_max_heap(void);
 extern void test_bheap_heapify(void);
@@ -50,12 +50,12 @@ int main(void)
 {
   UnityBegin("../test/bheap_test.c");
   RUN_TEST(test_bheap_empty_peek_and_extract, 37);
-  RUN_TEST(test_bheap_peek_extract_peek, 51);
-  RUN_TEST(test_bheap_min_heap, 88);
-  RUN_TEST(test_bheap_max_heap, 109);
-  RUN_TEST(test_bheap_heapify, 205);
-  RUN_TEST(test_inv_bheap_heapify, 235);
-  RUN_TEST(test_bheap_sort, 264);
+  RUN_TEST(test_bheap_peek_extract, 51);
+  RUN_TEST(test_bheap_min_heap, 79);
+  RUN_TEST(test_bheap_max_heap, 110);
+  RUN_TEST(test_bheap_heapify, 206);
+  RUN_TEST(test_inv_bheap_heapify, 236);
+  RUN_TEST(test_bheap_sort, 265);
 
   return (UnityEnd());
 }
