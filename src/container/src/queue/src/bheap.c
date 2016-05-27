@@ -34,33 +34,21 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 {
 	/* sentinel node has been reached, 'node' is new root node
 	 * ────────────────────────────────────────────────────────────────── */
-	if (i_next == 1ul) {
-		heap->set(heap->get(heap->nodes,
-				    1ul),
-			  node);
+	if (i_next == 1ul)
 		return;
-	}
-
 
 	const size_t i_parent = i_next / 2ul;
 	void *const restrict parent = heap->get(heap->nodes,
 						i_parent);
 
-	/* if 'node' belongs below 'parent'
+	/* if 'node' belongs above 'parent', swap then continue to grandparent
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(parent, node)) {
+	if (heap->compare(node, parent)) {
 
-		heap->set(heap->get(heap->nodes,
-				    i_next),
-			  node);
-	} else {
-
-		heap->set(heap->get(heap->nodes,
-				    i_next),
-			  parent);
+		heap->swap(node, parent);
 
 		bheap_do_insert(heap,
-				node,
+				parent,
 				i_parent);
 	}
 }
