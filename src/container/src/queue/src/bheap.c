@@ -27,6 +27,9 @@ extern inline void bheap_realloc(struct BHeap *const restrict heap,
 extern inline void bheap_insert(struct BHeap *const restrict heap,
 				void *const restrict next);
 
+extern inline void bheap_inverse_insert(struct BHeap *const restrict heap,
+					void *const restrict next);
+
 
 void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 			  void *const restrict node,
@@ -43,7 +46,7 @@ void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 
 	/* if 'node' belongs above 'parent', swap then continue to grandparent
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(node, parent)) {
+	if (heap->compare(node, parent) < 0) {
 
 		heap->swap(node,
 			   parent);
@@ -51,6 +54,32 @@ void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 		bheap_do_asc_restore(heap,
 				     parent,
 				     i_parent);
+	}
+}
+
+void bheap_do_inverse_asc_restore(const struct BHeap *const restrict heap,
+				  void *const restrict node,
+				  const size_t i_node)
+{
+	/* sentinel node has been reached, 'node' is new root node
+	 * ────────────────────────────────────────────────────────────────── */
+	if (i_node == 1ul)
+		return;
+
+	const size_t i_parent = i_node / 2ul;
+	void *const restrict parent = heap->get(heap->nodes,
+						i_parent);
+
+	/* if 'node' belongs above 'parent', swap then continue to grandparent
+	 * ────────────────────────────────────────────────────────────────── */
+	if (heap->compare(node, parent) > 0) {
+
+		heap->swap(node,
+			   parent);
+
+		bheap_do_inverse_asc_restore(heap,
+					     parent,
+					     i_parent);
 	}
 }
 
@@ -89,7 +118,7 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 	 *
 	 * if 'lchild' belongs above 'node'...
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(lchild, node)) {
+	if (heap->compare(lchild, node) < 0) {
 
 		/* if base level of heap has been reached (no more children),
 		 * swap 'node' with 'lchild' and return
@@ -107,7 +136,7 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 		 *
 		 * if 'lchild' belongs above 'rchild'...
 		 * ────────────────────────────────────────────────────────── */
-		if (heap->compare(lchild, rchild)) {
+		if (heap->compare(lchild, rchild) < 0) {
 			/* swap 'lchild' with 'node' and continue recursion
 			 * down left branch
 			 * ────────────────────────────────────────────────── */
@@ -143,7 +172,7 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 	 *
 	 * if 'rchild' belongs above 'node'...
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(rchild, node)) {
+	if (heap->compare(rchild, node) < 0) {
 
 		/* swap 'rchild' with 'node' and continue recursion down right
 		 * branch
@@ -158,6 +187,9 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 	/* otherwise, 'node' belongs above lchild and rchild, return
 	 * ────────────────────────────────────────────────────────────────── */
 }
+
+
+
 
 void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 				   void *const restrict node,
@@ -179,7 +211,7 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 	 *
 	 * if 'lchild' belongs above 'node'...
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(node, lchild)) {
+	if (heap->compare(lchild, node) > 0) {
 
 		/* if base level of heap has been reached (no more children),
 		 * swap 'node' with 'lchild' and return
@@ -197,7 +229,7 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 		 *
 		 * if 'lchild' belongs above 'rchild'...
 		 * ────────────────────────────────────────────────────────── */
-		if (heap->compare(rchild, lchild)) {
+		if (heap->compare(lchild, rchild) > 0) {
 
 			/* swap 'lchild' with 'node' and continue recursion
 			 * down left branch
@@ -234,7 +266,7 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 	 *
 	 * if 'rchild' belongs above 'node'...
 	 * ────────────────────────────────────────────────────────────────── */
-	if (heap->compare(node, rchild)) {
+	if (heap->compare(rchild, node) > 0) {
 
 		/* swap 'rchild' with 'node' and continue recursion down right
 		 * branch
@@ -286,11 +318,11 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 /* heapsort
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_sort(void *const array,
-		const size_t length,
-		const size_t width,
-		int (*compare)(const void *,
-			       const void *))
+void bheap_heapsort(void *const array,
+		    const size_t length,
+		    const size_t width,
+		    int (*compare)(const void *,
+				   const void *))
 {
 	struct BHeap heap;
 

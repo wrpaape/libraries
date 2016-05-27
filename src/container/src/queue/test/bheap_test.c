@@ -1,9 +1,12 @@
 #include <unity/unity.h>
 #include "bheap.h"
 
-#define DEF_COMP(SYMBOL, TYPE, COMPARE)		\
-int SYMBOL(const void *x, const void *y)	\
-{ return ((*((TYPE *) x)) COMPARE (*((TYPE *) y))); }
+#define DEF_COMP(SYMBOL, TYPE, COMP)					\
+int SYMBOL(const void *x, const void *y)				\
+{									\
+	return ((*((TYPE *) x)) COMP (*((TYPE *) y))) ? -1 :		\
+	      (((*((TYPE *) x))  ==  (*((TYPE *) y))) ?  0 : 1);	\
+}
 
 #define DEFINE_LESS_THAN(TYPE) DEF_COMP(TYPE ## _less_than, TYPE, <)
 #define DEFINE_GREATER_THAN(TYPE) DEF_COMP(TYPE ## _greater_than, TYPE, >)
@@ -20,7 +23,7 @@ FOR_ALL_TYPES(DEFINE_GREATER_THAN)
 
 int string_compare(const void *x, const void *y)
 {
-	return strcmp(x, y) < 1;
+	return strcmp(x, y);
 }
 
 void setUp(void)
@@ -163,7 +166,7 @@ void test_int_array_is_valid_heap(const int *restrict array,
 		for (child_count = 0ul; child_count < 2ul; ++child_count) {
 
 			if (compare((void *) (array + i_child),
-				    (void *) (array + i_parent)))
+				    (void *) (array + i_parent)) < 0)
 				heap_property_failure(array,
 						      length,
 						      i_parent,
@@ -245,10 +248,10 @@ void test_bheap_sort(void)
 	int sorted_ints[]   = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	int shuffled_ints[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
 
-	bheap_sort(&shuffled_ints[0],
-		   10ul,
-		   sizeof(int),
-		   &int_less_than);
+	bheap_heapsort(&shuffled_ints[0],
+		       10ul,
+		       sizeof(int),
+		       &int_less_than);
 
 	TEST_ASSERT_EQUAL_INT_ARRAY(&sorted_ints[0],
 				    &shuffled_ints[0], 10ul);
@@ -257,10 +260,11 @@ void test_bheap_sort(void)
 	char *sorted_strings[]   = { "bob", "bob", "jon", "moe", "tim", "tom" };
 	char *shuffled_strings[] = { "tim", "tom", "bob", "moe", "bob", "jon" };
 
-	bheap_sort(&shuffled_strings[0],
-		   6ul,
-		   sizeof(char *),
-		   &string_compare);
+	bheap_heapsort(&shuffled_strings[0],
+		       6ul,
+		       sizeof(char *),
+		       /* &strcmp); */
+	&string_compare);
 
 	TEST_ASSERT_EQUAL_STRING_ARRAY(&sorted_strings[0],
 				       &shuffled_strings[0], 6ul);

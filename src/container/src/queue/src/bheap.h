@@ -149,13 +149,13 @@ inline void bheap_realloc(struct BHeap *const restrict heap,
 
 /* insertion
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_do_insert(const struct BHeap *const restrict heap,
-		     void *const restrict node,
-		     const size_t i_node);
-
 void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 			  void *const restrict node,
 			  const size_t i_node);
+
+void bheap_do_inverse_asc_restore(const struct BHeap *const restrict heap,
+				  void *const restrict node,
+				  const size_t i_node);
 
 inline void bheap_insert(struct BHeap *const restrict heap,
 			 void *const restrict node)
@@ -176,6 +176,25 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 			     heap->count);
 }
 
+inline void bheap_inverse_insert(struct BHeap *const restrict heap,
+				 void *const restrict node)
+{
+	++(heap->count);
+
+	if (heap->count == heap->capacity)
+		bheap_realloc(heap,
+			      heap->capacity * 2ul);
+
+	void *const restrict base = heap->get(heap->nodes,
+					      heap->count);
+	heap->set(base,
+		  node);
+
+	bheap_do_inverse_asc_restore(heap,
+				     base,
+				     heap->count);
+}
+
 
 /* access
  * ══════════════════════════════════════════════════════════════════════════ */
@@ -190,6 +209,8 @@ inline bool bheap_peek(struct BHeap *const restrict heap,
 			    1l));
 	return true;
 }
+
+#define bheap_inverse_peek(HEAP, BUFFER) bheap_peek(HEAP, BUFFER)
 
 
 
@@ -231,6 +252,33 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 }
 
 
+inline bool bheap_inverse_extract(struct BHeap *const restrict heap,
+				  void *const restrict buffer)
+{
+	if (heap->count == 0ul)
+		return false;
+
+	void *const restrict root = heap->get(heap->nodes,
+					      1l);
+
+	void *const restrict base = heap->get(heap->nodes,
+					      heap->count);
+
+	heap->set(buffer,
+		  root);
+
+	heap->set(root,
+		  base);
+
+	--(heap->count);
+
+	bheap_do_inverse_desc_restore(heap,
+				      root,
+				      1ul);
+	return true;
+}
+
+
 
 /* display
  * ══════════════════════════════════════════════════════════════════════════ */
@@ -243,11 +291,11 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 /* heapsort
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_sort(void *const array,
-		const size_t length,
-		const size_t width,
-		int (*compare)(const void *,
-			       const void *));
+void bheap_heapsort(void *const array,
+		    const size_t length,
+		    const size_t width,
+		    int (*compare)(const void *,
+				   const void *));
 
 
 

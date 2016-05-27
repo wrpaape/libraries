@@ -49,13 +49,13 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/bheap_test.c");
-  RUN_TEST(test_bheap_empty_peek_and_extract, 34);
-  RUN_TEST(test_bheap_peek_extract_peek, 48);
-  RUN_TEST(test_bheap_min_heap, 85);
-  RUN_TEST(test_bheap_max_heap, 106);
-  RUN_TEST(test_bheap_heapify, 184);
-  RUN_TEST(test_bheap_inverse_heapify, 214);
-  RUN_TEST(test_bheap_sort, 243);
+  RUN_TEST(test_bheap_empty_peek_and_extract, 37);
+  RUN_TEST(test_bheap_peek_extract_peek, 51);
+  RUN_TEST(test_bheap_min_heap, 88);
+  RUN_TEST(test_bheap_max_heap, 109);
+  RUN_TEST(test_bheap_heapify, 187);
+  RUN_TEST(test_bheap_inverse_heapify, 217);
+  RUN_TEST(test_bheap_sort, 246);
 
   return (UnityEnd());
 }
