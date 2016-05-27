@@ -1,20 +1,24 @@
 include $(MAKEFILE_SCAFFOLD)
 
-define RULES
-$(call OBJECT,memory_utils)
+CHILDREN := queue
 
-$(call PIC_OBJECT,memory_utils)
-
-$(call TEST_BINARY,memory_utils)
-
-$(foreach module,queue bheap,\
-	$(call QUEUE_MODULE,$(module)))
-
-$(call EXPORT_ALL_HEADERS,memory_utils)
+define MAKE_CHILDREN 
+$(call TRIM,make_$1_children:)$(foreach child,$(CHILDREN),
+	$(MAKE) $(M_FLAGS) -C $(child) $2)
 endef
 
-SRC_DIR = src
-MFLAGS  = -j5 LAST=550
+define RULES
+$(call EXPORT_SIBLING_HEADERS,container)
 
-all clean:
-	$(MAKE) $(MFLAGS) -C $(SRC_DIR) $@
+$(call MAKE_CHILDREN,all)
+
+$(call MAKE_CHILDREN,clean)
+endef
+
+$(eval $(RULES))
+
+# ensure headers have been exported before making children
+all: $(TARGETS) | make_all_children
+
+clean: make_clean_children
+	$(RM) $(RM_FLAGS) $(TARGETS)

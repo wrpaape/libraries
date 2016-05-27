@@ -11,10 +11,10 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <time.h>		/* unique seed */
-#include <stdbool.h>		/* true, false */
-#include <utils/utils.h>	/* malloc, memcpy, ptrdiff_t */
-#include "pcg_basic.h"		/* psuedorandom number generator */
+#include <time.h>			/* unique seed */
+#include <stdbool.h>			/* true, false */
+#include <memory_utils/memory_swap.h>	/* memory swap utils, <utils/utils.h> */
+#include "pcg_basic.h"			/* psuedorandom number generator */
 
 /* EXTERNAL DEPENDENCIES ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -82,9 +82,30 @@ inline double random_in_dbl_range(const double lbound,
 	       + lbound;
 }
 
-void shuffle_array(void *array,
-		   const size_t length,
-		   const size_t width);
+void shuffle_array_by_width(void *array,
+			    const uint32_t length,
+			    const size_t width);
+
+void shuffle_array_by_swap(void *array,
+			   const uint32_t length,
+			   const size_t width,
+			   MemorySwap *swap);
+
+inline void shuffle_array(void *array,
+			  const uint32_t length,
+			  const size_t width)
+{
+	if (length == 0u)
+		return;
+
+	MemorySwap *swap = assign_memory_swap(width);
+
+	if (swap == NULL)
+		shuffle_array_by_width(array, length, width);
+	else
+		shuffle_array_by_swap(array, length, width, swap);
+}
+
 
 inline int32_t *init_random_int_array(const size_t length)
 {

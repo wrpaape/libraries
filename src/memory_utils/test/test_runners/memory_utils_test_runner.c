@@ -27,7 +27,7 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_memory_utils(void);
+extern void test_pointer_offset(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +43,7 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/memory_utils_test.c");
-  RUN_TEST(test_memory_utils, 12);
+  RUN_TEST(test_pointer_offset, 12);
 
   return (UnityEnd());
 }

@@ -11,7 +11,7 @@ extern "C" {
 
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <stdlib.h>	/* m/c/realloc, free, exit */
+#include <stdlib.h>	/* exit */
 #include <stddef.h>	/* ptrdiff_t */
 #include <stdio.h>	/* printf, fprintf */
 #include <errno.h>	/* errno */
@@ -38,61 +38,6 @@ do {									\
 	exit(EXIT_FAILURE);						\
 } while (0)
 
-/* error handlers
- * ========================================================================== */
-#ifdef __cplusplus /* for c++ files */
-/* memory allocation (cast returned alloc, 'nullptr' instead of 'NULL') */
-#define HANDLE_MALLOC(PTR, SIZE)					\
-do {									\
-	PTR = (__typeof__(PTR)) malloc(SIZE);				\
-	if (PTR == nullptr)						\
-		EXIT_ON_FAILURE("failed to allocate %lu bytes of "	\
-				"memory for '" #PTR "'", SIZE);		\
-} while (0)
-#define HANDLE_CALLOC(PTR, COUNT, SIZE)					\
-do {									\
-	PTR = (__typeof__(PTR)) calloc(COUNT, SIZE);			\
-	if (PTR == nullptr)						\
-		EXIT_ON_FAILURE("failed to allocate %lu blocks of %lu"	\
-				"bytes of zeroed memory for '" #PTR	\
-				"'", COUNT, SIZE);			\
-} while (0)
-#define HANDLE_REALLOC(PTR, SIZE)					\
-do {									\
-	PTR = (__typeof__(PTR)) realloc(PTR, SIZE);			\
-	if (PTR == nullptr)						\
-		EXIT_ON_FAILURE("failed to reallocate memory for '"	\
-				#PTR "' to %lu bytes", SIZE);		\
-} while (0)
-
-
-#else	/* for c files */
-
-/* memory allocation */
-#define HANDLE_MALLOC(PTR, SIZE)					\
-do {									\
-	PTR = malloc(SIZE);						\
-	if (PTR == NULL)						\
-		EXIT_ON_FAILURE("failed to allocate %lu bytes of "	\
-				"memory for '" #PTR "'", SIZE);		\
-} while (0)
-#define HANDLE_CALLOC(PTR, COUNT, SIZE)					\
-do {									\
-	PTR = calloc(COUNT, SIZE);					\
-	if (PTR == NULL)						\
-		EXIT_ON_FAILURE("failed to allocate %lu blocks of %lu"	\
-				"bytes of zeroed memory for '" #PTR	\
-				"'", COUNT, SIZE);			\
-} while (0)
-#define HANDLE_REALLOC(PTR, SIZE)					\
-do {									\
-	PTR = realloc(PTR, SIZE);					\
-	if (PTR == NULL)						\
-		EXIT_ON_FAILURE("failed to reallocate memory for '"	\
-				#PTR "' to %lu bytes", SIZE);		\
-} while (0)
-
-#endif	/* ifdef __cplusplus */
 
 
 /* returns 'THIS' or 'THAT' according to the predicate 'THIS CMP THAT',
@@ -116,7 +61,6 @@ do {							\
 } while (0)
 
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
-
 
 inline size_t next_pow_two(const size_t num)
 {

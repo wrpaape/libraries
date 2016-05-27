@@ -1,5 +1,5 @@
-#ifndef MEMORY_UTILS_MEMORY_GET_H_
-#define MEMORY_UTILS_MEMORY_GET_H_
+#ifndef MEMORY_UTILS_MEMORY_SET_H_
+#define MEMORY_UTILS_MEMORY_SET_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -21,9 +21,9 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* index access for an pointer of particular byte width */
-typedef void *MemoryGet(const void *const restrict,
-			const ptrdiff_t);
+/* set memory for a particular byte width */
+typedef void MemorySet(void *const restrict,
+		       const void *const restrict);
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -32,8 +32,8 @@ typedef void *MemoryGet(const void *const restrict,
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* lookup for 'assign_memory_get' (+1 for extra NULL slot) */
-extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul];
+/* lookup for 'assign_memory_set' (+1 for extra NULL slot) */
+extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -48,116 +48,108 @@ extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul];
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* return address of object offset 'i * width' bytes from 'pointer', i.e. 'i'th
- * member of array refrerenced by 'pointer'  */
-inline void *memory_get_width(const void *const restrict pointer,
-			      const ptrdiff_t i,
-			      const size_t width)
+#define memory_set_width memset
+
+inline MemorySet *assign_memory_set(const size_t width)
 {
-	return (void *)
-		(((const Width1 *const restrict) pointer) + (i * width));
+	return (width > WIDTH_MAX) ? NULL : MEMORY_SET_MAP[width];
 }
 
-inline MemoryGet *assign_memory_get(const size_t width)
+/* define memory_set<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+inline void memory_set1(void *const restrict x,
+			const void *const restrict y)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_GET_MAP[width];
+	*((Width1 *const restrict) x) = *((const Width1 *const restrict) y);
 }
 
-/* define memory_get<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
-inline void *memory_get1(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set2(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width1 *const restrict) pointer) + i);
+	*((Width2 *const restrict) x) = *((const Width2 *const restrict) y);
 }
 
-inline void *memory_get2(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set3(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width2 *const restrict) pointer) + i);
+	*((Width3 *const restrict) x) = *((const Width3 *const restrict) y);
 }
 
-inline void *memory_get3(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set4(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width3 *const restrict) pointer) + i);
+	*((Width4 *const restrict) x) = *((const Width4 *const restrict) y);
 }
 
-inline void *memory_get4(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set5(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width4 *const restrict) pointer) + i);
+	*((Width5 *const restrict) x) = *((const Width5 *const restrict) y);
 }
 
-inline void *memory_get5(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set6(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width5 *const restrict) pointer) + i);
+	*((Width6 *const restrict) x) = *((const Width6 *const restrict) y);
 }
 
-inline void *memory_get6(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set7(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width6 *const restrict) pointer) + i);
+	*((Width7 *const restrict) x) = *((const Width7 *const restrict) y);
 }
 
-inline void *memory_get7(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set8(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width7 *const restrict) pointer) + i);
+	*((Width8 *const restrict) x) = *((const Width8 *const restrict) y);
 }
 
-inline void *memory_get8(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set9(void *const restrict x,
+			const void *const restrict y)
 {
-	return (void *) (((const Width8 *const restrict) pointer) + i);
+	*((Width9 *const restrict) x) = *((const Width9 *const restrict) y);
 }
 
-inline void *memory_get9(const void *const restrict pointer,
-			 const ptrdiff_t i)
+inline void memory_set10(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width9 *const restrict) pointer) + i);
+	*((Width10 *const restrict) x) = *((const Width10 *const restrict) y);
 }
 
-inline void *memory_get10(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set11(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width10 *const restrict) pointer) + i);
+	*((Width11 *const restrict) x) = *((const Width11 *const restrict) y);
 }
 
-inline void *memory_get11(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set12(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width11 *const restrict) pointer) + i);
+	*((Width12 *const restrict) x) = *((const Width12 *const restrict) y);
 }
 
-inline void *memory_get12(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set13(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width12 *const restrict) pointer) + i);
+	*((Width13 *const restrict) x) = *((const Width13 *const restrict) y);
 }
 
-inline void *memory_get13(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set14(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width13 *const restrict) pointer) + i);
+	*((Width14 *const restrict) x) = *((const Width14 *const restrict) y);
 }
 
-inline void *memory_get14(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set15(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width14 *const restrict) pointer) + i);
+	*((Width15 *const restrict) x) = *((const Width15 *const restrict) y);
 }
 
-inline void *memory_get15(const void *const restrict pointer,
-			  const ptrdiff_t i)
+inline void memory_set16(void *const restrict x,
+			 const void *const restrict y)
 {
-	return (void *) (((const Width15 *const restrict) pointer) + i);
-}
-
-inline void *memory_get16(const void *const restrict pointer,
-			  const ptrdiff_t i)
-{
-	return (void *) (((const Width16 *const restrict) pointer) + i);
+	*((Width16 *const restrict) x) = *((const Width16 *const restrict) y);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -174,4 +166,4 @@ inline void *memory_get16(const void *const restrict pointer,
 }
 #endif
 
-#endif /* ifndef MEMORY_UTILS_MEMORY_GET_H_ */
+#endif /* ifndef MEMORY_UTILS_MEMORY_SET_H_ */

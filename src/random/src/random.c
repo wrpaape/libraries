@@ -1,5 +1,4 @@
 #include "random.h"
-#include <memory_utils/memory_swap.h>
 
 extern inline void rng_init(void);
 
@@ -17,26 +16,53 @@ extern inline double random_in_dbl_range(const double lbound,
 
 extern inline int32_t *init_random_int_array(const size_t length);
 
-void shuffle_array(void *array,
-		   const size_t length,
-		   const size_t width)
+extern inline void shuffle_array(void *array,
+				 const uint32_t length,
+				 const size_t width);
+
+
+
+void shuffle_array_by_width(void *array,
+			    const uint32_t length,
+			    const size_t width)
 {
-	const uint32_t i_lim = length - 1u;
+	ByteWidth1 buffer[width];
+	uint32_t i_old, i_new;
+	size_t o_old, o_new;
 
-	char *bytes = (char *) array;
 
-	char buffer[width];
-	uint32_t i_ini, i_swp;
-	ptrdiff_t o_ini, o_swp;
+	ByteWidth1 *const bytes = (ByteWidth1 *) array;
+	const uint32_t i_last	= length - 1u;
 
-	for (i_ini = 0u, o_ini = 0l; i_ini < i_lim; ++i_ini, o_ini += width) {
+	for (i_old = 0u, o_old = 0l; i_old < i_last; ++i_old, o_old += width) {
 
-		i_swp = random_uint_upto(i_lim - i_ini);
-		o_swp = (i_ini + i_swp) * width;
+		i_new = random_uint_upto(i_last - i_old);
+		o_new = (i_old + i_new) * width;
 
-		memory_swap_buffer(&bytes[o_ini],
-				   &bytes[o_swp],
+		memory_swap_buffer(&bytes[o_old],
+				   &bytes[o_new],
 				   &buffer[0l],
 				   width);
+	}
+}
+
+void shuffle_array_by_swap(void *array,
+			   const uint32_t length,
+			   const size_t width,
+			   MemorySwap *swap)
+{
+	uint32_t i_old, i_new;
+	size_t o_old, o_new;
+
+	ByteWidth1 *const bytes = (ByteWidth1 *) array;
+	const uint32_t i_last	= length - 1u;
+
+	for (i_old = 0u, o_old = 0l; i_old < i_last; ++i_old, o_old += width) {
+
+		i_new = random_uint_upto(i_last - i_old);
+		o_new = (i_old + i_new) * width;
+
+		swap(&bytes[o_old],
+		     &bytes[o_new]);
 	}
 }
