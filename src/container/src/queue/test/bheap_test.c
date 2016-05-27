@@ -88,31 +88,83 @@ void test_bheap_max_heap(void)
 	bheap_free(heap);
 }
 
-/* void validate_heap_array(const int *restrict array, */
-/* 			 const size_t length, */
-/* 			 int (*compare)(void *restrict, */
-/* 					void *restrict)) */
+void heap_property_failure(const int *restrict array,
+			   const size_t i_parent,
+			   const size_t i_child,
+			   const char *restrict comparison)
+{
+	char failure[256];
+
+	sprintf(&failure[0],
+		"invalid heap!\nchild node (array[%zu] = %d) is %s parent node "
+		"(array[%zu] = %d)",
+		i_child, array[i_child], comparison, i_parent, array[i_parent]);
+
+	TEST_FAIL_MESSAGE(failure);
+}
+
+
+void test_int_array_is_valid_heap(const int *restrict array,
+				  const size_t length,
+				  int (*compare)(const void *,
+						 const void *),
+				  const char *restrict comparison)
+{
+	if (length < 2ul)
+		return;
+
+	size_t i_parent = 0ul;
+	size_t i_child  = 1ul;
+	size_t child_count;
+
+	while (1) {
+		for (child_count = 0ul; child_count < 2ul; ++child_count) {
+
+			if (compare((void *) (array + i_child),
+				    (void *) (array + i_parent)))
+				heap_property_failure(array,
+						      i_parent,
+						      i_child,
+						      comparison);
+			++i_child;
+
+			if (i_child == length)
+				return;
+		}
+
+		++i_parent;
+	}
+}
 
 
 
 void test_bheap_heapify(void)
 {
 	struct BHeap heap;
-	int array[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int min_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int max_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+
 	bheap_heapify(&heap,
-		      &array[0],
+		      &min_heap[0],
 		      10ul,
 		      sizeof(int),
 		      &int_less_than);
 
-	/* for (size_t i = 0ul, j = 1ul) */
+	test_int_array_is_valid_heap(min_heap,
+				     10ul,
+				     &int_less_than,
+				     "less than");
 
-	TEST_ASSERT((array[0] < array[1])); TEST_ASSERT((array[0] < array[2]));
-	TEST_ASSERT((array[1] < array[3])); TEST_ASSERT((array[1] < array[4]));
-	TEST_ASSERT((array[2] < array[5])); TEST_ASSERT((array[2] < array[6]));
-	TEST_ASSERT((array[3] < array[7])); TEST_ASSERT((array[3] < array[8]));
-	TEST_ASSERT((array[4] < array[9]));
+	bheap_heapify(&heap,
+		      &max_heap[0],
+		      10ul,
+		      sizeof(int),
+		      &int_greater_than);
 
+	test_int_array_is_valid_heap(max_heap,
+				     10ul,
+				     &int_greater_than,
+				     "greater than");
 }
 
 void test_bheap_sort(void)

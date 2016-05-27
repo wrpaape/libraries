@@ -50,8 +50,8 @@ int main(void)
   RUN_TEST(test_bheap_extract_empty, 34);
   RUN_TEST(test_bheap_min_heap, 45);
   RUN_TEST(test_bheap_max_heap, 67);
-  RUN_TEST(test_bheap_heapify, 98);
-  RUN_TEST(test_bheap_sort, 118);
+  RUN_TEST(test_bheap_heapify, 141);
+  RUN_TEST(test_bheap_sort, 170);
 
   return (UnityEnd());
 }

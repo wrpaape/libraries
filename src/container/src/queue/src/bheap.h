@@ -166,10 +166,8 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 		bheap_realloc(heap,
 			      heap->capacity * 2ul);
 
-
 	void *const restrict base = heap->get(heap->nodes,
 					      heap->count);
-
 	heap->set(base,
 		  node);
 
