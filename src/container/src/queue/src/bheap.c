@@ -27,8 +27,8 @@ extern inline void bheap_realloc(struct BHeap *const restrict heap,
 extern inline void bheap_insert(struct BHeap *const restrict heap,
 				void *const restrict next);
 
-extern inline void bheap_inverse_insert(struct BHeap *const restrict heap,
-					void *const restrict next);
+extern inline void inv_bheap_insert(struct BHeap *const restrict heap,
+				    void *const restrict next);
 
 
 void bheap_do_asc_restore(const struct BHeap *const restrict heap,
@@ -57,9 +57,9 @@ void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 	}
 }
 
-void bheap_do_inverse_asc_restore(const struct BHeap *const restrict heap,
-				  void *const restrict node,
-				  const size_t i_node)
+void inv_bheap_do_asc_restore(const struct BHeap *const restrict heap,
+			      void *const restrict node,
+			      const size_t i_node)
 {
 	/* sentinel node has been reached, 'node' is new root node
 	 * ────────────────────────────────────────────────────────────────── */
@@ -77,9 +77,9 @@ void bheap_do_inverse_asc_restore(const struct BHeap *const restrict heap,
 		heap->swap(node,
 			   parent);
 
-		bheap_do_inverse_asc_restore(heap,
-					     parent,
-					     i_parent);
+		inv_bheap_do_asc_restore(heap,
+					 parent,
+					 i_parent);
 	}
 }
 
@@ -97,6 +97,9 @@ extern inline bool bheap_peek(struct BHeap *const restrict heap,
  * ══════════════════════════════════════════════════════════════════════════ */
 extern inline bool bheap_extract(struct BHeap *const restrict heap,
 				 void *const restrict buffer);
+
+extern inline bool inv_bheap_extract(struct BHeap *const restrict heap,
+				     void *const restrict buffer);
 
 void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 			   void *const restrict node,
@@ -191,9 +194,9 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 
 
 
-void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
-				   void *const restrict node,
-				   const size_t i_node)
+void inv_bheap_do_desc_restore(const struct BHeap *const restrict heap,
+			       void *const restrict node,
+			       const size_t i_node)
 {
 	const size_t i_lchild = i_node * 2ul;
 
@@ -237,9 +240,9 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 			heap->swap(node,
 				   lchild);
 
-			bheap_do_inverse_desc_restore(heap,
-						      lchild,
-						      i_lchild);
+			inv_bheap_do_desc_restore(heap,
+						  lchild,
+						  i_lchild);
 
 		} else {
 			/* swap 'rchild' with 'node' and continue recursion
@@ -248,9 +251,9 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 			heap->swap(node,
 				   rchild);
 
-			bheap_do_inverse_desc_restore(heap,
-						      rchild,
-						      i_rchild);
+			inv_bheap_do_desc_restore(heap,
+						  rchild,
+						  i_rchild);
 		}
 		return;
 	}
@@ -274,9 +277,9 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 		heap->swap(node,
 			   rchild);
 
-		bheap_do_inverse_desc_restore(heap,
-					      rchild,
-					      i_rchild);
+		inv_bheap_do_desc_restore(heap,
+					  rchild,
+					  i_rchild);
 	}
 	/* otherwise, 'node' belongs above lchild and rchild, return
 	 * ────────────────────────────────────────────────────────────────── */
@@ -326,11 +329,11 @@ void bheap_heapsort(void *const array,
 {
 	struct BHeap heap;
 
-	bheap_inverse_heapify(&heap,
-			      array,
-			      length,
-			      width,
-			      compare);
+	inv_bheap_heapify(&heap,
+			  array,
+			  length,
+			  width,
+			  compare);
 
 	do {
 		heap.swap(array,
@@ -339,9 +342,9 @@ void bheap_heapsort(void *const array,
 
 		--(heap.count);
 
-		bheap_do_inverse_desc_restore(&heap,
-					      array,
-					      1ul);
+		inv_bheap_do_desc_restore(&heap,
+					  array,
+					  1ul);
 	} while (heap.count > 1ul);
 }
 
@@ -391,12 +394,12 @@ void bheap_heapify(struct BHeap *const restrict heap,
 
 
 
-void bheap_inverse_heapify(struct BHeap *const restrict heap,
-			   void *const array,
-			   const size_t length,
-			   const size_t width,
-			   int (*compare)(const void *,
-					  const void *))
+void inv_bheap_heapify(struct BHeap *const restrict heap,
+		       void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *))
 {
 	heap->width = width;
 
@@ -417,10 +420,10 @@ void bheap_inverse_heapify(struct BHeap *const restrict heap,
 				length - 3l);
 
 	while (1) {
-		bheap_do_inverse_desc_restore(heap,
-					      heap->get(heap->nodes,
-							1l),
-					      1ul);
+		inv_bheap_do_desc_restore(heap,
+					  heap->get(heap->nodes,
+						    1l),
+					  1ul);
 
 		if (heap->count == length)
 			return;

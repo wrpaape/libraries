@@ -153,9 +153,9 @@ void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 			  void *const restrict node,
 			  const size_t i_node);
 
-void bheap_do_inverse_asc_restore(const struct BHeap *const restrict heap,
-				  void *const restrict node,
-				  const size_t i_node);
+void inv_bheap_do_asc_restore(const struct BHeap *const restrict heap,
+			      void *const restrict node,
+			      const size_t i_node);
 
 inline void bheap_insert(struct BHeap *const restrict heap,
 			 void *const restrict node)
@@ -176,8 +176,8 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 			     heap->count);
 }
 
-inline void bheap_inverse_insert(struct BHeap *const restrict heap,
-				 void *const restrict node)
+inline void inv_bheap_insert(struct BHeap *const restrict heap,
+			     void *const restrict node)
 {
 	++(heap->count);
 
@@ -190,9 +190,9 @@ inline void bheap_inverse_insert(struct BHeap *const restrict heap,
 	heap->set(base,
 		  node);
 
-	bheap_do_inverse_asc_restore(heap,
-				     base,
-				     heap->count);
+	inv_bheap_do_asc_restore(heap,
+				 base,
+				 heap->count);
 }
 
 
@@ -210,7 +210,7 @@ inline bool bheap_peek(struct BHeap *const restrict heap,
 	return true;
 }
 
-#define bheap_inverse_peek(HEAP, BUFFER) bheap_peek(HEAP, BUFFER)
+#define inv_bheap_peek(HEAP, BUFFER) bheap_peek(HEAP, BUFFER)
 
 
 
@@ -220,9 +220,9 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 			   void *const restrict node,
 			   const size_t i_node);
 
-void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
-				   void *const restrict node,
-				   const size_t i_node);
+void inv_bheap_do_desc_restore(const struct BHeap *const restrict heap,
+			       void *const restrict node,
+			       const size_t i_node);
 
 
 inline bool bheap_extract(struct BHeap *const restrict heap,
@@ -252,8 +252,8 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 }
 
 
-inline bool bheap_inverse_extract(struct BHeap *const restrict heap,
-				  void *const restrict buffer)
+inline bool inv_bheap_extract(struct BHeap *const restrict heap,
+			      void *const restrict buffer)
 {
 	if (heap->count == 0ul)
 		return false;
@@ -272,9 +272,9 @@ inline bool bheap_inverse_extract(struct BHeap *const restrict heap,
 
 	--(heap->count);
 
-	bheap_do_inverse_desc_restore(heap,
-				      root,
-				      1ul);
+	inv_bheap_do_desc_restore(heap,
+				  root,
+				  1ul);
 	return true;
 }
 
@@ -308,12 +308,12 @@ void bheap_heapify(struct BHeap *const restrict heap,
 		   int (*compare)(const void *,
 				  const void *));
 
-void bheap_inverse_heapify(struct BHeap *const restrict heap,
-			   void *const array,
-			   const size_t length,
-			   const size_t width,
-			   int (*compare)(const void *,
-					  const void *));
+void inv_bheap_heapify(struct BHeap *const restrict heap,
+		       void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *));
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS

@@ -23,7 +23,7 @@ FOR_ALL_TYPES(DEFINE_GREATER_THAN)
 
 int string_compare(const void *x, const void *y)
 {
-	return strcmp(x, y);
+	return strcmp((const char *) x, (const char *) y);
 }
 
 void setUp(void)
@@ -127,6 +127,24 @@ void test_bheap_max_heap(void)
 	TEST_ASSERT_EQUAL_HEX(0xCAFEBABE, buffer);
 	TEST_ASSERT_FALSE(bheap_extract(heap, &buffer));
 
+
+	/* inverted max heap */
+	heap->count = 0ul;
+
+	for (size_t i = 0ul; i < (sizeof(insert) / sizeof(Width16)); ++i)
+		inv_bheap_insert(heap, &insert[i]);
+
+
+	TEST_ASSERT_TRUE(inv_bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xCAFEBABE, buffer);
+	TEST_ASSERT_TRUE(inv_bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xCAFEDEAD, buffer);
+	TEST_ASSERT_TRUE(inv_bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xDEADBEEF, buffer);
+	TEST_ASSERT_TRUE(inv_bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xDEED00DAA, buffer);
+	TEST_ASSERT_FALSE(inv_bheap_extract(heap, &buffer));
+
 	bheap_free(heap);
 }
 
@@ -214,30 +232,30 @@ void test_bheap_heapify(void)
 }
 
 
-void test_bheap_inverse_heapify(void)
+void test_inv_bheap_heapify(void)
 {
 	struct BHeap heap;
-	int inverse_min_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
-	int inverse_max_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int inv_min_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int inv_max_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
 
-	bheap_inverse_heapify(&heap,
-			      &inverse_min_heap[0],
-			      10ul,
-			      sizeof(int),
-			      &int_less_than);
+	inv_bheap_heapify(&heap,
+			  &inv_min_heap[0],
+			  10ul,
+			  sizeof(int),
+			  &int_less_than);
 
-	test_int_array_is_valid_heap(&inverse_min_heap[0],
+	test_int_array_is_valid_heap(&inv_min_heap[0],
 				     10ul,
 				     &int_greater_than,
 				     "greater than");
 
-	bheap_inverse_heapify(&heap,
-			      &inverse_max_heap[0],
-			      10ul,
-			      sizeof(int),
-			      &int_greater_than);
+	inv_bheap_heapify(&heap,
+			  &inv_max_heap[0],
+			  10ul,
+			  sizeof(int),
+			  &int_greater_than);
 
-	test_int_array_is_valid_heap(&inverse_max_heap[0],
+	test_int_array_is_valid_heap(&inv_max_heap[0],
 				     10ul,
 				     &int_less_than,
 				     "less than");

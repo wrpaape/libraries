@@ -32,7 +32,7 @@ extern void test_bheap_peek_extract_peek(void);
 extern void test_bheap_min_heap(void);
 extern void test_bheap_max_heap(void);
 extern void test_bheap_heapify(void);
-extern void test_bheap_inverse_heapify(void);
+extern void test_inv_bheap_heapify(void);
 extern void test_bheap_sort(void);
 
 
@@ -53,9 +53,9 @@ int main(void)
   RUN_TEST(test_bheap_peek_extract_peek, 51);
   RUN_TEST(test_bheap_min_heap, 88);
   RUN_TEST(test_bheap_max_heap, 109);
-  RUN_TEST(test_bheap_heapify, 187);
-  RUN_TEST(test_bheap_inverse_heapify, 217);
-  RUN_TEST(test_bheap_sort, 246);
+  RUN_TEST(test_bheap_heapify, 205);
+  RUN_TEST(test_inv_bheap_heapify, 235);
+  RUN_TEST(test_bheap_sort, 264);
 
   return (UnityEnd());
 }
