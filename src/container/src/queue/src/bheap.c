@@ -2,9 +2,11 @@
 #include "bheap.h"
 
 /* initialize, destroy, resize
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 extern inline struct BHeap *bheap_alloc(const size_t capacity,
 					const size_t width);
+
+extern inline void bheap_assign_accessors(struct BHeap *const restrict heap);
 
 extern inline void bheap_init(struct BHeap *const restrict heap,
 			      int (*compare)(const void *,
@@ -12,7 +14,7 @@ extern inline void bheap_init(struct BHeap *const restrict heap,
 
 extern inline struct BHeap *bheap_create(const size_t width,
 					 int (*compare)(const void *,
-						      const void *));
+							const void *));
 
 extern inline void bheap_free(struct BHeap *restrict heap);
 
@@ -21,39 +23,17 @@ extern inline void bheap_realloc(struct BHeap *const restrict heap,
 				 const size_t new_capacity);
 
 /* insertion
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 extern inline void bheap_insert(struct BHeap *const restrict heap,
 				void *const restrict next);
-
-/* void bheap_insert_array(struct BHeap *const restrict heap, */
-/* 			void *const array, */
-/* 			const size_t length) */
-/* { */
-/* 	void *const nodes  = heap->nodes; */
-/* 	const size_t count = heap->count; */
-/* 	const size_t width = heap->width; */
-/* 	const size_t next_count = count + length; */
-
-/* 	if (heap->capacity < next_count) */
-/* 		bheap_realloc(heap, next_pow_two(next_count)); */
-
-/* 	int (*compare)(const void *, */
-/* 		       const void *) = heap->compare; */
-
-
-/* 	for (size_t i = 0ul; i < length; ++i) */
-/* 		do_insert(nodes, &array[i], count + i, width, compare); */
-
-/* 	heap->count = next_count; */
-/* } */
-
 
 
 void bheap_do_insert(const struct BHeap *const restrict heap,
 		     void *const restrict node,
 		     const size_t i_next)
 {
-	/* sentinel node has been reached, 'node' is new root node */
+	/* sentinel node has been reached, 'node' is new root node
+	 * ────────────────────────────────────────────────────────────────── */
 	if (i_next == 1ul) {
 		heap->set(heap->get(heap->nodes,
 				    1ul),
@@ -66,6 +46,8 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 	void *const restrict parent = heap->get(heap->nodes,
 						i_parent);
 
+	/* if 'node' belongs below 'parent'
+	 * ────────────────────────────────────────────────────────────────── */
 	if (heap->compare(parent, node)) {
 
 		heap->set(heap->get(heap->nodes,
@@ -87,7 +69,7 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 
 
 /* extraction
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 extern inline bool bheap_extract(struct BHeap *const restrict heap,
 				 void *const restrict buffer);
 
@@ -98,7 +80,7 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 	const size_t i_lchild = i_next * 2ul;
 
 	/* if base level of heap has been reached (no more children), replace
-	 **********************************************************************/
+	 * ────────────────────────────────────────────────────────────────── */
 	if (i_lchild > heap->count) {
 
 		heap->set(heap->get(heap->nodes,
@@ -115,12 +97,12 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 	/* compare left child with 'node':
 	 *
 	 * if 'lchild' belongs above 'node'...
-	 **********************************************************************/
+	 * ────────────────────────────────────────────────────────────────── */
 	if (heap->compare(lchild, node)) {
 
 		/* if base level of heap has been reached (no more children),
 		 * place 'node' below 'lchild' and return
-		 **************************************************************/
+		 * ────────────────────────────────────────────────────────── */
 		if (i_rchild > heap->count) {
 			heap->set(heap->get(heap->nodes,
 					    i_next),
@@ -137,11 +119,11 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 		/* compare left child with right child:
 		 *
 		 * if 'lchild' belongs above 'rchild'...
-		 **************************************************************/
+		 * ────────────────────────────────────────────────────────── */
 		if (heap->compare(lchild, rchild)) {
 			/* place 'lchild' at 'i_next' and continue recursion
 			 * down left branch
-			 ******************************************************/
+			 * ────────────────────────────────────────────────── */
 			heap->set(heap->get(heap->nodes,
 					    i_next),
 				  lchild);
@@ -153,7 +135,7 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 		} else {
 			/* place 'rchild' at 'i_next' and continue recursion
 			 * down right branch
-			 ******************************************************/
+			 * ────────────────────────────────────────────────── */
 			heap->set(heap->get(heap->nodes,
 					    i_next),
 				  rchild);
@@ -167,7 +149,7 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 
 	/* if base level of heap has been reached (no more children), place
 	 * 'node' above 'lchild' (new base/last element) and return
-	 **********************************************************************/
+	 * ────────────────────────────────────────────────────────────────── */
 	if (i_rchild > heap->count) {
 		heap->set(heap->get(heap->nodes,
 				    i_next),
@@ -180,12 +162,12 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 	/* compare 'node' with right child:
 	 *
 	 * if 'rchild' belongs above 'node'...
-	 **********************************************************************/
+	 * ────────────────────────────────────────────────────────────────── */
 	if (heap->compare(rchild, node)) {
 
 		/* place 'rchild' at 'i_next' and continue recursion down right
 		 * branch
-		 **************************************************************/
+		 * ────────────────────────────────────────────────────────── */
 		heap->set(heap->get(heap->nodes,
 				    i_next),
 			  rchild);
@@ -196,7 +178,7 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 	} else {
 		/* otherwise, 'node' belongs above lchild and rchild: place at
 		 * 'i_next' and return
-		 **************************************************************/
+		 * ────────────────────────────────────────────────────────── */
 		heap->set(heap->get(heap->nodes,
 				    i_next),
 			 node);
@@ -207,7 +189,7 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 
 
 /* display
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 void print_bheap(const struct BHeap *const restrict heap,
 		 void (*node_to_string)(char *restrict,
 					const void *restrict))
@@ -219,7 +201,7 @@ void print_bheap(const struct BHeap *const restrict heap,
 		return;
 	}
 
-	char buffer[256];
+	char buffer[BHEAP_PRINT_BUFFER_SIZE];
 
 	const void *const restrict nodes = heap->nodes;
 
@@ -229,7 +211,7 @@ void print_bheap(const struct BHeap *const restrict heap,
 		node_to_string(&buffer[0],
 			       get(nodes, i));
 
-		printf("%zu:\t%s\n", i, buffer);
+		printf("%zu) {\n%s\n}\n", i, buffer);
 	}
 }
 
@@ -237,12 +219,12 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 
 /* heapsort
- ******************************************************************************/
-/* extern inline void bheap_sort(void *const array, */
-/* 			      const size_t length, */
-/* 			      const size_t width, */
-/* 			      int (*compare)(const void *, */
-/* 					     const void *)); */
+ * ══════════════════════════════════════════════════════════════════════════ */
+extern inline void bheap_sort(void *const array,
+			      const size_t length,
+			      const size_t width,
+			      int (*compare)(const void *,
+					     const void *));
 
 /* void sort_bheap_nodes(void *const nodes, */
 /* 		      const size_t length, */
@@ -262,7 +244,7 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 
 /* convienience, misc
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 /* extern inline struct BHeap *array_into_bheap(void *const array, */
 /* 					     const size_t length, */
 /* 					     const size_t width, */

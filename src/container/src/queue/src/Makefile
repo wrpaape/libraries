@@ -24,8 +24,8 @@ $(call QUEUE_MODULE,queue,\
 		    -lmemory_utils_static)
 
 $(call QUEUE_MODULE,bheap,\
-		    -lmemory_get_shared -lmemory_set_shared,\
-		    -lmemory_get_static -lmemory_set_static)
+		    -lmemory_get_shared -lmemory_set_shared -lmemory_swap_shared,\
+		    -lmemory_get_static -lmemory_set_static -lmemory_swap_static)
 
 $(call EXPORT_ALL_HEADERS,container/queue)
 endef

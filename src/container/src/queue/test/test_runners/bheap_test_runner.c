@@ -29,6 +29,8 @@ extern void setUp(void);
 extern void tearDown(void);
 extern void test_bheap_extract_empty(void);
 extern void test_bheap_min_heap(void);
+extern void test_bheap_max_heap(void);
+extern void test_bheap_sort(void);
 
 
 //=======Test Reset Option=====
@@ -44,8 +46,10 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/bheap_test.c");
-  RUN_TEST(test_bheap_extract_empty, 35);
+  RUN_TEST(test_bheap_extract_empty, 34);
   RUN_TEST(test_bheap_min_heap, 45);
+  RUN_TEST(test_bheap_max_heap, 67);
+  RUN_TEST(test_bheap_sort, 91);
 
   return (UnityEnd());
 }

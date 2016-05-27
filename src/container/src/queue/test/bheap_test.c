@@ -29,7 +29,6 @@ void setUp(void)
 
 void tearDown(void)
 {
-	bheap_free(heap);
 }
 
 void test_bheap_extract_empty(void)
@@ -40,6 +39,7 @@ void test_bheap_extract_empty(void)
 
 	TEST_ASSERT_FALSE(bheap_extract(heap,
 					&buffer));
+	bheap_free(heap);
 }
 
 void test_bheap_min_heap(void)
@@ -48,7 +48,7 @@ void test_bheap_min_heap(void)
 			    &char_less_than);
 
 	char insert[] = "JCFGBIADHE";
-	char extract[sizeof(insert)];
+	char extract[sizeof(insert) / sizeof(char)];
 
 	char *pointer;
 
@@ -57,5 +57,47 @@ void test_bheap_min_heap(void)
 
 	for (pointer = &extract[0]; bheap_extract(heap, pointer); ++pointer);
 
+	*pointer = '\0';
+
 	TEST_ASSERT_EQUAL_STRING("ABCDEFGHIJ", &extract[0]);
+
+	bheap_free(heap);
+}
+
+void test_bheap_max_heap(void)
+{
+	heap = bheap_create(sizeof(Width16),
+			    &Width16_greater_than);
+	Width16 buffer;
+	Width16 insert[] = { 0xDEADBEEF, 0xCAFEBABE, 0xCAFEDEAD, 0xDEED00DAA };
+
+	for (size_t i = 0ul; i < (sizeof(insert) / sizeof(Width16)); ++i)
+		bheap_insert(heap, &insert[i]);
+
+
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xDEED00DAA, buffer);
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xDEADBEEF, buffer);
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xCAFEDEAD, buffer);
+	TEST_ASSERT_TRUE(bheap_extract(heap, &buffer));
+	TEST_ASSERT_EQUAL_HEX(0xCAFEBABE, buffer);
+	TEST_ASSERT_FALSE(bheap_extract(heap, &buffer));
+
+	bheap_free(heap);
+}
+
+void test_bheap_sort(void)
+{
+
+	int array[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+
+	bheap_sort(&array[0],
+		   10ul,
+		   sizeof(int),
+		   &int_greater_than);
+
+	for (int i = 0; i < 10; ++i)
+		TEST_ASSERT_EQUAL_INT(i, array[i]);
 }

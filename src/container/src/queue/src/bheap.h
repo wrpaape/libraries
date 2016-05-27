@@ -12,8 +12,9 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <memory_utils/memory_set.h>	/* MemorySet */
 #include <memory_utils/memory_get.h>	/* MemoryGet */
+#include <memory_utils/memory_set.h>	/* MemorySet */
+#include <memory_utils/memory_swap.h>	/* MemorySwap */
 #include <stdbool.h>			/* bool */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -35,11 +36,29 @@ struct BHeap {
 };
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * TYPEDEFS, ENUM AND STRUCT DEFINITIONS */
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
+ *
+ *
+ * CONSTANTS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+#define BHEAP_PRINT_BUFFER_SIZE 1024ul
+
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * CONSTANTS
+ *
+ *
+ * FUNCTION-LIKE MACROS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * FUNCTION-LIKE MACROS
+ *
+ *
+ * TOP-LEVEL FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* initialize, destroy, resize
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 inline struct BHeap *bheap_alloc(const size_t capacity,
 				 const size_t width)
 {
@@ -59,19 +78,24 @@ inline struct BHeap *bheap_alloc(const size_t capacity,
 	return heap;
 }
 
-inline void bheap_init(struct BHeap *const restrict heap,
-		       int (*compare)(const void *,
-				      const void *))
+inline void bheap_assign_accessors(struct BHeap *const restrict heap)
 {
-
-	heap->get     = assign_memory_get(heap->width);
+	heap->get = assign_memory_get(heap->width);
 
 	if (heap->get == NULL)
 		EXIT_ON_FAILURE("BHeap node width of %zu bytes exceeds "
 				"maximum supported width of %zu bytes",
 				heap->width, WIDTH_MAX);
 
-	heap->set     = assign_memory_set(heap->width);
+	heap->set = assign_memory_set(heap->width);
+}
+
+inline void bheap_init(struct BHeap *const restrict heap,
+		       int (*compare)(const void *,
+				      const void *))
+{
+	bheap_assign_accessors(heap);
+
 	heap->compare = compare;
 	heap->count   = 0ul;
 }
@@ -117,7 +141,7 @@ inline void bheap_realloc(struct BHeap *const restrict heap,
 
 
 /* insertion
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 void bheap_do_insert(const struct BHeap *const restrict heap,
 		     void *const restrict node,
 		     const size_t i_next);
@@ -144,7 +168,7 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 
 
 /* extraction
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 void bheap_do_shift(const struct BHeap *const restrict heap,
 		    void *const restrict node,
 		    const size_t i_next);
@@ -173,7 +197,7 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 
 
 /* display
- ******************************************************************************/
+ * ══════════════════════════════════════════════════════════════════════════ */
 void print_bheap(const struct BHeap *const restrict heap,
 		 void (*node_to_string)(char *restrict,
 					const void *restrict));
@@ -182,53 +206,64 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 
 /* heapsort
- ******************************************************************************/
-/* void sort_bheap_nodes(void *const nodes, */
-/* 		      const size_t length, */
-/* 		      const size_t width, */
-/* 		      int (*compare)(const void *, */
-/* 				     const void *)); */
+ * ══════════════════════════════════════════════════════════════════════════ */
+inline void bheap_sort(void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *))
+{
+	struct BHeap heap = {
+		.count = length,
+		.compare = compare,
+		.width = width,
+		.nodes = memory_offset(array,
+				       -width)
+	};
 
-/* inline void bheap_sort(void *const array, */
-/* 		       const size_t length, */
-/* 		       const size_t width, */
-/* 		       int (*compare)(const void *, */
-/* 				      const void *)) */
-/* { */
-/* 	sort_bheap_nodes(&array[-1l], length, width, compare); */
-/* } */
+	bheap_assign_accessors(&heap);
+
+	for (size_t i = length; i > 0ul; --i) {
+		bheap_do_shift(&heap,
+			       heap.get(heap.nodes,
+					i),
+			       1ul);
+
+		PRINT_ARRAY(((int *)array), length, "%d");
+	}
+
+
+	MemorySwap *swap = assign_memory_swap(width);
+
+	while (heap.count > 1ul) {
+		swap(array,
+		     heap.get(heap.nodes,
+			      heap.count));
+
+		--(heap.count);
+
+		bheap_do_shift(&heap,
+			       array,
+			       1ul);
+	}
+
+	for (size_t i = 0ul; i < length; ++i)
+		printf("%zu) %d\n", i, ((int *) array)[i]);
+}
 
 
 
 /* convienience, misc
- ******************************************************************************/
-/* inline struct BHeap *array_into_bheap(void *const array, */
-/* 				      const size_t length, */
-/* 				      const size_t width, */
-/* 				      int (*compare)(const void *, */
-/* 						     const void *)) */
-/* { */
-/* 	const size_t array_size = width * length; */
-/* 	const struct BHeap *const restrict heap; */
-/* 	void *nodes; */
+ * ══════════════════════════════════════════════════════════════════════════ */
 
-/* 	HANDLE_MALLOC(heap, sizeof(struct BHeap)); */
-/* 	HANDLE_MALLOC(nodes, array_size); */
-/* 	memcpy(nodes, array, array_size); */
-
-/* 	/1* sentinel node at index 0 *1/ */
-/* 	--nodes; */
-
-/* 	sort_bheap_nodes(nodes, width, length, compare); */
-
-/* 	heap->nodes   = nodes; */
-/* 	heap->count   = length; */
-/* 	heap->capacity   = length; */
-/* 	heap->compare = compare; */
-
-/* 	return heap; */
-
-/* } */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * TOP-LEVEL FUNCTIONS
+ *
+ *
+ * HELPER FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * HELPER FUNCTIONS */
 
 #ifdef __cplusplus /* close 'extern "C" {' */
 }
