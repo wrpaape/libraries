@@ -30,14 +30,14 @@ extern inline void bheap_insert(struct BHeap *const restrict heap,
 
 void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 			  void *const restrict node,
-			  const size_t i_next)
+			  const size_t i_node)
 {
 	/* sentinel node has been reached, 'node' is new root node
 	 * ────────────────────────────────────────────────────────────────── */
-	if (i_next == 1ul)
+	if (i_node == 1ul)
 		return;
 
-	const size_t i_parent = i_next / 2ul;
+	const size_t i_parent = i_node / 2ul;
 	void *const restrict parent = heap->get(heap->nodes,
 						i_parent);
 
@@ -53,6 +53,13 @@ void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 				     i_parent);
 	}
 }
+
+
+
+/* access
+ * ══════════════════════════════════════════════════════════════════════════ */
+extern inline bool bheap_peek(struct BHeap *const restrict heap,
+			      void *const restrict buffer);
 
 
 
@@ -191,6 +198,7 @@ void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 		 * if 'lchild' belongs above 'rchild'...
 		 * ────────────────────────────────────────────────────────── */
 		if (heap->compare(rchild, lchild)) {
+
 			/* swap 'lchild' with 'node' and continue recursion
 			 * down left branch
 			 * ────────────────────────────────────────────────── */
@@ -379,7 +387,7 @@ void bheap_inverse_heapify(struct BHeap *const restrict heap,
 	while (1) {
 		bheap_do_inverse_desc_restore(heap,
 					      heap->get(heap->nodes,
-							1ul),
+							1l),
 					      1ul);
 
 		if (heap->count == length)

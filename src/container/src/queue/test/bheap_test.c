@@ -18,10 +18,10 @@ int SYMBOL(const void *x, const void *y)	\
 FOR_ALL_TYPES(DEFINE_LESS_THAN)
 FOR_ALL_TYPES(DEFINE_GREATER_THAN)
 
-
-
-static struct BHeap *heap;
-
+int string_compare(const void *x, const void *y)
+{
+	return strcmp(x, y) < 1;
+}
 
 void setUp(void)
 {
@@ -31,22 +31,61 @@ void tearDown(void)
 {
 }
 
-void test_bheap_extract_empty(void)
+void test_bheap_empty_peek_and_extract(void)
 {
 	int buffer;
-	heap = bheap_create(sizeof(int),
-			    &int_less_than);
+	struct BHeap *heap = bheap_create(sizeof(int),
+					  &int_less_than);
+
+	TEST_ASSERT_FALSE(bheap_peek(heap,
+				     &buffer));
 
 	TEST_ASSERT_FALSE(bheap_extract(heap,
 					&buffer));
 	bheap_free(heap);
 }
 
+void test_bheap_peek_extract_peek(void)
+{
+	long buffer;
+	struct BHeap *heap = bheap_create(sizeof(long),
+					  &long_greater_than);
+
+	long large = 0xDEADBEA7;
+	long small = 0xDEADBABE;
+
+	bheap_insert(heap, &small);
+	bheap_insert(heap, &large);
+
+	TEST_ASSERT_TRUE(bheap_peek(heap,
+				     &buffer));
+	TEST_ASSERT_EQUAL_HEX(large,
+			      buffer);
+
+	TEST_ASSERT_TRUE(bheap_extract(heap,
+					&buffer));
+	TEST_ASSERT_EQUAL_HEX(large,
+			      buffer);
+
+	TEST_ASSERT_TRUE(bheap_peek(heap,
+				     &buffer));
+	TEST_ASSERT_EQUAL_HEX(small,
+			      buffer);
+
+	TEST_ASSERT_TRUE(bheap_extract(heap,
+					&buffer));
+	TEST_ASSERT_EQUAL_HEX(small,
+			      buffer);
+
+	TEST_ASSERT_FALSE(bheap_peek(heap,
+				     &buffer));
+	bheap_free(heap);
+}
+
 void test_bheap_min_heap(void)
 {
-	heap = bheap_create(sizeof(char),
-			    &char_less_than);
-
+	struct BHeap *heap = bheap_create(sizeof(char),
+					  &char_less_than);
 	char insert[] = "JCFGBIADHE";
 	char extract[sizeof(insert) / sizeof(char)];
 
@@ -66,8 +105,8 @@ void test_bheap_min_heap(void)
 
 void test_bheap_max_heap(void)
 {
-	heap = bheap_create(sizeof(Width16),
-			    &Width16_greater_than);
+	struct BHeap *heap = bheap_create(sizeof(Width16),
+					  &Width16_greater_than);
 	Width16 buffer;
 	Width16 insert[] = { 0xDEADBEEF, 0xCAFEBABE, 0xCAFEDEAD, 0xDEED00DAA };
 
@@ -221,7 +260,7 @@ void test_bheap_sort(void)
 	bheap_sort(&shuffled_strings[0],
 		   6ul,
 		   sizeof(char *),
-		   &int_less_than);
+		   &string_compare);
 
 	TEST_ASSERT_EQUAL_STRING_ARRAY(&sorted_strings[0],
 				       &shuffled_strings[0], 6ul);

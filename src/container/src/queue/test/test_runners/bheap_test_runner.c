@@ -27,7 +27,8 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_bheap_extract_empty(void);
+extern void test_bheap_empty_peek_and_extract(void);
+extern void test_bheap_peek_extract_peek(void);
 extern void test_bheap_min_heap(void);
 extern void test_bheap_max_heap(void);
 extern void test_bheap_heapify(void);
@@ -48,12 +49,13 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/bheap_test.c");
-  RUN_TEST(test_bheap_extract_empty, 34);
-  RUN_TEST(test_bheap_min_heap, 45);
-  RUN_TEST(test_bheap_max_heap, 67);
-  RUN_TEST(test_bheap_heapify, 145);
-  RUN_TEST(test_bheap_inverse_heapify, 175);
-  RUN_TEST(test_bheap_sort, 204);
+  RUN_TEST(test_bheap_empty_peek_and_extract, 34);
+  RUN_TEST(test_bheap_peek_extract_peek, 48);
+  RUN_TEST(test_bheap_min_heap, 85);
+  RUN_TEST(test_bheap_max_heap, 106);
+  RUN_TEST(test_bheap_heapify, 184);
+  RUN_TEST(test_bheap_inverse_heapify, 214);
+  RUN_TEST(test_bheap_sort, 243);
 
   return (UnityEnd());
 }

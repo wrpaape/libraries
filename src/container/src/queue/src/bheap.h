@@ -151,11 +151,11 @@ inline void bheap_realloc(struct BHeap *const restrict heap,
  * ══════════════════════════════════════════════════════════════════════════ */
 void bheap_do_insert(const struct BHeap *const restrict heap,
 		     void *const restrict node,
-		     const size_t i_next);
+		     const size_t i_node);
 
 void bheap_do_asc_restore(const struct BHeap *const restrict heap,
 			  void *const restrict node,
-			  const size_t i_next);
+			  const size_t i_node);
 
 inline void bheap_insert(struct BHeap *const restrict heap,
 			 void *const restrict node)
@@ -177,17 +177,32 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 }
 
 
+/* access
+ * ══════════════════════════════════════════════════════════════════════════ */
+inline bool bheap_peek(struct BHeap *const restrict heap,
+		       void *const restrict buffer)
+{
+	if (heap->count == 0ul)
+		return false;
+
+	heap->set(buffer,
+		  heap->get(heap->nodes,
+			    1l));
+	return true;
+}
+
 
 
 /* extraction
  * ══════════════════════════════════════════════════════════════════════════ */
 void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 			   void *const restrict node,
-			   const size_t i_next);
+			   const size_t i_node);
 
 void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
 				   void *const restrict node,
-				   const size_t i_next);
+				   const size_t i_node);
+
 
 inline bool bheap_extract(struct BHeap *const restrict heap,
 			  void *const restrict buffer)
@@ -195,9 +210,8 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 	if (heap->count == 0ul)
 		return false;
 
-
 	void *const restrict root = heap->get(heap->nodes,
-					      1ul);
+					      1l);
 
 	void *const restrict base = heap->get(heap->nodes,
 					      heap->count);
@@ -207,7 +221,6 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 
 	heap->set(root,
 		  base);
-
 
 	--(heap->count);
 
