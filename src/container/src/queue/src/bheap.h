@@ -153,9 +153,9 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 		     void *const restrict node,
 		     const size_t i_next);
 
-void bheap_insert_array(const struct BHeap *const restrict heap,
-			void *const array,
-			const size_t length);
+void bheap_do_asc_restore(const struct BHeap *const restrict heap,
+			  void *const restrict node,
+			  const size_t i_next);
 
 inline void bheap_insert(struct BHeap *const restrict heap,
 			 void *const restrict node)
@@ -173,10 +173,9 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 	heap->set(base,
 		  node);
 
-
-	bheap_do_insert(heap,
-			base,
-			heap->count);
+	bheap_do_asc_restore(heap,
+			     base,
+			     heap->count);
 }
 
 
@@ -184,17 +183,9 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 
 /* extraction
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_do_shift_over(const struct BHeap *const restrict heap,
-			 void *const restrict node,
-			 const size_t i_next);
-
-void bheap_do_shift_swap(const struct BHeap *const restrict heap,
-			 void *const restrict node,
-			 const size_t i_next);
-
-void bheap_do_reverse_shift_swap(const struct BHeap *const restrict heap,
-				 void *const restrict node,
-				 const size_t i_next);
+void bheap_do_desc_restore(const struct BHeap *const restrict heap,
+			   void *const restrict node,
+			   const size_t i_next);
 
 inline bool bheap_extract(struct BHeap *const restrict heap,
 			  void *const restrict buffer)
@@ -218,9 +209,9 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 
 	--(heap->count);
 
-	bheap_do_shift_swap(heap,
-			    root,
-			    1ul);
+	bheap_do_desc_restore(heap,
+			      root,
+			      1ul);
 	return true;
 }
 
