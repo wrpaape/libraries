@@ -31,6 +31,7 @@ struct BHeap {
 	size_t width;			/* byte size per node */
 	MemoryGet *get;			/* array access function */
 	MemorySet *set;			/* memory setting function */
+	MemorySwap *swap;		/* memory swapping function */
 	int (*compare)(const void *,	/* node comparison function */
 		       const void *);
 };
@@ -80,14 +81,20 @@ inline struct BHeap *bheap_alloc(const size_t capacity,
 
 inline void bheap_assign_accessors(struct BHeap *const restrict heap)
 {
-	heap->get = assign_memory_get(heap->width);
+	if (heap->width == 0ul)
+		EXIT_ON_FAILURE("zero byte BHeap node width is not supported: "
+				"(valid width 'w' = { w ∈ ℕ | 1 ≤ w ≤ %zu })",
+				WIDTH_MAX);
 
-	if (heap->get == NULL)
+	if (heap->width > WIDTH_MAX)
 		EXIT_ON_FAILURE("BHeap node width of %zu bytes exceeds "
-				"maximum supported width of %zu bytes",
+				"supported maximum: "
+				"(valid width 'w' = { w ∈ ℕ | 1 ≤ w ≤ %zu })",
 				heap->width, WIDTH_MAX);
 
-	heap->set = assign_memory_set(heap->width);
+	heap->get  = MEMORY_GET_MAP[ heap->width];
+	heap->set  = MEMORY_SET_MAP[ heap->width];
+	heap->swap = MEMORY_SWAP_MAP[heap->width];
 }
 
 inline void bheap_init(struct BHeap *const restrict heap,
@@ -169,9 +176,9 @@ inline void bheap_insert(struct BHeap *const restrict heap,
 
 /* extraction
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_do_shift(const struct BHeap *const restrict heap,
-		    void *const restrict node,
-		    const size_t i_next);
+void bheap_do_shift_over(const struct BHeap *const restrict heap,
+			 void *const restrict node,
+			 const size_t i_next);
 
 inline bool bheap_extract(struct BHeap *const restrict heap,
 			  void *const restrict buffer)
@@ -188,9 +195,9 @@ inline bool bheap_extract(struct BHeap *const restrict heap,
 
 	--(heap->count);
 
-	bheap_do_shift(heap,
-		       base,
-		       1ul);
+	bheap_do_shift_over(heap,
+			    base,
+			    1ul);
 	return true;
 }
 
@@ -217,12 +224,16 @@ void bheap_sort(void *const array,
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_heapify(struct BHeap *const restrict heap,
-		   void *const array,
-		   const size_t length,
-		   const size_t width,
-		   int (*compare)(const void *,
-				  const void *));
+void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
+			     void *const restrict node,
+			     const size_t i_next);
+
+void bheap_heapify_min(struct BHeap *const restrict heap,
+		       void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *));
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS

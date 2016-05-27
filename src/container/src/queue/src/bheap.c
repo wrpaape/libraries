@@ -73,9 +73,9 @@ void bheap_do_insert(const struct BHeap *const restrict heap,
 extern inline bool bheap_extract(struct BHeap *const restrict heap,
 				 void *const restrict buffer);
 
-void bheap_do_shift(const struct BHeap *const restrict heap,
-		    void *const restrict node,
-		    const size_t i_next)
+void bheap_do_shift_over(const struct BHeap *const restrict heap,
+			 void *const restrict node,
+			 const size_t i_next)
 {
 	const size_t i_lchild = i_next * 2ul;
 
@@ -128,9 +128,9 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 					    i_next),
 				  lchild);
 
-			bheap_do_shift(heap,
-				       node,
-				       i_lchild);
+			bheap_do_shift_over(heap,
+					    node,
+					    i_lchild);
 
 		} else {
 			/* place 'rchild' at 'i_next' and continue recursion
@@ -140,9 +140,9 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 					    i_next),
 				  rchild);
 
-			bheap_do_shift(heap,
-				       node,
-				       i_rchild);
+			bheap_do_shift_over(heap,
+					    node,
+					    i_rchild);
 		}
 		return;
 	}
@@ -172,9 +172,9 @@ void bheap_do_shift(const struct BHeap *const restrict heap,
 				    i_next),
 			  rchild);
 
-		bheap_do_shift(heap,
-			       node,
-			       i_rchild);
+		bheap_do_shift_over(heap,
+				    node,
+				    i_rchild);
 	} else {
 		/* otherwise, 'node' belongs above lchild and rchild: place at
 		 * 'i_next' and return
@@ -221,33 +221,31 @@ void print_bheap(const struct BHeap *const restrict heap,
 /* heapsort
  * ══════════════════════════════════════════════════════════════════════════ */
 void bheap_sort(void *const array,
-		       const size_t length,
-		       const size_t width,
-		       int (*compare)(const void *,
-				      const void *))
+		const size_t length,
+		const size_t width,
+		int (*compare)(const void *,
+			       const void *))
 {
 	struct BHeap heap;
 
 
-	bheap_heapify(&heap,
-		      array,
-		      length,
-		      width,
-		      compare);
+	bheap_heapify_min(&heap,
+			  array,
+			  length,
+			  width,
+			  compare);
 
-
-	MemorySwap *swap = assign_memory_swap(width);
 
 	do {
-		swap(array,
-		     heap.get(heap.nodes,
-			      heap.count));
+		heap.swap(array,
+			  heap.get(heap.nodes,
+				   heap.count));
 
 		--(heap.count);
 
-		bheap_do_shift(&heap,
-			       array,
-			       1ul);
+		bheap_do_shift_swap_min(&heap,
+					array,
+					1ul);
 
 	} while (heap.count > 1ul);
 }
@@ -255,17 +253,109 @@ void bheap_sort(void *const array,
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_heapify(struct BHeap *const restrict heap,
-		   void *const array,
-		   const size_t length,
-		   const size_t width,
-		   int (*compare)(const void *,
-				  const void *))
+void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
+			     void *const restrict node,
+			     const size_t i_node)
+{
+	const size_t i_lchild = i_node * 2ul;
+
+	/* if base level of heap has been reached (no more children), return
+	 * ────────────────────────────────────────────────────────────────── */
+	if (i_lchild > heap->count)
+		return;
+
+	const size_t i_rchild = i_lchild + 1ul;
+
+	void *const restrict lchild = heap->get(heap->nodes,
+						i_lchild);
+
+	/* compare left child with 'node':
+	 *
+	 * if 'lchild' belongs above 'node'...
+	 * ────────────────────────────────────────────────────────────────── */
+	if (heap->compare(lchild, node)) {
+
+		/* if base level of heap has been reached (no more children),
+		 * swap 'node' with 'lchild' and return
+		 * ────────────────────────────────────────────────────────── */
+		if (i_rchild > heap->count) {
+
+			heap->swap(node,
+				   lchild);
+			return;
+		}
+
+		void *const restrict rchild = heap->get(heap->nodes,
+							i_rchild);
+
+		/* compare left child with right child:
+		 *
+		 * if 'lchild' belongs above 'rchild'...
+		 * ────────────────────────────────────────────────────────── */
+		if (heap->compare(lchild, rchild)) {
+			/* swap 'lchild' with 'node' and continue recursion
+			 * down left branch
+			 * ────────────────────────────────────────────────── */
+			heap->swap(node,
+				   lchild);
+
+			bheap_do_shift_swap_min(heap,
+						node,
+						i_lchild);
+
+		} else {
+			/* swap 'rchild' with 'i_node' and continue recursion
+			 * down right branch
+			 * ────────────────────────────────────────────────── */
+			heap->swap(node,
+				   rchild);
+
+			bheap_do_shift_swap_min(heap,
+						node,
+						i_rchild);
+		}
+		return;
+	}
+
+	/* if base level of heap has been reached (no more children), return
+	 * ────────────────────────────────────────────────────────────────── */
+	if (i_rchild > heap->count)
+		return;
+
+	void *const restrict rchild = heap->get(heap->nodes,
+						i_rchild);
+	/* compare 'node' with right child:
+	 *
+	 * if 'rchild' belongs above 'node'...
+	 * ────────────────────────────────────────────────────────────────── */
+	if (heap->compare(rchild, node)) {
+
+		/* swap 'rchild' with 'node' and continue recursion down right
+		 * branch
+		 * ────────────────────────────────────────────────────────── */
+		heap->swap(node,
+			   rchild);
+
+		bheap_do_shift_swap_min(heap,
+					node,
+					i_rchild);
+	}
+	/* otherwise, 'node' belongs above lchild and rchild, return
+	 * ────────────────────────────────────────────────────────────────── */
+}
+
+void bheap_heapify_min(struct BHeap *const restrict heap,
+		       void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *))
 {
 	heap->width   = width;
-	heap->compare = compare;
 
-	bheap_assign_accessors(&heap);
+	bheap_assign_accessors(heap);
+
+	heap->compare = compare;
 
 	if (length < 2ul) {
 		heap->count = length;
@@ -280,18 +370,22 @@ void bheap_heapify(struct BHeap *const restrict heap,
 				length - 3l);
 
 
-	do {
-		bheap_do_shift(heap,
-			       heap->get(heap->nodes,
-					 1ul),
-			       1ul);
+	while (1) {
+		bheap_do_shift_swap_min(heap,
+					heap->get(heap->nodes,
+						  1ul),
+					1ul);
 
 
 		PRINT_ARRAY(((int *)array), length, "%d");
 
+		if (heap->count == length)
+			return;
+
 		++(heap->count);
 
-	} while (heap->count < length);
-
+		heap->nodes = heap->get(heap->nodes,
+					-1l);
+	}
 }
 

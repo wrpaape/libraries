@@ -98,6 +98,8 @@ void test_bheap_sort(void)
 		   sizeof(int),
 		   &int_greater_than);
 
+	PRINT_ARRAY(array, 10ul, "%d");
+
 	for (int i = 0; i < 10; ++i)
 		TEST_ASSERT_EQUAL_INT(i, array[i]);
 }
