@@ -207,54 +207,22 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 /* heapsort
  * ══════════════════════════════════════════════════════════════════════════ */
-inline void bheap_sort(void *const array,
-		       const size_t length,
-		       const size_t width,
-		       int (*compare)(const void *,
-				      const void *))
-{
-	struct BHeap heap = {
-		.count = length,
-		.compare = compare,
-		.width = width,
-		.nodes = memory_offset(array,
-				       -width)
-	};
-
-	bheap_assign_accessors(&heap);
-
-	for (size_t i = length; i > 0ul; --i) {
-		bheap_do_shift(&heap,
-			       heap.get(heap.nodes,
-					i),
-			       1ul);
-
-		PRINT_ARRAY(((int *)array), length, "%d");
-	}
-
-
-	MemorySwap *swap = assign_memory_swap(width);
-
-	while (heap.count > 1ul) {
-		swap(array,
-		     heap.get(heap.nodes,
-			      heap.count));
-
-		--(heap.count);
-
-		bheap_do_shift(&heap,
-			       array,
-			       1ul);
-	}
-
-	for (size_t i = 0ul; i < length; ++i)
-		printf("%zu) %d\n", i, ((int *) array)[i]);
-}
+void bheap_sort(void *const array,
+		const size_t length,
+		const size_t width,
+		int (*compare)(const void *,
+			       const void *));
 
 
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
+void bheap_heapify(struct BHeap *const restrict heap,
+		   void *const array,
+		   const size_t length,
+		   const size_t width,
+		   int (*compare)(const void *,
+				  const void *));
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS

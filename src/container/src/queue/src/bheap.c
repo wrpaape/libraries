@@ -220,33 +220,78 @@ void print_bheap(const struct BHeap *const restrict heap,
 
 /* heapsort
  * ══════════════════════════════════════════════════════════════════════════ */
-extern inline void bheap_sort(void *const array,
-			      const size_t length,
-			      const size_t width,
-			      int (*compare)(const void *,
-					     const void *));
+void bheap_sort(void *const array,
+		       const size_t length,
+		       const size_t width,
+		       int (*compare)(const void *,
+				      const void *))
+{
+	struct BHeap heap;
 
-/* void sort_bheap_nodes(void *const nodes, */
-/* 		      const size_t length, */
-/* 		      const size_t width, */
-/* 		      int (*compare)(const void *, */
-/* 				     const void *)) */
-/* { */
-/* 	ptrdiff_t i = length; */
-/* 	void *next; */
 
-/* 	while (i > 1l) { */
-/* 		next = &nodes[i]; */
-/* 		--i; */
-/* 		do_bheap_shift(nodes, next, width, i, length, compare); */
-/* 	} */
-/* } */
+	bheap_heapify(&heap,
+		      array,
+		      length,
+		      width,
+		      compare);
+
+
+	MemorySwap *swap = assign_memory_swap(width);
+
+	do {
+		swap(array,
+		     heap.get(heap.nodes,
+			      heap.count));
+
+		--(heap.count);
+
+		bheap_do_shift(&heap,
+			       array,
+			       1ul);
+
+	} while (heap.count > 1ul);
+}
 
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
-/* extern inline struct BHeap *array_into_bheap(void *const array, */
-/* 					     const size_t length, */
-/* 					     const size_t width, */
-/* 					     int (*compare)(const void *, */
-/* 							    const void *)); */
+void bheap_heapify(struct BHeap *const restrict heap,
+		   void *const array,
+		   const size_t length,
+		   const size_t width,
+		   int (*compare)(const void *,
+				  const void *))
+{
+	heap->width   = width;
+	heap->compare = compare;
+
+	bheap_assign_accessors(&heap);
+
+	if (length < 2ul) {
+		heap->count = length;
+		heap->nodes = heap->get(array,
+					-1l);
+		return;
+	}
+
+
+	heap->count = 2ul;
+	heap->nodes = heap->get(array,
+				length - 3l);
+
+
+	do {
+		bheap_do_shift(heap,
+			       heap->get(heap->nodes,
+					 1ul),
+			       1ul);
+
+
+		PRINT_ARRAY(((int *)array), length, "%d");
+
+		++(heap->count);
+
+	} while (heap->count < length);
+
+}
+
