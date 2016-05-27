@@ -88,15 +88,24 @@ void test_bheap_max_heap(void)
 	bheap_free(heap);
 }
 
-void test_bheap_heapify_min(void)
+/* void validate_heap_array(const int *restrict array, */
+/* 			 const size_t length, */
+/* 			 int (*compare)(void *restrict, */
+/* 					void *restrict)) */
+
+
+
+void test_bheap_heapify(void)
 {
 	struct BHeap heap;
 	int array[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
-	bheap_heapify_min(&heap,
-			  &array[0],
-			  10ul,
-			  sizeof(int),
-			  &int_less_than);
+	bheap_heapify(&heap,
+		      &array[0],
+		      10ul,
+		      sizeof(int),
+		      &int_less_than);
+
+	/* for (size_t i = 0ul, j = 1ul) */
 
 	TEST_ASSERT((array[0] < array[1])); TEST_ASSERT((array[0] < array[2]));
 	TEST_ASSERT((array[1] < array[3])); TEST_ASSERT((array[1] < array[4]));

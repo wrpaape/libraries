@@ -180,23 +180,38 @@ void bheap_do_shift_over(const struct BHeap *const restrict heap,
 			 void *const restrict node,
 			 const size_t i_next);
 
+void bheap_do_shift_swap(const struct BHeap *const restrict heap,
+			 void *const restrict node,
+			 const size_t i_next);
+
+void bheap_do_reverse_shift_swap(const struct BHeap *const restrict heap,
+				 void *const restrict node,
+				 const size_t i_next);
+
 inline bool bheap_extract(struct BHeap *const restrict heap,
 			  void *const restrict buffer)
 {
 	if (heap->count == 0ul)
 		return false;
 
-	heap->set(buffer,
-		  heap->get(heap->nodes,
-			    1ul));
+
+	void *const restrict root = heap->get(heap->nodes,
+					      1ul);
 
 	void *const restrict base = heap->get(heap->nodes,
 					      heap->count);
 
+	heap->set(buffer,
+		  root);
+
+	heap->set(root,
+		  base);
+
+
 	--(heap->count);
 
-	bheap_do_shift_over(heap,
-			    base,
+	bheap_do_shift_swap(heap,
+			    root,
 			    1ul);
 	return true;
 }
@@ -224,16 +239,13 @@ void bheap_sort(void *const array,
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
-void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
-			     void *const restrict node,
-			     const size_t i_next);
 
-void bheap_heapify_min(struct BHeap *const restrict heap,
-		       void *const array,
-		       const size_t length,
-		       const size_t width,
-		       int (*compare)(const void *,
-				      const void *));
+void bheap_heapify(struct BHeap *const restrict heap,
+		   void *const array,
+		   const size_t length,
+		   const size_t width,
+		   int (*compare)(const void *,
+				  const void *));
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS
@@ -241,6 +253,7 @@ void bheap_heapify_min(struct BHeap *const restrict heap,
  *
  * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * HELPER FUNCTIONS */
 
