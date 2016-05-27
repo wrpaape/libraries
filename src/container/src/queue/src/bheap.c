@@ -152,6 +152,96 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 	 * ────────────────────────────────────────────────────────────────── */
 }
 
+void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
+				   void *const restrict node,
+				   const size_t i_node)
+{
+	const size_t i_lchild = i_node * 2ul;
+
+	/* if base level of heap has been reached (no more children), return
+	 * ────────────────────────────────────────────────────────────────── */
+	if (i_lchild > heap->count)
+		return;
+
+	const size_t i_rchild = i_lchild + 1ul;
+
+	void *const restrict lchild = heap->get(heap->nodes,
+						i_lchild);
+
+	/* compare left child with 'node':
+	 *
+	 * if 'lchild' belongs above 'node'...
+	 * ────────────────────────────────────────────────────────────────── */
+	if (heap->compare(node, lchild)) {
+
+		/* if base level of heap has been reached (no more children),
+		 * swap 'node' with 'lchild' and return
+		 * ────────────────────────────────────────────────────────── */
+		if (i_rchild > heap->count) {
+			heap->swap(node,
+				   lchild);
+			return;
+		}
+
+		void *const restrict rchild = heap->get(heap->nodes,
+							i_rchild);
+
+		/* compare left child with right child:
+		 *
+		 * if 'lchild' belongs above 'rchild'...
+		 * ────────────────────────────────────────────────────────── */
+		if (heap->compare(rchild, lchild)) {
+			/* swap 'lchild' with 'node' and continue recursion
+			 * down left branch
+			 * ────────────────────────────────────────────────── */
+			heap->swap(node,
+				   lchild);
+
+			bheap_do_inverse_desc_restore(heap,
+						      lchild,
+						      i_lchild);
+
+		} else {
+			/* swap 'rchild' with 'node' and continue recursion
+			 * down right branch
+			 * ────────────────────────────────────────────────── */
+			heap->swap(node,
+				   rchild);
+
+			bheap_do_inverse_desc_restore(heap,
+						      rchild,
+						      i_rchild);
+		}
+		return;
+	}
+
+	/* if base level of heap has been reached (no more children), return
+	 * ────────────────────────────────────────────────────────────────── */
+	if (i_rchild > heap->count)
+		return;
+
+	void *const restrict rchild = heap->get(heap->nodes,
+						i_rchild);
+	/* compare 'node' with right child:
+	 *
+	 * if 'rchild' belongs above 'node'...
+	 * ────────────────────────────────────────────────────────────────── */
+	if (heap->compare(node, rchild)) {
+
+		/* swap 'rchild' with 'node' and continue recursion down right
+		 * branch
+		 * ────────────────────────────────────────────────────────── */
+		heap->swap(node,
+			   rchild);
+
+		bheap_do_inverse_desc_restore(heap,
+					      rchild,
+					      i_rchild);
+	}
+	/* otherwise, 'node' belongs above lchild and rchild, return
+	 * ────────────────────────────────────────────────────────────────── */
+}
+
 
 
 
@@ -196,12 +286,11 @@ void bheap_sort(void *const array,
 {
 	struct BHeap heap;
 
-	bheap_heapify(&heap,
-		      array,
-		      length,
-		      width,
-		      compare);
-
+	bheap_inverse_heapify(&heap,
+			      array,
+			      length,
+			      width,
+			      compare);
 
 	do {
 		heap.swap(array,
@@ -210,10 +299,9 @@ void bheap_sort(void *const array,
 
 		--(heap.count);
 
-		bheap_do_desc_restore(&heap,
-				      array,
-				      1ul);
-
+		bheap_do_inverse_desc_restore(&heap,
+					      array,
+					      1ul);
 	} while (heap.count > 1ul);
 }
 
@@ -245,12 +333,54 @@ void bheap_heapify(struct BHeap *const restrict heap,
 	heap->nodes = heap->get(array,
 				length - 3l);
 
-
 	while (1) {
 		bheap_do_desc_restore(heap,
 				      heap->get(heap->nodes,
-						1ul),
+						1l),
 				      1ul);
+
+		if (heap->count == length)
+			return;
+
+		++(heap->count);
+
+		heap->nodes = heap->get(heap->nodes,
+					-1l);
+	}
+}
+
+
+
+void bheap_inverse_heapify(struct BHeap *const restrict heap,
+			   void *const array,
+			   const size_t length,
+			   const size_t width,
+			   int (*compare)(const void *,
+					  const void *))
+{
+	heap->width = width;
+
+	bheap_assign_accessors(heap);
+
+	heap->compare = compare;
+
+	if (length < 2ul) {
+		heap->count = length;
+		heap->nodes = heap->get(array,
+					-1l);
+		return;
+	}
+
+
+	heap->count = 2ul;
+	heap->nodes = heap->get(array,
+				length - 3l);
+
+	while (1) {
+		bheap_do_inverse_desc_restore(heap,
+					      heap->get(heap->nodes,
+							1ul),
+					      1ul);
 
 		if (heap->count == length)
 			return;

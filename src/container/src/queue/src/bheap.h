@@ -185,6 +185,10 @@ void bheap_do_desc_restore(const struct BHeap *const restrict heap,
 			   void *const restrict node,
 			   const size_t i_next);
 
+void bheap_do_inverse_desc_restore(const struct BHeap *const restrict heap,
+				   void *const restrict node,
+				   const size_t i_next);
+
 inline bool bheap_extract(struct BHeap *const restrict heap,
 			  void *const restrict buffer)
 {
@@ -236,13 +240,19 @@ void bheap_sort(void *const array,
 
 /* convienience, misc
  * ══════════════════════════════════════════════════════════════════════════ */
-
 void bheap_heapify(struct BHeap *const restrict heap,
 		   void *const array,
 		   const size_t length,
 		   const size_t width,
 		   int (*compare)(const void *,
 				  const void *));
+
+void bheap_inverse_heapify(struct BHeap *const restrict heap,
+			   void *const array,
+			   const size_t length,
+			   const size_t width,
+			   int (*compare)(const void *,
+					  const void *));
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS

@@ -89,6 +89,7 @@ void test_bheap_max_heap(void)
 }
 
 void heap_property_failure(const int *restrict array,
+			   const size_t length,
 			   const size_t i_parent,
 			   const size_t i_child,
 			   const char *restrict comparison)
@@ -96,9 +97,11 @@ void heap_property_failure(const int *restrict array,
 	char failure[256];
 
 	sprintf(&failure[0],
-		"invalid heap!\nchild node (array[%zu] = %d) is %s parent node "
+		"invalid heap, child node (array[%zu] = %d) is %s parent node "
 		"(array[%zu] = %d)",
 		i_child, array[i_child], comparison, i_parent, array[i_parent]);
+
+	PRINT_ARRAY(array, 10, "%d");
 
 	TEST_FAIL_MESSAGE(failure);
 }
@@ -123,6 +126,7 @@ void test_int_array_is_valid_heap(const int *restrict array,
 			if (compare((void *) (array + i_child),
 				    (void *) (array + i_parent)))
 				heap_property_failure(array,
+						      length,
 						      i_parent,
 						      i_child,
 						      comparison);
@@ -150,7 +154,7 @@ void test_bheap_heapify(void)
 		      sizeof(int),
 		      &int_less_than);
 
-	test_int_array_is_valid_heap(min_heap,
+	test_int_array_is_valid_heap(&min_heap[0],
 				     10ul,
 				     &int_less_than,
 				     "less than");
@@ -161,25 +165,64 @@ void test_bheap_heapify(void)
 		      sizeof(int),
 		      &int_greater_than);
 
-	test_int_array_is_valid_heap(max_heap,
+	test_int_array_is_valid_heap(&max_heap[0],
 				     10ul,
 				     &int_greater_than,
 				     "greater than");
 }
 
+
+void test_bheap_inverse_heapify(void)
+{
+	struct BHeap heap;
+	int inverse_min_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int inverse_max_heap[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+
+	bheap_inverse_heapify(&heap,
+			      &inverse_min_heap[0],
+			      10ul,
+			      sizeof(int),
+			      &int_less_than);
+
+	test_int_array_is_valid_heap(&inverse_min_heap[0],
+				     10ul,
+				     &int_greater_than,
+				     "greater than");
+
+	bheap_inverse_heapify(&heap,
+			      &inverse_max_heap[0],
+			      10ul,
+			      sizeof(int),
+			      &int_greater_than);
+
+	test_int_array_is_valid_heap(&inverse_max_heap[0],
+				     10ul,
+				     &int_less_than,
+				     "less than");
+}
+
 void test_bheap_sort(void)
 {
-	TEST_IGNORE();
+	int sorted_ints[]   = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	int shuffled_ints[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
 
-	int sorted[]   = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	int shuffled[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
-
-	bheap_sort(&shuffled[0],
+	bheap_sort(&shuffled_ints[0],
 		   10ul,
 		   sizeof(int),
-		   &int_greater_than);
+		   &int_less_than);
 
-	PRINT_ARRAY(shuffled, 10ul, "%d");
+	TEST_ASSERT_EQUAL_INT_ARRAY(&sorted_ints[0],
+				    &shuffled_ints[0], 10ul);
 
-	TEST_ASSERT_EQUAL_INT_ARRAY(&sorted[0], &shuffled[0], 10ul);
+
+	char *sorted_strings[]   = { "bob", "bob", "jon", "moe", "tim", "tom" };
+	char *shuffled_strings[] = { "tim", "tom", "bob", "moe", "bob", "jon" };
+
+	bheap_sort(&shuffled_strings[0],
+		   6ul,
+		   sizeof(char *),
+		   &int_less_than);
+
+	TEST_ASSERT_EQUAL_STRING_ARRAY(&sorted_strings[0],
+				       &shuffled_strings[0], 6ul);
 }
