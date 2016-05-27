@@ -30,6 +30,7 @@ extern void tearDown(void);
 extern void test_bheap_extract_empty(void);
 extern void test_bheap_min_heap(void);
 extern void test_bheap_max_heap(void);
+extern void test_bheap_heapify_min(void);
 extern void test_bheap_sort(void);
 
 
@@ -49,7 +50,8 @@ int main(void)
   RUN_TEST(test_bheap_extract_empty, 34);
   RUN_TEST(test_bheap_min_heap, 45);
   RUN_TEST(test_bheap_max_heap, 67);
-  RUN_TEST(test_bheap_sort, 91);
+  RUN_TEST(test_bheap_heapify_min, 91);
+  RUN_TEST(test_bheap_sort, 109);
 
   return (UnityEnd());
 }

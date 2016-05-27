@@ -235,6 +235,8 @@ void bheap_sort(void *const array,
 			  width,
 			  compare);
 
+	PRINT_ARRAY(((int *)array), length, "%d");
+
 
 	do {
 		heap.swap(array,
@@ -257,12 +259,19 @@ void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
 			     void *const restrict node,
 			     const size_t i_node)
 {
+       printf("top=========  node = %d, i_node = %zu, count = %zu\n\n",
+	       *(int *)node, i_node, heap->count);
+
 	const size_t i_lchild = i_node * 2ul;
 
 	/* if base level of heap has been reached (no more children), return
 	 * ────────────────────────────────────────────────────────────────── */
-	if (i_lchild > heap->count)
+	if (i_lchild > heap->count) {
+		puts("i_lchild > heap->count");
+		printf("bot=========  node = %d, i_node = %zu, count = %zu\n\n",
+		       *(int *)node, i_node, heap->count);
 		return;
+	}
 
 	const size_t i_rchild = i_lchild + 1ul;
 
@@ -279,9 +288,11 @@ void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
 		 * swap 'node' with 'lchild' and return
 		 * ────────────────────────────────────────────────────────── */
 		if (i_rchild > heap->count) {
-
 			heap->swap(node,
 				   lchild);
+			puts("lchild belongs above node && i_rchild > heap->count");
+			printf("bot=========  node = %d, i_node = %zu, count = %zu\n\n",
+			       *(int *)node, i_node, heap->count);
 			return;
 		}
 
@@ -299,28 +310,38 @@ void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
 			heap->swap(node,
 				   lchild);
 
+			puts("	lchild belongs above node and rchild, continue");
+
 			bheap_do_shift_swap_min(heap,
-						node,
+						lchild,
 						i_lchild);
 
 		} else {
-			/* swap 'rchild' with 'i_node' and continue recursion
+			/* swap 'rchild' with 'node' and continue recursion
 			 * down right branch
 			 * ────────────────────────────────────────────────── */
 			heap->swap(node,
 				   rchild);
 
+			puts("	rchild belongs above node and lchild, continue");
+
 			bheap_do_shift_swap_min(heap,
-						node,
+						rchild,
 						i_rchild);
 		}
+		printf("bot=========  node = %d, i_node = %zu, count = %zu\n\n",
+		       *(int *)node, i_node, heap->count);
 		return;
 	}
 
 	/* if base level of heap has been reached (no more children), return
 	 * ────────────────────────────────────────────────────────────────── */
-	if (i_rchild > heap->count)
+	if (i_rchild > heap->count) {
+		puts("node belongs above lchild, base has been reached");
+		printf("bot=========  node = %d, i_node = %zu, count = %zu\n\n",
+		       *(int *)node, i_node, heap->count);
 		return;
+	}
 
 	void *const restrict rchild = heap->get(heap->nodes,
 						i_rchild);
@@ -336,10 +357,19 @@ void bheap_do_shift_swap_min(const struct BHeap *const restrict heap,
 		heap->swap(node,
 			   rchild);
 
+		puts("	rchild < node < lchild, continue");
+
+
 		bheap_do_shift_swap_min(heap,
-					node,
+					rchild,
 					i_rchild);
+		printf("bot========= node = %d, i_node = %zu, count = %zu\n\n",
+		       *(int *)node, i_node, heap->count);
+		return;
 	}
+	puts("do nothing");
+	printf("bot========= node = %d, i_node = %zu, count = %zu\n\n",
+	       *(int *)node, i_node, heap->count);
 	/* otherwise, 'node' belongs above lchild and rchild, return
 	 * ────────────────────────────────────────────────────────────────── */
 }
@@ -377,7 +407,7 @@ void bheap_heapify_min(struct BHeap *const restrict heap,
 					1ul);
 
 
-		PRINT_ARRAY(((int *)array), length, "%d");
+		PRINT_ARRAY(((int *)heap->nodes + 1l), heap->count, "%d");
 
 		if (heap->count == length)
 			return;

@@ -88,18 +88,37 @@ void test_bheap_max_heap(void)
 	bheap_free(heap);
 }
 
+void test_bheap_heapify_min(void)
+{
+	struct BHeap heap;
+	int array[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	bheap_heapify_min(&heap,
+			  &array[0],
+			  10ul,
+			  sizeof(int),
+			  &int_less_than);
+
+	TEST_ASSERT((array[0] < array[1])); TEST_ASSERT((array[0] < array[2]));
+	TEST_ASSERT((array[1] < array[3])); TEST_ASSERT((array[1] < array[4]));
+	TEST_ASSERT((array[2] < array[5])); TEST_ASSERT((array[2] < array[6]));
+	TEST_ASSERT((array[3] < array[7])); TEST_ASSERT((array[3] < array[8]));
+	TEST_ASSERT((array[4] < array[9]));
+
+}
+
 void test_bheap_sort(void)
 {
+	TEST_IGNORE();
 
-	int array[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
+	int sorted[]   = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	int shuffled[] = { 8, 2, 3, 1, 9, 5, 0, 4, 6, 7 };
 
-	bheap_sort(&array[0],
+	bheap_sort(&shuffled[0],
 		   10ul,
 		   sizeof(int),
 		   &int_greater_than);
 
-	PRINT_ARRAY(array, 10ul, "%d");
+	PRINT_ARRAY(shuffled, 10ul, "%d");
 
-	for (int i = 0; i < 10; ++i)
-		TEST_ASSERT_EQUAL_INT(i, array[i]);
+	TEST_ASSERT_EQUAL_INT_ARRAY(&sorted[0], &shuffled[0], 10ul);
 }
