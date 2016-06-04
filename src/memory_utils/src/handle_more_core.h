@@ -1,5 +1,5 @@
-#ifndef MEMORY_UTILS_MEMORY_ALLOCATE_H_
-#define MEMORY_UTILS_MEMORY_ALLOCATE_H_
+#ifndef MEMORY_UTILS_HANDLE_MORE_CORE_H_
+#define MEMORY_UTILS_HANDLE_MORE_CORE_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -12,11 +12,8 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <unistd.h>		/* sysconf, _SC_PAGE_SIZE */
 #include <sys/mman.h>		/* size_t, mmap */
 #include <mach/vm_statistics.h>	/* PAGE_SIZE, VM_MAKE_TAG, VM_MEMORY_MALLOC */
-
-
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -24,28 +21,12 @@ extern "C" {
  *
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-struct MemoryAllocator {
-	off_t offset;
-};
-
-struct Chunk {
-	size_t *length;
-	void *buffer;
-};
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  *
  *
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-#ifndef CHUNK_SIZE
-#define CHUNK_SIZE (1ul << 4)
-#endif /* ifndef CHUNK_SIZE */
-
-static size_t *alloc_space = 0;
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -56,9 +37,6 @@ static size_t *alloc_space = 0;
 
 /* mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset); */
 /* mmap(0, alloc_size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, VM_MAKE_TAG(VM_MEMORY_MALLOC), 0); */
-
-
-#define GET_PAGE_SIZE() sysconf(_SC_PAGESIZE)
 
 #define MMAP_PROT PROT_READ | PROT_WRITE
 #define MMAP_FLAGS MAP_ANON | MAP_PRIVATE
@@ -71,7 +49,7 @@ HANDLE_MMAP(BUFFER,				\
 	    (void *) 0,				\
 	    LEN,				\
 	    PROT_READ | PROT_WRITE,		\
-	    MAP_ANON | MAP_PRIVATE,		\
+	    MAP_ANONYMOUS | MAP_PRIVATE,	\
 	    VM_MAKE_TAG(VM_MEMORY_MALLOC),	\
 	    (off_t) 0)
 
@@ -148,4 +126,4 @@ do {									\
 }
 #endif
 
-#endif /* ifndef MEMORY_UTILS_MEMORY_ALLOCATE_H_ */
+#endif /* ifndef MEMORY_UTILS_HANDLE_MORE_CORE_H_ */
