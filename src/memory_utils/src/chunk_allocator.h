@@ -12,9 +12,11 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h"	/* Width1 */
-#include "handle_more_core.h"	/* HANDLE_MORE_CORE */
-#include "get_page_size.h"	/* GET_PAGE_SIZE */
+#include "handle_more_core.h"		/* HANDLE_MORE_CORE */
+#include "get_page_size.h"		/* GET_PAGE_SIZE */
+#include <parallel/handle_pthread.h>	/* pthread API */
+#include <container/link_node.h>	/* SLinkNode */
+
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -23,26 +25,30 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#ifndef CHUNK_SIZE
-#error "Please specify compile-time constant 'CHUNK_SIZE'"
-#endif /* ifndef CHUNK_SIZE */
-
-typedef struct Chunk {
-	Width1[CHUNK_SIZE];
-} Chunk;
-
-struct ChunkBuffer {
-	size_t *count;
-	Chunk *chunks;
-};
-
 struct ChunkAllocator {
-	off_t offset;
+	size_t chunk_size;
+	size_t block_size;
+	size_t cache_count;
+	pthread_mutex_t chunk_lock;
+	struct SLinkNode *free_chunks;
+	struct SLinkNode *active_chunks;
+	struct SLinkNode *active_blocks;
 };
 
+inline void chunk_allocator_init(struct ChunkAllocator *allocator,
+				 const size_t chunk_size,
+				 const size_t min_cache_count)
 
 
-void chunk_allocator_init(struct ChunkAllocator *chunk_allocator);
+inline void chunk_allocator_init(struct ChunkAllocator *allocator,
+				 const size_t chunk_size,
+				 const size_t min_cache_count)
+{
+	allocator->chunk_size = chunk_size;
+	allocator->chunk_lock = chunk_lock_prototype;
+	allocator->block_size =;
+
+}
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -52,6 +58,7 @@ void chunk_allocator_init(struct ChunkAllocator *chunk_allocator);
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 static size_t chunk_allocator_page_size; /* set once at runtime */
+static pthread_mutex_t chunk_lock_prototype = PTHREAD_MUTEX_INITIALIZER;
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
