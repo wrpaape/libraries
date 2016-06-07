@@ -27,8 +27,8 @@ $(call USER_LIBRARIES,string_utils,\
 		      $(STRING_UTILS_CC_PREQS),\
 		      $(EMPTY),\
 		      $(STRING_UTILS_LD_PREQS),\
-		      $(STRING_UTILS_LD_FLAGS),\
 		      $(STRING_UTILS_LIBTOOL_PREQS),\
+		      $(STRING_UTILS_LD_FLAGS),\
 		      $(STRING_UTILS_LIBTOOL_FLAGS))
 
 $(call TEST_BINARY,string_utils,\
