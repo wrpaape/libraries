@@ -13,9 +13,10 @@ extern "C" {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <ctype.h>			/* toupper */
-#include <memory_utils/memory_utils.h>	/* HANDLE_MALLOC */
 #include "ascii.h"			/* ascii_t */
-#include "split_string.h"		/* split_string, <string.h>, <utils/utils.h> */
+#include "utf8.h"			/* utf8_t */
+#include "token.h"			/* token macros */
+#include "split_string.h"		/* split_string, memory_utils */
 /* #include "generate.h"	/1* string generators *1/ */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

@@ -3,8 +3,8 @@
 
 #ifdef _cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '_restrict_' */
-#define restrict _restrict_
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
+#define restrict __restrict__
 #endif
 #endif
 
