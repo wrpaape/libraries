@@ -12,9 +12,10 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <ctype.h>		/* toupper */
-#include "ascii.h"		/* ascii_t */
-#include "split_string.h"	/* split_string, <string.h>, <utils/utils.h> */
+#include <ctype.h>			/* toupper */
+#include <memory_utils/memory_utils.h>	/* HANDLE_MALLOC */
+#include "ascii.h"			/* ascii_t */
+#include "split_string.h"		/* split_string, <string.h>, <utils/utils.h> */
 /* #include "generate.h"	/1* string generators *1/ */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

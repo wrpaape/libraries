@@ -1,3 +1,0 @@
-# ooga
-
-## TODO: everything

@@ -248,8 +248,13 @@ extern const ascii_t ASCII_TOGGLE_MAP[ASCII_CNT];
  * FUNCTION-LIKE MACROS
  *
  *
- * TOP-LEVEL FUNCTIONS
+ * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+inline bool is_ascii(char byte)
+{
+	return (byte & 0x80) == 0x00;
+}
 
 /* character map case */
 inline ascii_t lowercase_ascii(ascii_t ascii)
@@ -267,19 +272,40 @@ inline ascii_t togglecase_ascii(ascii_t ascii)
 	return ASCII_TOGGLE_MAP[ascii];
 }
 
-inline void uppercase_ascii_string(ascii_t *restrict string)
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * HELPER FUNCTIONS
+ *
+ *
+ * TOP-LEVEL FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+inline bool is_ascii_string(char *string)
 {
-	while (*string != '\0') {
-		*string = uppercase_ascii(*string);
-		++string;
+	while (1) {
+		if (*string == '\0')
+			return true;
+
+		if (is_ascii(*string))
+			++string;
+		else
+			return false;
 	}
 }
+
 
 /* string map case */
 inline void lowercase_ascii_string(ascii_t *restrict string)
 {
 	while (*string != '\0') {
 		*string = lowercase_ascii(*string);
+		++string;
+	}
+}
+
+inline void uppercase_ascii_string(ascii_t *restrict string)
+{
+	while (*string != '\0') {
+		*string = uppercase_ascii(*string);
 		++string;
 	}
 }
@@ -293,13 +319,7 @@ inline void togglecase_ascii_string(ascii_t *restrict string)
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * TOP-LEVEL FUNCTIONS
- *
- *
- * HELPER FUNCTIONS
- * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * HELPER FUNCTIONS */
+ * TOP-LEVEL FUNCTIONS */
 
 /* undefine group macros */
 
