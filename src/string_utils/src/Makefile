@@ -1,12 +1,14 @@
 include $(MAKEFILE_SCAFFOLD)
 
+SUPPORT_HEADERS := token utf32
 SUPPORT_MODULES := ascii utf8
 
 MODULE_MAP = $(foreach module,$(SUPPORT_MODULES),$(call $1,$(module)))
 
 
 STRING_UTILS_CC_PREQS 	   := $(call MODULE_MAP,SOURCE_HEADER_PATHS)$(SPACE)\
-			      $(call HEADER_PATH,token)
+			      $(foreach header,$(SUPPORT_HEADERS),\
+			      		       $(call HEADER_PATH,$(header)))
 
 STRING_UTILS_LD_PREQS 	   := $(call MODULE_MAP,PIC_OBJECT_PATH)
 STRING_UTILS_LD_FLAGS 	   := -lmemory_utils_shared
