@@ -14,6 +14,7 @@ extern "C" {
 
 #include <memory_utils/memory_utils.h>	/* HANDLE_M/C/REALLOC, utils.h */
 #include <utils/word.h>			/* word_t */
+#include <stdbool.h>			/* bool */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -31,9 +32,9 @@ struct BitVector {
 	word_t *buckets;
 };
 
-struct BitCoords {
+struct BitPoint {
 	unsigned int i_bucket;
-	word_t bit_x;
+	word_t bit;
 };
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -52,23 +53,139 @@ struct BitCoords {
  * FUNCTION-LIKE MACROS
  *
  *
- * TOP-LEVEL FUNCTIONS
+ * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline void bit_vector_free(struct BitVector *set)
+static inline void get_bit_point(struct BitPoint *const restrict point,
+				 const struct BitVector *const restrict set,
+				 const int x)
 {
-	free(set->buckets);
-	free(set);
+	const unsigned int offset_x = x - set->min;
+
+	point->i_bucket = offset_x >> set->lg_length;
+
+	point->bit = 1ul << (offset_x & set->length_m1);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * TOP-LEVEL FUNCTIONS
+ * HELPER FUNCTIONS
  *
  *
  * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+inline void bit_vector_init(struct BitVector *const restrict set,
+			    const int min,
+			    const int max)
+{
+	const unsigned int length = next_pow_two((unsigned int) (max - min));
+
+	HANDLE_CALLOC(set->buckets,
+		      (length / BIT_SIZE(word_t)) + 1ul,
+		      sizeof(word_t));
+
+	set->min = min;
+	set->max = max;
+	set->lg_length = log_base_two(length);
+	set->length_m1 = length - 1ul;
+	set->size = 0ul;
+}
+
+inline struct BitVector *bit_vector_create(const int min,
+					   const int max)
+{
+	struct BitVector *restrict set;
+
+	HANDLE_MALLOC(set, sizeof(struct BitVector));
+
+	bit_vector_init(set, min, max);
+
+	return set;
+}
+
+inline void bit_vector_free_buckets(struct BitVector *restrict set)
+{
+	free(set->buckets);
+}
+
+inline void bit_vector_free(struct BitVector *restrict set)
+{
+	bit_vector_free_buckets(set);
+	free(set);
+}
+
+
+inline bool bit_vector_is_ib(const struct BitVector *const restrict set,
+			     const int x)
+{
+	return (x <= set->max)
+	    && (x >= set->min);
+}
+
+inline bool bit_vector_is_ob(const struct BitVector *const restrict set,
+				    const int x)
+{
+	return (x > set->max)
+	    || (x < set->min);
+}
+
+inline bool bit_vector_member(const struct BitVector *const restrict set,
+			      const int x)
+{
+	if (bit_vector_is_ob(set, x))
+		return false;
+
+	struct BitPoint point;
+
+	get_bit_point(&point, set, x);
+
+	return set->buckets[point.i_bucket] & point.bit;
+}
+
+inline bool bit_vector_put(struct BitVector *const restrict set,
+			   const int x)
+{
+	struct BitPoint point;
+
+	get_bit_point(&point, set, x);
+
+	word_t *const restrict bucket_x = &set->buckets[point.i_bucket];
+
+	if ((*bucket_x) & point.bit)
+		return false;
+
+	(*bucket_x) |= point.bit;
+
+	++(set->size);
+
+	return true;
+}
+
+inline bool bit_vector_handle_put(struct BitVector *const restrict set,
+				  const int x)
+{
+	if (bit_vector_is_ob(set, x))
+		EXIT_ON_FAILURE("'%d' is out of range"
+				"\e24m]\n\n{\n"
+				"\tmin:       %d\n"
+				"\tmax:       %d\n"
+				"\tlg_length: %u\n"
+				"\tlength_m1: %u\n"
+				"\tsize:      %u\n"
+				"}\n\n",
+				x,
+				set->min,
+				set->max,
+				set->lg_length,
+				set->length_m1,
+				set->size);
+
+	return bit_vector_put(set, x);
+}
+
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * HELPER FUNCTIONS */
+ * TOP-LEVEL FUNCTIONS */
 
 
 #ifdef __cplusplus /* close 'extern "C" {' */
