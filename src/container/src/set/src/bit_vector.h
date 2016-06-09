@@ -49,6 +49,26 @@ struct BitPoint {
  *
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+#define HANDLE_BIT_VECTOR_IS_IB(SET, X)			\
+do {							\
+	if (bit_vector_is_ob(SET, X))			\
+		EXIT_ON_FAILURE("'%d' is out of range"	\
+				"\e24m]\n\n{\n"		\
+				"\tmin:       %d\n"	\
+				"\tmax:       %d\n"	\
+				"\tlg_length: %u\n"	\
+				"\tlength_m1: %u\n"	\
+				"\tsize:      %u\n"	\
+				"}\n\n",		\
+				X,			\
+				SET->min,		\
+				SET->max,		\
+				SET->lg_length,		\
+				SET->length_m1,		\
+				SET->size);		\
+} while (0)
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
  *
@@ -129,12 +149,9 @@ inline bool bit_vector_is_ob(const struct BitVector *const restrict set,
 	    || (x < set->min);
 }
 
-inline bool bit_vector_member(const struct BitVector *const restrict set,
-			      const int x)
+inline bool bit_vector_member_ib(const struct BitVector *const restrict set,
+				 const int x)
 {
-	if (bit_vector_is_ob(set, x))
-		return false;
-
 	struct BitPoint point;
 
 	get_bit_point(&point, set, x);
@@ -142,8 +159,25 @@ inline bool bit_vector_member(const struct BitVector *const restrict set,
 	return set->buckets[point.i_bucket] & point.bit;
 }
 
-inline bool bit_vector_put(struct BitVector *const restrict set,
-			   const int x)
+inline bool bit_vector_member(const struct BitVector *const restrict set,
+			      const int x)
+{
+	return bit_vector_is_ib(set, x)
+	    && bit_vector_member_ib(set, x);
+}
+
+inline bool bit_vector_handle_member(const struct BitVector *const restrict set,
+				     const int x)
+{
+	HANDLE_BIT_VECTOR_IS_IB(set, x);
+
+	return bit_vector_member_ib(set, x);
+}
+
+
+inline bool bit_vector_put_ib(struct BitVector *const restrict set,
+			      const int x)
+
 {
 	struct BitPoint point;
 
@@ -161,24 +195,17 @@ inline bool bit_vector_put(struct BitVector *const restrict set,
 	return true;
 }
 
+inline bool bit_vector_put(struct BitVector *const restrict set,
+			   const int x)
+{
+	return bit_vector_is_ib(set, x)
+	    && bit_vector_put_ib(set, x);
+}
+
 inline bool bit_vector_handle_put(struct BitVector *const restrict set,
 				  const int x)
 {
-	if (bit_vector_is_ob(set, x))
-		EXIT_ON_FAILURE("'%d' is out of range"
-				"\e24m]\n\n{\n"
-				"\tmin:       %d\n"
-				"\tmax:       %d\n"
-				"\tlg_length: %u\n"
-				"\tlength_m1: %u\n"
-				"\tsize:      %u\n"
-				"}\n\n",
-				x,
-				set->min,
-				set->max,
-				set->lg_length,
-				set->length_m1,
-				set->size);
+	HANDLE_BIT_VECTOR_IS_IB(set, x);
 
 	return bit_vector_put(set, x);
 }
