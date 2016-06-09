@@ -22,13 +22,12 @@
 #include <unity/unity.h>
 #include <setjmp.h>
 #include <stdio.h>
-#include "random.h"
-#include <string.h>
+#include "random_nogc.h"
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_glob_rng_ctor(void);
+extern void test_no_glob_rng_ctor(void);
 
 
 //=======Test Reset Option=====
@@ -43,8 +42,8 @@ void resetTest(void)
 //=======MAIN=====
 int main(void)
 {
-  UnityBegin("../test/random_test.c");
-  RUN_TEST(test_glob_rng_ctor, 15);
+  UnityBegin("../test/random_nogc_test.c");
+  RUN_TEST(test_no_glob_rng_ctor, 14);
 
   return (UnityEnd());
 }
