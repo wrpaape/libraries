@@ -12,7 +12,7 @@ extern "C" {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <memory_utils/memory_utils.h>	/* malloc, free */
-#include <container/link_node.h>	/* SLinkNode struct */
+#include <container/link_node.h>	/* LinkNode struct */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -23,8 +23,8 @@ extern "C" {
 
 /* implemented as singly linked-list with a pointer to last element's tail */
 struct Queue {
-	struct SLinkNode *head;
-	struct SLinkNode **last;
+	struct LinkNode *head;
+	struct LinkNode **last;
 };
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -74,8 +74,8 @@ inline struct Queue *queue_create(void)
 inline void queue_push(struct Queue *queue,
 		       void *data)
 {
-	struct SLinkNode *node;
-	HANDLE_MALLOC(node, sizeof(struct SLinkNode));
+	struct LinkNode *node;
+	HANDLE_MALLOC(node, sizeof(struct LinkNode));
 
 	node->data = data;
 	node->link = NULL;
@@ -96,7 +96,7 @@ inline void *queue_peek(struct Queue *queue)
 
 inline void *queue_pop(struct Queue *queue)
 {
-	struct SLinkNode *node = queue->head;
+	struct LinkNode *node = queue->head;
 
 	if (node == NULL)
 		return NULL;

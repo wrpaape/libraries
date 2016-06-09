@@ -27,7 +27,7 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_set_global_page_size(void);
+extern void test_set_global_page_size_constructor(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +43,7 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/global_page_size_test.c");
-  RUN_TEST(test_set_global_page_size, 12);
+  RUN_TEST(test_set_global_page_size_constructor, 12);
 
   return (UnityEnd());
 }

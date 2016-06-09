@@ -9,11 +9,7 @@ void tearDown(void)
 {
 }
 
-void test_set_global_page_size(void)
+void test_set_global_page_size_constructor(void)
 {
-	TEST_ASSERT_TRUE(global_page_size == 0ul);
-
-	set_global_page_size();
-
 	TEST_ASSERT_TRUE(global_page_size != 0ul);
 }

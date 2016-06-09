@@ -107,9 +107,9 @@ inline bool is_utf8(const byte_t *restrict bytes)
 
 bool is_utf8_string(const byte_t *restrict string);
 
-char *fgets_utf8_chars(char *restrict buffer,
-		       int count,
-		       FILE *restrict stream);
+char *fgets_utf8(char *const restrict buffer,
+		 int count,
+		 FILE *restrict stream);
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS */
