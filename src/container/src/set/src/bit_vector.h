@@ -25,10 +25,15 @@ extern "C" {
 struct BitVector {
 	int min;
 	int max;
-	size_t span_m1;
-	size_t lg_span;
-	size_t size;
-	word_t *bits;
+	unsigned int lg_length;
+	unsigned int length_m1;
+	unsigned int size;
+	word_t *buckets;
+};
+
+struct BitCoords {
+	unsigned int i_bucket;
+	word_t bit_x;
 };
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -52,7 +57,7 @@ struct BitVector {
 
 inline void bit_vector_free(struct BitVector *set)
 {
-	free(set->bits);
+	free(set->buckets);
 	free(set);
 }
 
