@@ -96,29 +96,29 @@ static inline void get_bit_point(struct BitPoint *const restrict point,
 
 inline void bit_vector_init(struct BitVector *const restrict set,
 			    const int min,
-			    const int max)
+			    const unsigned int range)
 {
-	const unsigned int length = next_pow_two((unsigned int) (max - min));
+	const unsigned int length = next_pow_two(range);
 
 	HANDLE_CALLOC(set->buckets,
 		      (length / BIT_SIZE(word_t)) + 1ul,
 		      sizeof(word_t));
 
 	set->min = min;
-	set->max = max;
+	set->max = min + range;
 	set->lg_length = log_base_two(length);
 	set->length_m1 = length - 1ul;
 	set->size = 0ul;
 }
 
 inline struct BitVector *bit_vector_create(const int min,
-					   const int max)
+					   const unsigned int range)
 {
 	struct BitVector *restrict set;
 
 	HANDLE_MALLOC(set, sizeof(struct BitVector));
 
-	bit_vector_init(set, min, max);
+	bit_vector_init(set, min, range);
 
 	return set;
 }

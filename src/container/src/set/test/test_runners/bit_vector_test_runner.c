@@ -23,11 +23,14 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "bit_vector.h"
+#include <random/random.h>
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_bit_vector(void);
+extern void test_bit_vector_is_ib(void);
+extern void test_bit_vector_is_ob(void);
+extern void test_bit_vector_put(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +46,9 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/bit_vector_test.c");
-  RUN_TEST(test_bit_vector, 12);
+  RUN_TEST(test_bit_vector_is_ib, 24);
+  RUN_TEST(test_bit_vector_is_ob, 38);
+  RUN_TEST(test_bit_vector_put, 51);
 
   return (UnityEnd());
 }

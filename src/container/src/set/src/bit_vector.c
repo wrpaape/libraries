@@ -8,11 +8,11 @@ get_bit_point(struct BitPoint *const restrict point,
 extern inline void
 bit_vector_init(struct BitVector *const restrict set,
 		const int min,
-		const int max);
+		const unsigned int range);
 
 extern inline struct BitVector *
 bit_vector_create(const int min,
-		  const int max);
+		  const unsigned int range);
 
 
 
