@@ -66,7 +66,7 @@ bit_vector_handle_put(struct BitVector *const restrict set,
 
 extern inline bool
 bit_vector_delete_ib(struct BitVector *const restrict set,
-		  const int x);
+		     const int x);
 
 extern inline bool
 bit_vector_delete(struct BitVector *const restrict set,

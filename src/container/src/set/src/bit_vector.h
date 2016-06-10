@@ -91,14 +91,14 @@ static inline void get_bit_point(struct BitPoint *const restrict point,
  * HELPER FUNCTIONS
  *
  *
- * HELPER FUNCTIONS
+ * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 inline void bit_vector_init(struct BitVector *const restrict set,
 			    const int min,
 			    const unsigned int range)
 {
-	const unsigned int length = next_pow_two(range);
+	const unsigned int length = round_pow_two_lb(range);
 
 	HANDLE_CALLOC(set->buckets,
 		      (length / BIT_SIZE(word_t)) + 1ul,
@@ -207,7 +207,7 @@ inline bool bit_vector_handle_put(struct BitVector *const restrict set,
 {
 	HANDLE_BIT_VECTOR_IS_IB(set, x);
 
-	return bit_vector_put(set, x);
+	return bit_vector_put_ib(set, x);
 }
 
 
@@ -221,25 +221,32 @@ inline bool bit_vector_delete_ib(struct BitVector *const restrict set,
 
 	word_t *const restrict bucket_x = &set->buckets[point.i_bucket];
 
-	if ((*bucket_x) & point.bit)
-		return false;
+	if ((*bucket_x) & point.bit) {
 
-	(*bucket_x) |= point.bit;
+		(*bucket_x) ^= point.bit;
 
-	++(set->size);
+		--(set->size);
 
-	return true;
+		return true;
+	}
+
+	return false;
 }
 
 inline bool bit_vector_delete(struct BitVector *const restrict set,
 			      const int x)
 {
 	return bit_vector_is_ib(set, x)
-	    && bit_vector_delete(set, x);
+	    && bit_vector_delete_ib(set, x);
 }
 
 inline bool bit_vector_handle_delete(struct BitVector *const restrict set,
 				     const int x)
+{
+	HANDLE_BIT_VECTOR_IS_IB(set, x);
+
+	return bit_vector_delete_ib(set, x);
+}
 
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

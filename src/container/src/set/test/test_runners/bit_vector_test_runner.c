@@ -31,6 +31,8 @@ extern void tearDown(void);
 extern void test_bit_vector_is_ib(void);
 extern void test_bit_vector_is_ob(void);
 extern void test_bit_vector_put(void);
+extern void test_bit_vector_member(void);
+extern void test_bit_vector_delete(void);
 
 
 //=======Test Reset Option=====
@@ -49,6 +51,8 @@ int main(void)
   RUN_TEST(test_bit_vector_is_ib, 24);
   RUN_TEST(test_bit_vector_is_ob, 38);
   RUN_TEST(test_bit_vector_put, 51);
+  RUN_TEST(test_bit_vector_member, 79);
+  RUN_TEST(test_bit_vector_delete, 99);
 
   return (UnityEnd());
 }
