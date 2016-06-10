@@ -23,7 +23,7 @@ extern "C" {
 
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define BIT_SIZE(TYPE) (sizeof(TYPE) * CHAR_BIT)
+#define BIT_SIZE(TYPE) (sizeof(TYPE) * ((size_t) CHAR_BIT))
 
 #define EXIT_ON_FAILURE(FORMAT, ...)					\
 do {									\
@@ -62,14 +62,95 @@ do {							\
 
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
-inline size_t next_pow_two(const size_t num)
-{
-	return 1lu << (BIT_SIZE(size_t) - __builtin_clzl(num - 1lu));
-}
 
-inline size_t log_base_two(const size_t num)
+/* log₂(num) when num ≡ 0 (mod 2) */
+inline unsigned long log_base_two_p2(const unsigned long num)
 {
 	return __builtin_ctzl(num);
+}
+
+/* floor( log₂(num) ) */
+inline unsigned long log_base_two(const unsigned long num)
+{
+	return BIT_SIZE(unsigned long) - 1lu - __builtin_clzl(num);
+}
+
+inline unsigned long handle_log_base_two(const unsigned long num)
+{
+	if (num < 1lu)
+		EXIT_ON_FAILURE("log₂(0) undefined");
+
+	return log_base_two(num);
+}
+
+
+/* defined results for 0 < num < LONG_MAX */
+inline unsigned long next_pow_two_ib(const unsigned long num)
+{
+	return 1lu << (BIT_SIZE(unsigned long) - __builtin_clzl(num));
+}
+
+/* checks lower boundary */
+inline unsigned long next_pow_two_lb(const unsigned long num)
+{
+	return (num > 0lu) ? next_pow_two_ib(num) : 1lu;
+}
+
+/* checks upper boundary */
+inline unsigned long next_pow_two_ub(const unsigned long num)
+{
+	return (num < LONG_MAX) ? next_pow_two_ib(num) : SIZE_MAX;
+}
+
+/* checks both boundaries */
+inline unsigned long next_pow_two(const unsigned long num)
+{
+	return (num > 0lu) ? next_pow_two_ub(num) : 1lu;
+}
+
+/* checks both boundaries, exits on integer overflow */
+inline unsigned long handle_next_pow_two(const unsigned long num)
+{
+	if (num < LONG_MAX)
+		return next_pow_two_lb(num);
+
+	EXIT_ON_FAILURE("integer overflow, next_pow_two(%zu) > LONG_MAX "
+			"(%zu)", num, LONG_MAX);
+}
+
+
+/* defined results for 1 < num <= LONG_MAX */
+inline unsigned long round_pow_two_ib(const unsigned long num)
+{
+	return next_pow_two_ib(num - 1lu);
+}
+
+/* checks lower boundary */
+inline unsigned long round_pow_two_lb(const unsigned long num)
+{
+	return (num > 1lu) ? round_pow_two_ib(num) : 1lu;
+}
+
+/* checks upper boundary */
+inline unsigned long round_pow_two_ub(const unsigned long num)
+{
+	return (num > LONG_MAX) ? SIZE_MAX : round_pow_two_ib(num);
+}
+
+/* checks both boundaries */
+inline unsigned long round_pow_two(const unsigned long num)
+{
+	return (num > 1lu) ? round_pow_two_ub(num) : 1lu;
+}
+
+/* checks both boundaries, exits on integer overflow */
+inline unsigned long handle_round_pow_two(const unsigned long num)
+{
+	if (num > LONG_MAX)
+		EXIT_ON_FAILURE("integer overflow, next_pow_two(%zu) > "
+				"LONG_MAX (%zu)", num, LONG_MAX);
+
+	return round_pow_two_lb(num);
 }
 
 #ifdef __cplusplus /* close 'extern "C" {' */

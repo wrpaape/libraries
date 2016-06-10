@@ -23,11 +23,21 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "utils.h"
+#include <math.h>
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_utils(void);
+extern void test_next_pow_two_ib(void);
+extern void test_next_pow_two_lb(void);
+extern void test_next_pow_two_ub(void);
+extern void test_next_pow_two(void);
+extern void test_round_pow_two_ib(void);
+extern void test_round_pow_two_lb(void);
+extern void test_round_pow_two_ub(void);
+extern void test_round_pow_two(void);
+extern void test_log_base_two_p2(void);
+extern void test_log_base_two(void);
 
 
 //=======Test Reset Option=====
@@ -43,7 +53,16 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/utils_test.c");
-  RUN_TEST(test_utils, 12);
+  RUN_TEST(test_next_pow_two_ib, 13);
+  RUN_TEST(test_next_pow_two_lb, 21);
+  RUN_TEST(test_next_pow_two_ub, 27);
+  RUN_TEST(test_next_pow_two, 27);
+  RUN_TEST(test_round_pow_two_ib, 43);
+  RUN_TEST(test_round_pow_two_lb, 50);
+  RUN_TEST(test_round_pow_two_ub, 57);
+  RUN_TEST(test_round_pow_two, 57);
+  RUN_TEST(test_log_base_two_p2, 70);
+  RUN_TEST(test_log_base_two, 70);
 
   return (UnityEnd());
 }
