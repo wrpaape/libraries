@@ -45,7 +45,7 @@ void test_bheap_empty_peek_and_extract(void)
 
 	TEST_ASSERT_FALSE(bheap_extract(heap,
 					&buffer));
-	bheap_free(heap);
+	bheap_destroy(heap);
 }
 
 void test_bheap_peek_extract(void)
@@ -73,7 +73,7 @@ void test_bheap_peek_extract(void)
 	TEST_ASSERT_EQUAL_HEX(small, buffer);
 
 	TEST_ASSERT_FALSE(bheap_peek(heap, &buffer));
-	bheap_free(heap);
+	bheap_destroy(heap);
 }
 
 void test_bheap_min_heap(void)
@@ -104,7 +104,7 @@ void test_bheap_min_heap(void)
 
 	TEST_ASSERT_EQUAL_STRING("JIHGFEDCBA", &extract[0]);
 
-	bheap_free(heap);
+	bheap_destroy(heap);
 }
 
 void test_bheap_max_heap(void)
@@ -146,7 +146,7 @@ void test_bheap_max_heap(void)
 	TEST_ASSERT_EQUAL_HEX(0xDEED00DAA, buffer);
 	TEST_ASSERT_FALSE(inv_bheap_extract(heap, &buffer));
 
-	bheap_free(heap);
+	bheap_destroy(heap);
 }
 
 void heap_property_failure(const int *restrict array,

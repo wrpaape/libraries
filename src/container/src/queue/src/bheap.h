@@ -60,25 +60,6 @@ struct BHeap {
 
 /* initialize, destroy, resize
  * ══════════════════════════════════════════════════════════════════════════ */
-inline struct BHeap *bheap_alloc(const size_t capacity,
-				 const size_t width)
-{
-	struct BHeap *restrict heap;
-
-	HANDLE_MALLOC(heap, sizeof(struct BHeap));
-	HANDLE_MALLOC(heap->nodes, width * capacity);
-
-	heap->capacity = capacity;
-	heap->width    = width;
-
-	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
-	 * 'nodes[0]' is illegal */
-	heap->nodes = memory_offset(heap->nodes,
-				    -width);
-
-	return heap;
-}
-
 inline void bheap_assign_accessors(struct BHeap *const restrict heap)
 {
 	if (heap->width == 0ul)
@@ -98,9 +79,21 @@ inline void bheap_assign_accessors(struct BHeap *const restrict heap)
 }
 
 inline void bheap_init(struct BHeap *const restrict heap,
+		       const size_t capacity,
+		       const size_t width,
 		       int (*compare)(const void *,
 				      const void *))
 {
+	HANDLE_MALLOC(heap->nodes, width * capacity);
+
+	heap->capacity = capacity;
+	heap->width    = width;
+
+	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
+	 * 'nodes[0]' is illegal */
+	heap->nodes = memory_offset(heap->nodes,
+				    -width);
+
 	bheap_assign_accessors(heap);
 
 	heap->compare = compare;
@@ -111,19 +104,26 @@ inline struct BHeap *bheap_create(const size_t width,
 				  int (*compare)(const void *,
 						 const void *))
 {
-	struct BHeap *const restrict heap = bheap_alloc(1ul, width);
+	struct BHeap *restrict heap;
 
-	bheap_init(heap, compare);
+	HANDLE_MALLOC(heap, sizeof(struct BHeap));
+
+	bheap_init(heap, 1ul, width, compare);
 
 	return heap;
 }
 
-inline void bheap_free(struct BHeap *restrict heap)
+inline void bheap_clear(struct BHeap *restrict heap)
 {
 	/* sentinel node at index 0, i.e. 'nodes[1]' points to first valid node,
 	 * 'nodes[0]' is illegal */
 	free(memory_offset(heap->nodes,
 			   heap->width));
+}
+
+inline void bheap_destroy(struct BHeap *restrict heap)
+{
+	bheap_clear(heap);
 	free(heap);
 }
 

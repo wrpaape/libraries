@@ -1,14 +1,13 @@
 #include <utils/utils.h>
 #include "bheap.h"
 
-/* initialize, destroy, resize
+/* create, initialize, clear, destroy, resize
  * ══════════════════════════════════════════════════════════════════════════ */
-extern inline struct BHeap *bheap_alloc(const size_t capacity,
-					const size_t width);
-
 extern inline void bheap_assign_accessors(struct BHeap *const restrict heap);
 
 extern inline void bheap_init(struct BHeap *const restrict heap,
+			      const size_t capacity,
+			      const size_t width,
 			      int (*compare)(const void *,
 					     const void *));
 
@@ -16,7 +15,9 @@ extern inline struct BHeap *bheap_create(const size_t width,
 					 int (*compare)(const void *,
 							const void *));
 
-extern inline void bheap_free(struct BHeap *restrict heap);
+extern inline void bheap_clear(struct BHeap *restrict heap);
+
+extern inline void bheap_destroy(struct BHeap *restrict heap);
 
 
 extern inline void bheap_realloc(struct BHeap *const restrict heap,
