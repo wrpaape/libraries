@@ -211,6 +211,37 @@ inline bool bit_vector_handle_put(struct BitVector *const restrict set,
 }
 
 
+inline bool bit_vector_delete_ib(struct BitVector *const restrict set,
+				 const int x)
+
+{
+	struct BitPoint point;
+
+	get_bit_point(&point, set, x);
+
+	word_t *const restrict bucket_x = &set->buckets[point.i_bucket];
+
+	if ((*bucket_x) & point.bit)
+		return false;
+
+	(*bucket_x) |= point.bit;
+
+	++(set->size);
+
+	return true;
+}
+
+inline bool bit_vector_delete(struct BitVector *const restrict set,
+			      const int x)
+{
+	return bit_vector_is_ib(set, x)
+	    && bit_vector_delete(set, x);
+}
+
+inline bool bit_vector_handle_delete(struct BitVector *const restrict set,
+				     const int x)
+
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS */
 

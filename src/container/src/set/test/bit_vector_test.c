@@ -52,10 +52,10 @@ void test_bit_vector_put(void)
 {
 	int x;
 
+	TEST_ASSERT_EQUAL_UINT(0u, set->size);
+
 
 	x = set->min;
-
-	TEST_ASSERT_EQUAL_UINT(0u, set->size);
 
 	TEST_ASSERT_TRUE(bit_vector_put(set,
 					x));
