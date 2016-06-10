@@ -47,34 +47,26 @@ struct Queue {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* basic LIFO implementation */
-
-inline struct Queue *queue_alloc(void)
-{
-	struct Queue *queue;
-	HANDLE_MALLOC(queue, sizeof(struct Queue));
-
-	return queue;
-}
-
-inline void queue_init(struct Queue *queue)
+inline void queue_init(struct Queue *const restrict queue)
 {
 	queue->head = NULL;
 	queue->last = NULL;
 }
 
-inline struct Queue *queue_create(void)
+inline struct Queue *restrict queue_create(void)
 {
-	struct Queue *queue = queue_alloc();
+	struct Queue *restrict queue;
+	HANDLE_MALLOC(queue, sizeof(struct Queue));
 
 	queue_init(queue);
 
 	return queue;
 }
 
-inline void queue_push(struct Queue *queue,
+inline void queue_push(struct Queue *const restrict queue,
 		       void *data)
 {
-	struct LinkNode *node;
+	struct LinkNode *restrict node;
 	HANDLE_MALLOC(node, sizeof(struct LinkNode));
 
 	node->data = data;
@@ -89,14 +81,14 @@ inline void queue_push(struct Queue *queue,
 	queue->last = &(node->link);
 }
 
-inline void *queue_peek(struct Queue *queue)
+inline void *queue_peek(const struct Queue *const restrict queue)
 {
 	return (queue->head == NULL) ? NULL : queue->head->data;
 }
 
-inline void *queue_pop(struct Queue *queue)
+inline void *queue_pop(struct Queue *const restrict queue)
 {
-	struct LinkNode *node = queue->head;
+	struct LinkNode *restrict node = queue->head;
 
 	if (node == NULL)
 		return NULL;
@@ -110,10 +102,14 @@ inline void *queue_pop(struct Queue *queue)
 	return data;
 }
 
-inline void queue_free(struct Queue *queue)
+inline void queue_clear(struct Queue *const restrict queue)
 {
 	while (queue_pop(queue) != NULL);
+}
 
+inline void queue_destroy(struct Queue *restrict queue)
+{
+	queue_clear(queue);
 	free(queue);
 }
 

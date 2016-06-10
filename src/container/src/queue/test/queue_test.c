@@ -10,7 +10,7 @@ void setUp(void)
 
 void tearDown(void)
 {
-	queue_free(queue);
+	queue_destroy(queue);
 }
 
 void test_queue_pop_empty(void)
