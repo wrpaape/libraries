@@ -18,7 +18,7 @@ void setUp(void)
 
 void tearDown(void)
 {
-	bit_vector_free(set);
+	bit_vector_destroy(set);
 }
 
 void test_bit_vector_is_ib(void)
@@ -37,15 +37,15 @@ void test_bit_vector_is_ib(void)
 
 void test_bit_vector_is_ob(void)
 {
-	TEST_ASSERT_FALSE(bit_vector_is_ob(set,
-					  set->min));
 	TEST_ASSERT_TRUE(bit_vector_is_ob(set,
 					  set->min - 1u));
-
 	TEST_ASSERT_FALSE(bit_vector_is_ob(set,
-					  set->max));
+					   set->min));
+
 	TEST_ASSERT_TRUE(bit_vector_is_ob(set,
 					  set->max + 1u));
+	TEST_ASSERT_FALSE(bit_vector_is_ob(set,
+					   set->max));
 }
 
 void test_bit_vector_put(void)

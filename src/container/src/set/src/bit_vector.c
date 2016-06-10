@@ -5,6 +5,8 @@ get_bit_point(struct BitPoint *const restrict point,
 	      const struct BitVector *const restrict set,
 	      const int x);
 
+
+
 extern inline void
 bit_vector_init(struct BitVector *const restrict set,
 		const int min,
@@ -17,10 +19,10 @@ bit_vector_create(const int min,
 
 
 extern inline void
-bit_vector_free_buckets(struct BitVector *restrict set);
+bit_vector_clear(struct BitVector *restrict set);
 
 extern inline void
-bit_vector_free(struct BitVector *restrict set);
+bit_vector_destroy(struct BitVector *restrict set);
 
 
 

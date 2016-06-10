@@ -123,14 +123,14 @@ inline struct BitVector *bit_vector_create(const int min,
 	return set;
 }
 
-inline void bit_vector_free_buckets(struct BitVector *restrict set)
+inline void bit_vector_clear(struct BitVector *restrict set)
 {
 	free(set->buckets);
 }
 
-inline void bit_vector_free(struct BitVector *restrict set)
+inline void bit_vector_destroy(struct BitVector *restrict set)
 {
-	bit_vector_free_buckets(set);
+	bit_vector_clear(set);
 	free(set);
 }
 
