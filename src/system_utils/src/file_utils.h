@@ -56,72 +56,142 @@ do {			\
      /*       O_EVTONLY       descriptor requested for event notifications only */
      /*       O_CLOEXEC       mark as close-on-exec */
 /* open */
+
+/* int open(const char *path, int oflag, ...); */
+/* int openat(int fd, const char *path, int oflag, ...); */
+
+/* open */
+#define HANDLE_OPEN(FILDES, PATH, OFLAG, ...)				\
+do {									\
+	FILDES = open(PATH, OFLAG, ##__VA_ARGS__);			\
+	if (FILDES == -1)						\
+		EXIT_ON_FAILURE("failed to close file"			\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tpath:   '" #PATH   "' (%s),\n"	\
+				"\toflag:  '" #OFLAG   "' (%d),\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				PATH,					\
+				OFLAG,					\
+				OPEN_FAILURE(errno));			\
+} while (0)
 #define OPEN_FAILURE(ERRNO)						\
   ((ERRNO == EACCES)							\
 ? "(one of the following)\n"						\
-  "\t- Search permission is denied for a component of the path prefix."	\
+  "\t- Search permission is denied for a component of the path \n"	\
+  "prefix."								\
   "\t- The required permissions (for reading and/or writing) are "	\
-  "denied for the given flags."
-  "\t- 'O_CREAT' is specified, the file does not exist, and the directory in which it is to be created does not permit writing."
-  
-  ((ERRNO == EACCES]           O_TRUNC is specified and write permission is denied.
-  
-  ((ERRNO == EAGAIN]           path specifies the slave side of a locked pseudo-terminal device.
-  
-  ((ERRNO == EDQUOT]           O_CREAT is specified, the file does not exist, and the directory in which the entry for the new file is being placed cannot be extended because the user's quota of disk blocks on the file system containing the directory
-  		has been exhausted.
-  
-: ((ERRNO == EDQUOT]           O_CREAT is specified, the file does not exist, and the user's quota of inodes on the file system on which the file is being created has been exhausted.
-  
-: ((ERRNO == EEXIST]           O_CREAT and O_EXCL are specified and the file exists.
-  
-: ((ERRNO == EFAULT]           Path points outside the process's allocated address space.
-  
-: ((ERRNO == EINTR]            The open() operation is interrupted by a signal.
-  
-: ((ERRNO == EINVAL]           The value of oflag is not valid.
-  
-: ((ERRNO == EIO]              An I/O error occurs while making the directory entry or allocating the inode for O_CREAT.
-  
-: ((ERRNO == EISDIR]           The named file is a directory, and the arguments specify that it is to be opened for writing.
-  
-: ((ERRNO == ELOOP]            Too many symbolic links are encountered in translating the pathname.  This is taken to be indicative of a looping symbolic link.
-  
-: ((ERRNO == EMFILE]           The process has already reached its limit for open file descriptors.
-  
-: ((ERRNO == ENAMETOOLONG]     A component of a pathname exceeds {NAME_MAX} characters, or an entire path name exceeded {PATH_MAX} characters.
-  
-: ((ERRNO == ENFILE]           The system file table is full.
-  
-: ((ERRNO == ELOOP]            O_NOFOLLOW was specified and the target is a symbolic link.
-  
-: ((ERRNO == ENOENT]           O_CREAT is not set and the named file does not exist.
-  
-: ((ERRNO == ENOENT]           A component of the path name that must exist does not exist.
-  
-: ((ERRNO == ENOSPC]           O_CREAT is specified, the file does not exist, and the directory in which the entry for the new file is being placed cannot be extended because there is no space left on the file system containing the directory.
-  
-: ((ERRNO == ENOSPC]           O_CREAT is specified, the file does not exist, and there are no free inodes on the file system on which the file is being created.
-  
-: ((ERRNO == ENOTDIR]          A component of the path prefix is not a directory.
-  
-: ((ERRNO == ENXIO]            The named file is a character-special or block-special file and the device associated with this special file does not exist.
-  
-: ((ERRNO == ENXIO]            O_NONBLOCK and O_WRONLY are set, the file is a FIFO, and no process has it open for reading.
-  
-: ((ERRNO == EOPNOTSUPP]       O_SHLOCK or O_EXLOCK is specified, but the underlying filesystem does not support locking.
-  
-: ((ERRNO == EOPNOTSUPP]       An attempt is made to open a socket (not currently implemented).
-  
-: ((ERRNO == EOVERFLOW]        The named file is a regular file and its size does not fit in an object of type off_t.
-  
-: ((ERRNO == EROFS]            The named file resides on a read-only file system, and the file is to be modified.
-  
-: ((ERRNO == ETXTBSY]          The file is a pure procedure (shared text) file that is being executed and the open() call requests write access.
-  
-: ((ERRNO == EBADF]            The path argument does not specify an absolute path and the fd argument is neither AT_FDCWD nor a valid file descriptor open for searching.
-  
-: ((ERRNO == ENOTDIR]          The path argument is not an absolute path and fd is neither AT_FDCWD nor a file descriptor associated with a directory.
+  "denied for the given flags.\n"					\
+  "\t- 'O_CREAT' is specified, the file does not exist, and the "	\
+  "directory in which it is to be created does not permit writing.\n"	\
+  "\t- 'O_TRUNC' is specified and write permission is denied."		\
+: ((ERRNO == EAGAIN)							\
+? "'path' specifies the slave side of a locked pseudo-terminal device."	\
+: ((ERRNO == EDQUOT)							\
+? "(one of the following)\n"						\
+  "\t- 'O_CREAT' is specified, the file does not exist, and the "	\
+  "directory in which the entry for the new file is being placed "	\
+  "cannot be extended because the user's quota of disk blocks on the "	\
+  "file system containing the directory has been exhausted.\n"		\
+  "\t- 'O_CREAT' is specified, the file does not exist, and the user's"	\
+  " quota of inodes on the file system on which the file is being "	\
+  "created has been exhausted."						\
+: ((ERRNO == EEXIST)							\
+? "'O_CREAT' and 'O_EXCL' are specified and the file exists."		\
+: ((ERRNO == EFAULT)							\
+? "'path' points outside the process's allocated address space."	\
+: ((ERRNO == EINTR)							\
+? "The 'open' operation is interrupted by a signal."			\
+: ((ERRNO == EINVAL)							\
+? "The value of 'oflag' is not valid."					\
+: ((ERRNO == EIO)							\
+? "An I/O error occured while making the directory entry or allocating"	\
+  " the inode for 'O_CREAT'."						\
+: ((ERRNO == EISDIR)							\
+? "The named file is a directory, and the arguments specify that it is"	\
+  " to be opened for writing."						\
+: ((ERRNO == ELOOP)							\
+? "(one of the following)\n"						\
+  "\t- Too many symbolic links are encountered in translating the "	\
+  "pathname.  This is taken to be indicative of a looping symbolic "	\
+  "link.\n"								\
+  "\t- 'O_NOFOLLOW' was specified and the target is a symbolic link."	\
+: ((ERRNO == EMFILE)							\
+? "The process has already reached its limit for open file "		\
+  "descriptors."							\
+: ((ERRNO == ENAMETOOLONG)						\
+? "A component of a pathname exceeds {NAME_MAX} characters, or an "	\
+  "entire path name exceeded {PATH_MAX} characters."			\
+: ((ERRNO == ENFILE)							\
+? "The system file table is full."					\
+: ((ERRNO == ENOENT)							\
+? "(one of the following)\n"						\
+  "\t- 'O_CREAT' is not set and the named file does not exist.\n"	\
+  "\t- A component of the path name that must exist does not exist."	\
+: ((ERRNO == ENOSPC)							\
+? "(one of the following)\n"						\
+  "\t- 'O_CREAT' is specified, the file does not exist, and the "	\
+  "directory in which the entry for the new file is being placed "	\
+  "cannot be extended because there is no space left on the file "	\
+  "system containing the directory.\n"					\
+  "\t- 'O_CREAT' is specified, the file does not exist, and there are "	\
+  "no free inodes on the file system on which the file is being "	\
+  "created."								\
+: ((ERRNO == ENOTDIR)							\
+? "A component of the path prefix is not a directory."			\
+: ((ERRNO == ENXIO)							\
+? "(one of the following)\n"						\
+  "\t- The named file is a character-special or block-special file and"	\
+  " the device associated with this special file does not exist.\n"	\
+  "\t- 'O_NONBLOCK' and 'O_WRONLY' are set, the file is a FIFO, and no"	\
+  " process has it open for reading."					\
+: ((ERRNO == EOPNOTSUPP)						\
+? "(one of the following)\n"						\
+  "\t- 'O_SHLOCK' or 'O_EXLOCK' is specified, but the underlying "	\
+  "filesystem does not support locking.\n"				\
+  "\t- An attempt is made to open a socket (not currently "		\
+  "implemented)."							\
+: ((ERRNO == EOVERFLOW)							\
+? "The named file is a regular file and its size does not fit in an "	\
+  "object of type off_t."						\
+: ((ERRNO == EROFS)							\
+? "The named file resides on a read-only file system, and the file is "	\
+  "to be modified."							\
+: ((ERRNO == ETXTBSY)							\
+? "The file is a pure procedure (shared text) file that is being "	\
+  "executed and the open() call requests write access."			\
+: ((ERRNO == EBADF)							\
+? "The 'path' argument does not specify an absolute path and the 'fd' "	\
+  "argument is neither 'AT_FDCWD' nor a valid file descriptor open for"	\
+  " searching."								\
+: ((ERRNO == ENOTDIR)							\
+? "The 'path' argument is not an absolute path and 'fd' is neither "	\
+  "'AT_FDCWD' nor a file descriptor associated with a directory."	\
+: "unknown")))))))))))))))))))))))
+
+/* openat */
+#define HANDLE_OPENAT(FILDES, FD, PATH, OFLAG, ...)			\
+do {									\
+	FILDES = openat(FD, PATH, OFLAG, ##__VA_ARGS__);		\
+	if (FILDES == -1)						\
+		EXIT_ON_FAILURE("failed to close file"			\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tfd:     '" #FD     "' (%d),\n"	\
+				"\tpath:   '" #PATH   "' (%s),\n"	\
+				"\toflag:  '" #OFLAG   "' (%d),\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				FD,					\
+				PATH,					\
+				OFLAG,					\
+				OPENAT_FAILURE(errno));			\
+} while (0)
+#define OPENAT_FAILURE(ERRNO) OPEN_FAILURE(ERRNO)
+
 
 /* close */
 #define HANDLE_CLOSE(FILDES)
@@ -129,9 +199,10 @@ do {									\
 	if (close(FILDES) == -1)					\
 		EXIT_ON_FAILURE("failed to close file"			\
 				"\e24m]\n\n{\n"				\
-				"\tfildes: '" #FILDES "',\n"		\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
+				FILDES,
 				CLOSE_FAILURE(errno));			\
 } while (0)
 #define CLOSE_FAILURE(ERRNO)						\
