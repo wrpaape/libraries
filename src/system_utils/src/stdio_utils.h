@@ -20,8 +20,7 @@ extern "C" {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include "system_utils.h"	/* get_winsize, EXIT_ON_FAILURE */
-#include <unistd.h>		/* STDOUT_FILENO */
-#include <stdio.h>		/* popen, pclose */
+#include "file_utils.h"		/* stream handlers, STDOUT/IN/ERR_FILENO */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -96,7 +95,10 @@ do {									\
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 inline void stdio_get_command(char *restrict buffer,
-			      const char *const restrict command);
+			      const char *const restrict command)
+{
+
+}
 
 inline void stdio_get_winsize(struct winsize *const restrict window)
 {
