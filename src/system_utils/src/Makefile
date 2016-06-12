@@ -9,7 +9,9 @@ endef
 define RULES
 $(call MODULE,system_utils)
 
-$(call MODULE,screen_utils)
+$(call MODULE,file_utils)
+
+$(call MODULE,stdio_utils)
 
 $(call EXPORT_ALL_HEADERS,system_utils)
 endef

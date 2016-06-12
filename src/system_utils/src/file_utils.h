@@ -232,77 +232,192 @@ do {									\
 
 
 /* write */
-/* #include <unistd.h> */
+#define HANDLE_WRITE(FILDES, BUF, NBYTE)				\
+do {									\
+	if (write(FILDES, BUF, NBYTE) == -1) {				\
+		EXIT_ON_FAILURE("failed to write to file"		\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tbuf:    '" #BUF    "' (%s),\n"	\
+				"\tnbyte:  '" #NBYTE  "' (%zu)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				BUF,					\
+				NBYTE,					\
+				WRITE_FAILURE(errno));			\
+} while (0)
+#define WRITE_FAILURE(ERRNO)						\
+WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
+			    WRITE_EINVAL_REASON,			\
+	WRITE_PWRITE_FAILURE(ERRNO,					\
+			     WRITE_EAGAIN_REASON,			\
+			     WRITE_WRITEV_FAILURE(ERRNO)))
 
-/* ssize_t */
-/* pwrite(int fildes, const void *buf, size_t nbyte, off_t offset); */
 
-/* ssize_t */
-/* write(int fildes, const void *buf, size_t nbyte); */
 
-/* #include <sys/uio.h> */
-
-/* ssize_t */
-/* writev(int fildes, const struct iovec *iov, int iovcnt); */
-
-/* The write(), writev(), and pwrite() system calls will fail and the file pointer will remain unchanged if: */
-  ((ERRNO == EDQUOT)							\
-? "The user's quota of disk blocks on the file system containing the file is exhausted."
-: ((ERRNO == EFAULT)							\
-? "Part of iov or data to be written to the file points outside the process's allocated address space."
-: ((ERRNO == EINVAL)							\
-? "The pointer associated with fildes is negative."
-
-/* the write() and pwrite() system calls will fail and the file pointer will remain unchanged if: */
-: ((ERRNO == EAGAIN)							\
-? "The file is marked for non-blocking I/O, and no data could be written immediately."
-: ((ERRNO == EBADF)							\
-? "fildes is not a valid file descriptor open for writin"
-: ((ERRNO == ECONNRESET)							\
-? "A write is attempted on a socket that is not connected."
-: ((ERRNO == EFBIG)							\
-? "An attempt is made to write a file that exceeds the process's file size limit or the maximum file size."
-: ((ERRNO == EFBIG)							\
-? "The file is a regular file, nbyte is greater than 0, and the starting position is greater than or equal to the offset maximum established in the open file description associated with fildes."
-: ((ERRNO == EINTR)							\
-? "A signal interrupts the write before it could be completed."
-: ((ERRNO == EIO)							\
-? "An I/O error occurs while reading from or writing to the file system."
-: ((ERRNO == ENETDOWN)							\
-? "A write is attempted on a socket and the local network interface used to reach the destination is down."
-: ((ERRNO == ENETUNREACH)							\
-? "A write is attempted on a socket and no route to the network is present."
-: ((ERRNO == ENOSPC)							\
-? "There is no free space remaining on the file system containing the file."
-: ((ERRNO == ENXIO)							\
-? "A request is made of a nonexistent device, or the request is outside the capabilities of the device."
-: ((ERRNO == EPIPE)							\
-? "An attempt is made to write to a pipe that is not open for reading by any process."
-: ((ERRNO == EPIPE)							\
-? "An attempt is made to write to a socket of type SOCK_STREAM that is not connected to a peer socket."
-
-/* the write() and writev() calls may also return the following errors: */
-: ((ERRNO == EAGAIN)							\
-? "See EWOULDBLOCK, below."
-: ((ERRNO == EWOULDBLOCK)							\
-? "The file descriptor is for a socket, is marked O_NONBLOCK, and write would block.  The exact error code depends on the protocol, but EWOULDBLOCK is more common."
-
-/* in addition, writev() may return one of the following errors: */
-: ((ERRNO == EDESTADDRREQ)							\
-? "The destination is no longer available when writing to a UNIX domain datagram socket on which connect(2) or connectx(2) had been used to set a destination address."
-: ((ERRNO == EINVAL)							\
-? "(one of the following)\n"						\
-  "\t- Iovcnt is less than or equal to 0, or greater than UIO_MAXIOV."
-  "\t- One of the 'iov_len' values in the iov array is negative.
-  "\t- The sum of the 'iov_len' values in the iov array overflows a 32-bit integer.
+/* writev */
+#define HANDLE_WRITEV(FILDES, IOV, IOVCNT)				\
+do {									\
+	if (writev(FILDES, IOV, IOVCNT) == -1) {			\
+		EXIT_ON_FAILURE("failed to write to file"		\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tiov:    '" #IOV    "' (%p),\n"	\
+				"\tiovcnt: '" #IOVCNT "' (%d)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				IOV,					\
+				IOVCNT,					\
+				WRITEV_FAILURE(errno));			\
+} while (0)
+#define WRITEV_FAILURE(ERRNO)						\
+WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
+			    WRITEV_EINVAL_REASON,			\
+  ((ERRNO == EDESTADDRREQ)						\
+? "The destination is no longer available when writing to a UNIX "	\
+  "domain datagram socket on which connect(2) or connectx(2) had been "	\
+  "used to set a destination address."					\
 : ((ERRNO == ENOBUFS)							\
-? "The mbuf pool has been completely exhausted when writing to a socket.
+? "The 'mbuf' pool has been completely exhausted when writing to a "	\
+  "socket."								\
+: WRITE_WRITEV_FAILURE(ERRNO))))
 
-/* the pwrite() call may also return the following errors: */
+
+
+/* pwrite */
+#define HANDLE_PWRITE(FILDES, BUF, NBYTE, OFFSET)			\
+do {									\
+	if (pwrite(FILDES, BUF, NBYTE, OFFSET) == -1) {			\
+		EXIT_ON_FAILURE("failed to write to file"		\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tbuf:    '" #BUF    "' (%s),\n"	\
+				"\tnbyte:  '" #NBYTE  "' (%zu),\n"	\
+				"\toffset: '" #OFFSET "' (%jd),\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				BUF,					\
+				NBYTE,					\
+				OFFSET,					\
+				PWRITE_FAILURE(errno));			\
+} while (0)
+#define PWRITE_FAILURE(ERRNO)						\
+WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
+			    PWRITE_EINVAL_REASON,			\
+  WRITE_PWRITE_FAILURE(ERRNO,						\
+		       PWRITE_EAGAIN_REASON,				\
+  ((ERRNO == ESPIPE)							\
+? "The file descriptor is associated with a pipe, socket, or FIFO."	\
+: "unknown")))
+
+
+
+/* shared write failure reasons */
+#define WRITE_WRITEV_PWRITE_FAILURE(ERRNO, EINVAL_REASON, REM_REASON)	\
+  ((ERRNO == EDQUOT)							\
+? "The user's quota of disk blocks on the file system containing the "	\
+  "file is exhausted."							\
+: ((ERRNO == EFAULT)							\
+? "Part of 'iov' or data to be written to the file points outside the "	\
+  "process's allocated address space."					\
 : ((ERRNO == EINVAL)							\
-? "The specified file offset is invalid."
-: ((ERRNO == ESPIPE)							\
-? "The file descriptor is associated with a pipe, socket, or FIFO."
+? EINVAL_REASON								\
+: REM_REASON)))
+
+#define WRITE_PWRITE_FAILURE(ERRNO,					\
+			     EAGAIN_REASON,				\
+			     REM_REASON)				\
+  ((ERRNO == EAGAIN)							\
+? EAGAIN_REASON								\
+: ((ERRNO == EBADF)							\
+? "'fildes' is not a valid file descriptor open for writing"		\
+: ((ERRNO == ECONNRESET)						\
+? "A write is attempted on a socket that is not connected."		\
+: ((ERRNO == EFBIG)							\
+? "(one of the following)\n"						\
+  "\t- An attempt is made to write a file that exceeds the process's "	\
+  "file size limit or the maximum file size."				\
+  "\t- The file is a regular file, 'nbyte' is greater than 0, and the "	\
+  "starting position is greater than or equal to the offset maximum"	\
+  " established in the open file description associated with 'fildes'."	\
+: ((ERRNO == EINTR)							\
+? "A signal interrupts the write before it could be completed."		\
+: ((ERRNO == EIO)							\
+? "An I/O error occurs while reading from or writing to the file "	\
+  "system."								\
+: ((ERRNO == ENETDOWN)							\
+? "A write is attempted on a socket and the local network interface "	\
+  "used to reach the destination is down."				\
+: ((ERRNO == ENETUNREACH)						\
+? "A write is attempted on a socket and no route to the network is "	\
+  "present."								\
+: ((ERRNO == ENOSPC)							\
+? "There is no free space remaining on the file system containing the "	\
+  "file."								\
+: ((ERRNO == ENXIO)							\
+? "A request is made of a nonexistent device, or the request is "	\
+  "outside the capabilities of the device."				\
+: ((ERRNO == EPIPE)							\
+? "(one of the following)\n"						\
+  "\t- An attempt is made to write to a pipe that is not open for "	\
+   "reading by any process."						\
+  "\t- An attempt is made to write to a socket of type SOCK_STREAM "	\
+   "that is not connected to a peer socket."				\
+: REM_REASON)))))))))))
+
+
+#define WRITE_WRITEV_FAILURE(ERRNO,					\
+			     EAGAIN_REASON)				\
+  ((ERRNO == EWOULDBLOCK)						\
+? WRITEV_EAGAIN_REASON							\
+: "unknown")
+
+
+
+/* write failure reasons for specific 'errno's
+ *
+ * EINVAL ───────────────────────────────────────────────────────────────────
+ * write, writev, pwrite */
+#define WRITE_WRITEV_PWRITE_EINVAL_REASON				\
+"The pointer associated with 'fildes' is negative."			\
+/* write */
+#define WRITE_EINVAL_REASON WRITE_WRITEV_PWRITE_EINVAL_REASON
+/* writev */
+#define WRITEV_EINVAL_REASON						\
+"(one of the following)\n"						\
+"\t- " WRITE_WRITEV_PWRITE_EINVAL_REASON				\
+"\t- 'iovcnt' is less than or equal to 0, or greater than "		\
+"'UIO_MAXIOV'."								\
+"\t- One of the 'iov_len' values in the iov array is negative."		\
+"\t- The sum of the 'iov_len' values in the iov array overflows a "	\
+"32-bit integer.
+/* pwrite */
+#define PWRITE_EINVAL_REASON						\
+"(one of the following)\n"						\
+"\t- " WRITE_WRITEV_PWRITE_EINVAL_REASON				\
+"\t- The specified file offset is invalid."
+/* EAGAIN ───────────────────────────────────────────────────────────────────
+ * write, pwrite */
+#define WRITE_PWRITE_EAGAIN_REASON					\
+"The file is marked for non-blocking I/O, and no data could be "	\
+"written immediately."
+/* write, writev */
+#define WRITE_WRITEV_EAGAIN_REASON					\
+"The file descriptor is for a socket, is marked 'O_NONBLOCK', and "	\
+"write would block."							\
+/* write */
+#define WRITE_EAGAIN_REASON						\
+"(one of the following)\n"						\
+"\t- " WRITE_PWRITE_EAGAIN_REASON					\
+"\t- " WRITE_WRITEV_EAGAIN_REASON					\
+/* writev */
+#define WRITEV_EAGAIN_REASON WRITE_WRITEV_EAGAIN_REASON
+/* pwrite */
+#define PWRITE_EAGAIN_REASON WRITE_PWRITE_EAGAIN_REASON
+
 
 
 
@@ -422,7 +537,7 @@ do {									\
 : "unknown"))))
 
 
-#define PREPEND_CHMOD_FAILURE(ERRNO, REM_REASONS)			\
+#define PREPEND_CHMOD_FAILURE(ERRNO, REM_REASON)			\
   ((ERRNO == EACCES)							\
 ? "Search permission is denied for a component of the path prefix."	\
 : ((ERRNO == EFAULT)							\
@@ -448,7 +563,7 @@ do {									\
    "effective user ID is not the super-user."				\
 : ((ERRNO == EROFS)							\
 ? "The named file resides on a read-only file system."			\
-: REM_REASONS))))))))))
+: REM_REASON))))))))))
 
 
 
