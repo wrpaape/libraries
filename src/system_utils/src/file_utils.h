@@ -20,8 +20,8 @@ extern "C" {
 #include <utils/utils.h>	/* EXIT_ON_FAILURE, FILE/stream API */
 #include <fcntl.h>		/* open */
 #include <unistd.h>		/* close, getcwd, STDOUT/IN/ERR_FILENO */
-#include <sys/uio.h>		/* write */
-#include <sys/types.h>		/* chmod API */
+#include <sys/uio.h>		/* read, write */
+#include <sys/types.h>		/* ssize_t, chmod API */
 #include <sys/stat.h>		/* mkdir */
 #include <sys/param.h>		/* MAXPATHLEN */
 
@@ -83,6 +83,12 @@ extern "C" {
  * AT_SYMLINK_FOLLOW	0x0040	Act on target of symlink
  * AT_REMOVEDIR		0x0080	Path refers to directory */
 
+/* iovec struct for 'readv' (from <sys/types.h>)
+ *
+ * struct iovec {
+ * 	char   *iov_base;  Base address.
+ *	size_t iov_len;    Length.
+ * }; */
 
 /* CONSTANTS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
@@ -233,24 +239,153 @@ do {									\
 #define OPENAT_FAILURE(ERRNO) OPEN_FAILURE(ERRNO)
 
 /* HANDLE_READ, HANDLE_PREAD, HANDLE_READV ──────────────────────────────────
+/* read */
+#define HANDLE_READ(NREAD, FILDES, BUF, NBYTE)				\
+do {									\
+	NREAD = read(FILDES, BUF, NBYTE);				\
+	if (NREAD == -1l)						\
+		EXIT_ON_FAILURE("failed to read from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tnread:  '" #NREAD  "' (-1),\n"	\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tbuf:    '" #BUF    "' (%p),\n"	\
+				"\tnbyte:  '" #NBYTE  "' (%zu)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				BUF,					\
+				NBYTE,					\
+				READ_FAILURE(errno));			\
+} while (0)
+#define READ_FAILURE(ERRNO)						\
+READ_PREAD_READV_FAILURE(ERRNO,						\
+			 READ_EINVAL_REASON,				\
+   ((ERRNO == ECONNRESET)						\
+? "The connection is closed by the peer during a read attempt on a "	\
+  "socket."								\
+:  ((ERRNO == ENOTCONN)							\
+? "A read is attempted on an unconnected socket."			\
+:  ((ERRNO == ETIMEDOUT)						\
+? "A transmission timeout occurs during a read attempt on a socket."	\
+: "unknown"))))
+
+/* pread */
+#define HANDLE_PREAD(NREAD, D, BUF, NBYTE, OFFSET)			\
+do {									\
+	NREAD = pread(D, BUF, NBYTE, OFFSET);				\
+	if (NREAD == -1l)						\
+		EXIT_ON_FAILURE("failed to read from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tnread:   '" #NREAD  "' (-1),\n"	\
+				"\td:       '" #D      "' (%d),\n"	\
+				"\tbuf:     '" #BUF    "' (%p),\n"	\
+				"\tnbyte:   '" #NBYTE  "' (%zu),\n"	\
+				"\tnoffset: '" #OFFSET "' (%jd)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				BUF,					\
+				NBYTE,					\
+				OFFSET,					\
+				PREAD_FAILURE(errno));			\
+} while (0)
+#define PREAD_FAILURE(ERRNO)						\
+READ_PREAD_READV_FAILURE(ERRNO,						\
+			 PREAD_EINVAL_REASON,				\
+  ((ERRNO == ESPIPE)							\
+? "The file descriptor is associated with a pipe, socket, or FIFO."	\
+: "unkown"))
+
+/* read */
+#define HANDLE_READV(NREAD, D, IOV, IOVCNT)				\
+do {									\
+	NREAD = readv(D, IOV, IOVCNT);					\
+	if (NREAD == -1l)						\
+		EXIT_ON_FAILURE("failed to read from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tnread:   '" #NREAD  "' (-1),\n"	\
+				"\td:       '" #D      "' (%d),\n"	\
+				"\tiov:     '" #IOV    "' (%p),\n"	\
+				"\tniovcnt: '" #IOVCNT "' (%d)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				D,					\
+				IOV,					\
+				IOVCNT,					\
+				READV_FAILURE(errno));			\
+} while (0)
+#define READV_FAILURE(ERRNO)						\
+READ_PREAD_READV_FAILURE(ERRNO,						\
+			 READV_EINVAL_REASON,				\
+   ((ERRNO == EFAULT)							\
+? "Part of the 'iov' points outside the process's allocated address"	\
+  " space."								\
+: "unknown"))
+
+/* read, pread, and readv failure reasons ───────────────────────────────────
+ * reaad, pread, and readv */
+#define READ_PREAD_READV_FAILURE(ERRNO, EINVAL_REASON, REM_REASON)	\
+  ((ERRNO == EAGAIN)							\
+? "The file was marked for non-blocking I/O, and no data were ready to"	\
+  " be read."								\
+:  ((ERRNO == EBADF)							\
+? "'fildes' is not a valid file or socket descriptor open for reading."	\
+:  ((ERRNO == EFAULT)							\
+? "'buf' points outside the allocated address space."			\
+:  ((ERRNO == EINTR)							\
+? "A read from a slow device was interrupted before any data arrived "	\
+  "by the delivery of a signal."					\
+: ((ERRNO == EINVAL)							\
+? EINVAL_REASON
+: ((ERRNO == EIO)							\
+? "(one of the following)\n"						\
+  "\t- An I/O error occurred while reading from the file system."	\
+  "\t- The process group is orphaned."					\
+  "\t- The file is a regular file, 'nbyte' is greater than 0, the "	\
+  "starting position is before the end-of-file, and the starting "	\
+  "position is greater than or equal to the offset maximum established"	\
+  " for the open file descriptor associated with 'fildes'."		\
+: ((ERRNO == EISDIR)							\
+? "An attempt is made to read a directory."				\
+: ((ERRNO == ENOBUFS)							\
+? "An attempt to allocate a memory buffer fails."			\
+: ((ERRNO == ENOMEM)							\
+? "Insufficient memory is available."					\
+: ((ERRNO == ENXIO)							\
+? "(one of the following)\n"						\
+  "\t- An action is requested of a device that does not exist."		\
+  "\t- A requested action cannot be performed by the device."		\
+: REM_REASON))))))))))
+
+/* read, pread, and readv EINVAL failure reasons ─────────────────────────────
  * read */
-/* ssize_t */
-/* pread(int d, void *buf, size_t nbyte, off_t offset); */
+#define READ_EINVAL_REASON						\
+"The pointer associated with fildes was negative."
 
-/* ssize_t */
-/* read(int fildes, void *buf, size_t nbyte); */
+/* pread */
+#define PREAD_EINVAL_REASON						\
+"(one of the following)\n"						\
+"\t- " READ_EINVAL_REASON						\
+"\t- The specified file offset is invalid."
 
-/* ssize_t */
-/* readv(int d, const struct iovec *iov, int iovcnt); */
-
+/* readv */
+#define READV_EINVAL_REASON						\
+"(one of the following)\n"						\
+"\t- " READ_EINVAL_REASON						\
+"\t- 'iovcnt' was less than or equal to 0, or greater than 16."		\
+"\t- One of the 'iov_len' values in the 'iov' array was negative."	\
+"\t- The sum of the 'iov_len' values in the 'iov' array overflowed a "	\
+"32-bit integer."
 
 /* HANDLE_WRITE, HANDLE_WRITEV, HANDLE_PWRITE ───────────────────────────────
  * write */
-#define HANDLE_WRITE(FILDES, BUF, NBYTE)				\
+#define HANDLE_WRITE(NWRITE, FILDES, BUF, NBYTE)			\
 do {									\
-	if (write(FILDES, BUF, NBYTE) == -1) {				\
+	NWRITE = write(FILDES, BUF, NBYTE);				\
+	if (NWRITE == -1l)						\
 		EXIT_ON_FAILURE("failed to write to file"		\
 				"\e24m]\n\n{\n"				\
+				"\tnwrite: '" #NWRITE "' (-1),\n"	\
 				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"\tbuf:    '" #BUF    "' (%s),\n"	\
 				"\tnbyte:  '" #NBYTE  "' (%zu)\n"	\
@@ -269,11 +404,13 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 			     WRITE_WRITEV_FAILURE(ERRNO)))
 
 /* writev */
-#define HANDLE_WRITEV(FILDES, IOV, IOVCNT)				\
+#define HANDLE_WRITEV(NWRITE, FILDES, IOV, IOVCNT)			\
 do {									\
-	if (writev(FILDES, IOV, IOVCNT) == -1) {			\
+	NWRITE = writev(FILDES, IOV, IOVCNT);				\
+	if (NWRITE == -1l)						\
 		EXIT_ON_FAILURE("failed to write to file"		\
 				"\e24m]\n\n{\n"				\
+				"\tnwrite: '" #NWRITE "' (-1),\n"	\
 				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"\tiov:    '" #IOV    "' (%p),\n"	\
 				"\tiovcnt: '" #IOVCNT "' (%d)\n"	\
@@ -297,11 +434,13 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 : WRITE_WRITEV_FAILURE(ERRNO))))
 
 /* pwrite */
-#define HANDLE_PWRITE(FILDES, BUF, NBYTE, OFFSET)			\
+#define HANDLE_PWRITE(NWRITE, FILDES, BUF, NBYTE, OFFSET)		\
 do {									\
-	if (pwrite(FILDES, BUF, NBYTE, OFFSET) == -1) {			\
+	NWRITE = pwrite(FILDES, BUF, NBYTE, OFFSET);			\
+	if (NWRITE == -1l)						\
 		EXIT_ON_FAILURE("failed to write to file"		\
 				"\e24m]\n\n{\n"				\
+				"\tnwrite: '" #NWRITE "' (-1),\n"	\
 				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"\tbuf:    '" #BUF    "' (%s),\n"	\
 				"\tnbyte:  '" #NBYTE  "' (%zu),\n"	\
@@ -548,7 +687,6 @@ EXIT_ON_FAILURE("failed to read file (" FAIL_TYPE " error)"		\
 		FREAD_FAILURE(errno))
 #define FREAD_FAILUE(ERRNO) READ_FAILURE(ERRNO)
 
-
 /* HANDLE_FWRITE ────────────────────────────────────────────────────────────
  * fwrite */
 #define HANDLE_FWRITE(NWRITE, PTR, SIZE, NITEMS, STREAM)		\
@@ -690,7 +828,6 @@ do {									\
 					 STREAM);			\
 	}								\
 } while (0)
-
 
 /* HANDLE_FPUTS, HANDLE_PUTS ────────────────────────────────────────────────
  * fputs */
@@ -1030,14 +1167,12 @@ CMOD_FCHMODAT_FAILURE(ERRNO,						\
 ? "'S_ISVTX' - This is the sticky bit, usually 01000."			\
 : "compound permissions")))))))))))))))
 
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
  *
  *
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
 
 inline void fildes_write_all(const int fildes,
 			     const char *restrict contents)
@@ -1056,7 +1191,6 @@ inline void filename_write_all(const char *restrict filename,
 	HANDLE_FPUTS(contents, file);
 	HANDLE_FCLOSE(file);
 }
-
 
 /* 10 chars long */
 inline char *file_permissions_put_string(char *restrict buffer,
