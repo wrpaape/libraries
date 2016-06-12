@@ -18,7 +18,10 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include <utils/utils.h>	/* EXIT_ON_FAILURE, FILE/stream API */
-#include <unistd.h>		/* getcwd, STDOUT/IN/ERR_FILENO */
+#include <fcntl.h>		/* open */
+#include <unistd.h>		/* close, getcwd, STDOUT/IN/ERR_FILENO */
+#include <sys/uio.h>		/* write */
+#include <sys/types.h>		/* chmod API */
 #include <sys/stat.h>		/* mkdir */
 #include <sys/param.h>		/* MAXPATHLEN */
 
@@ -26,55 +29,91 @@ extern "C" {
 
 /* CONSTANTS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+/* open 'oflag's (from <fcntl.h>)
+ *
+ * The flags specified for the 'oflag' argument are formed by or'ing the
+ * following values:
+ *
+ *O_RDONLY        open for reading only
+ *O_WRONLY        open for writing only
+ *O_RDWR          open for reading and writing
+ *O_NONBLOCK      do not block on open or for data to become available
+ *O_APPEND        append on each write
+ *O_CREAT         create file if it does not exist
+ *O_TRUNC         truncate size to 0
+ *O_EXCL          error if O_CREAT and the file exists
+ *O_SHLOCK        atomically obtain a shared lock
+ *O_EXLOCK        atomically obtain an exclusive lock
+ *O_NOFOLLOW      do not follow symlinks
+ *O_SYMLINK       allow open of symlinks
+ *O_EVTONLY       descriptor requested for event notifications only
+ *O_CLOEXEC       mark as close-on-exe */
+
+
+/* chmod permission bitmasks (from <sys/stat.h>)
+ *
+ * A 'mode' is created from or'd permission bit masks:
+ *
+ * S_IRWXU 0000700    RWX mask for owner
+ * S_IRUSR 0000400    R for owner
+ * S_IWUSR 0000200    W for owner
+ * S_IXUSR 0000100    X for owner
+ *
+ * S_IRWXG 0000070    RWX mask for group
+ * S_IRGRP 0000040    R for group
+ * S_IWGRP 0000020    W for group
+ * S_IXGRP 0000010    X for group
+ *
+ * S_IRWXO 0000007    RWX mask for other
+ * S_IROTH 0000004    R for other
+ * S_IWOTH 0000002    W for other
+ * S_IXOTH 0000001    X for other
+ *
+ * S_ISUID 0004000    set user id on execution
+ * S_ISGID 0002000    set group id on execution
+ * S_ISVTX 0001000    save swapped text even after use */
+
+
+/* flags for the 'at' functions (from <fcntl.h>)
+ *
+ * AT_FDCWD	-2
+ *
+ * AT_EACCESS		0x0010	Use effective ids in access check
+ * AT_SYMLINK_NOFOLLOW	0x0020	Act on the symlink itself not the target
+ * AT_SYMLINK_FOLLOW	0x0040	Act on target of symlink
+ * AT_REMOVEDIR		0x0080	Path refers to directory */
+
+
 /* CONSTANTS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define PUT_SLASH(PTR)	\
-do {			\
-	*PTR = '/';	\
-	++PTR;		\
+#define PUT_CHAR(PTR, CHAR)	\
+do {				\
+	*PTR = CHAR;		\
+	++PTR;			\
 } while (0)
 
+#define PUT_SLASH(PTR) PUT_CHAR(PTR, CHAR)
 
 /* error handlers
  * ========================================================================== */
-     /* The flags specified for the oflag argument are formed by or'ing the following values: */
 
-     /*       O_RDONLY        open for reading only */
-     /*       O_WRONLY        open for writing only */
-     /*       O_RDWR          open for reading and writing */
-     /*       O_NONBLOCK      do not block on open or for data to become available */
-     /*       O_APPEND        append on each write */
-     /*       O_CREAT         create file if it does not exist */
-     /*       O_TRUNC         truncate size to 0 */
-     /*       O_EXCL          error if O_CREAT and the file exists */
-     /*       O_SHLOCK        atomically obtain a shared lock */
-     /*       O_EXLOCK        atomically obtain an exclusive lock */
-     /*       O_NOFOLLOW      do not follow symlinks */
-     /*       O_SYMLINK       allow open of symlinks */
-     /*       O_EVTONLY       descriptor requested for event notifications only */
-     /*       O_CLOEXEC       mark as close-on-exec */
-/* open */
-
-/* int open(const char *path, int oflag, ...); */
-/* int openat(int fd, const char *path, int oflag, ...); */
-
-/* open */
 #define HANDLE_OPEN(FILDES, PATH, OFLAG, ...)				\
 do {									\
 	FILDES = open(PATH, OFLAG, ##__VA_ARGS__);			\
 	if (FILDES == -1)						\
-		EXIT_ON_FAILURE("failed to close file"			\
+		EXIT_ON_FAILURE("failed to open file"			\
 				"\e24m]\n\n{\n"				\
 				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"\tpath:   '" #PATH   "' (%s),\n"	\
-				"\toflag:  '" #OFLAG   "' (%d),\n"	\
+				"\toflag:  '" #OFLAG  "' (%o) %s\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
 				FILDES,					\
 				PATH,					\
 				OFLAG,					\
+				CLASSIFY_FILE_OFLAG(OFLAG),		\
 				OPEN_FAILURE(errno));			\
 } while (0)
 #define OPEN_FAILURE(ERRNO)						\
@@ -176,21 +215,95 @@ do {									\
 do {									\
 	FILDES = openat(FD, PATH, OFLAG, ##__VA_ARGS__);		\
 	if (FILDES == -1)						\
-		EXIT_ON_FAILURE("failed to close file"			\
+		EXIT_ON_FAILURE("failed to open file"			\
 				"\e24m]\n\n{\n"				\
-				"\tfildes: '" #FILDES "' (%d),\n"	\
 				"\tfd:     '" #FD     "' (%d),\n"	\
 				"\tpath:   '" #PATH   "' (%s),\n"	\
-				"\toflag:  '" #OFLAG   "' (%d),\n"	\
+				"\toflag:  '" #OFLAG  "' (%o) %s\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
-				FILDES,					\
 				FD,					\
 				PATH,					\
 				OFLAG,					\
+				CLASSIFY_FILE_OFLAG(OFLAG),		\
 				OPENAT_FAILURE(errno));			\
 } while (0)
 #define OPENAT_FAILURE(ERRNO) OPEN_FAILURE(ERRNO)
+
+
+/* write */
+/* #include <unistd.h> */
+
+/* ssize_t */
+/* pwrite(int fildes, const void *buf, size_t nbyte, off_t offset); */
+
+/* ssize_t */
+/* write(int fildes, const void *buf, size_t nbyte); */
+
+/* #include <sys/uio.h> */
+
+/* ssize_t */
+/* writev(int fildes, const struct iovec *iov, int iovcnt); */
+
+/* The write(), writev(), and pwrite() system calls will fail and the file pointer will remain unchanged if: */
+  ((ERRNO == EDQUOT)							\
+? "The user's quota of disk blocks on the file system containing the file is exhausted."
+: ((ERRNO == EFAULT)							\
+? "Part of iov or data to be written to the file points outside the process's allocated address space."
+: ((ERRNO == EINVAL)							\
+? "The pointer associated with fildes is negative."
+
+/* the write() and pwrite() system calls will fail and the file pointer will remain unchanged if: */
+: ((ERRNO == EAGAIN)							\
+? "The file is marked for non-blocking I/O, and no data could be written immediately."
+: ((ERRNO == EBADF)							\
+? "fildes is not a valid file descriptor open for writin"
+: ((ERRNO == ECONNRESET)							\
+? "A write is attempted on a socket that is not connected."
+: ((ERRNO == EFBIG)							\
+? "An attempt is made to write a file that exceeds the process's file size limit or the maximum file size."
+: ((ERRNO == EFBIG)							\
+? "The file is a regular file, nbyte is greater than 0, and the starting position is greater than or equal to the offset maximum established in the open file description associated with fildes."
+: ((ERRNO == EINTR)							\
+? "A signal interrupts the write before it could be completed."
+: ((ERRNO == EIO)							\
+? "An I/O error occurs while reading from or writing to the file system."
+: ((ERRNO == ENETDOWN)							\
+? "A write is attempted on a socket and the local network interface used to reach the destination is down."
+: ((ERRNO == ENETUNREACH)							\
+? "A write is attempted on a socket and no route to the network is present."
+: ((ERRNO == ENOSPC)							\
+? "There is no free space remaining on the file system containing the file."
+: ((ERRNO == ENXIO)							\
+? "A request is made of a nonexistent device, or the request is outside the capabilities of the device."
+: ((ERRNO == EPIPE)							\
+? "An attempt is made to write to a pipe that is not open for reading by any process."
+: ((ERRNO == EPIPE)							\
+? "An attempt is made to write to a socket of type SOCK_STREAM that is not connected to a peer socket."
+
+/* the write() and writev() calls may also return the following errors: */
+: ((ERRNO == EAGAIN)							\
+? "See EWOULDBLOCK, below."
+: ((ERRNO == EWOULDBLOCK)							\
+? "The file descriptor is for a socket, is marked O_NONBLOCK, and write would block.  The exact error code depends on the protocol, but EWOULDBLOCK is more common."
+
+/* in addition, writev() may return one of the following errors: */
+: ((ERRNO == EDESTADDRREQ)							\
+? "The destination is no longer available when writing to a UNIX domain datagram socket on which connect(2) or connectx(2) had been used to set a destination address."
+: ((ERRNO == EINVAL)							\
+? "(one of the following)\n"						\
+  "\t- Iovcnt is less than or equal to 0, or greater than UIO_MAXIOV."
+  "\t- One of the 'iov_len' values in the iov array is negative.
+  "\t- The sum of the 'iov_len' values in the iov array overflows a 32-bit integer.
+: ((ERRNO == ENOBUFS)							\
+? "The mbuf pool has been completely exhausted when writing to a socket.
+
+/* the pwrite() call may also return the following errors: */
+: ((ERRNO == EINVAL)							\
+? "The specified file offset is invalid."
+: ((ERRNO == ESPIPE)							\
+? "The file descriptor is associated with a pipe, socket, or FIFO."
+
 
 
 /* close */
@@ -199,10 +312,10 @@ do {									\
 	if (close(FILDES) == -1)					\
 		EXIT_ON_FAILURE("failed to close file"			\
 				"\e24m]\n\n{\n"				\
-				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tfildes: '" #FILDES "' (%d)\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
-				FILDES,
+				FILDES,					\
 				CLOSE_FAILURE(errno));			\
 } while (0)
 #define CLOSE_FAILURE(ERRNO)						\
@@ -214,6 +327,130 @@ do {									\
 ? "A previously-uncommitted write(2) encountered an input/output "	\
   "error."								\
 : "unknown")))
+
+
+
+/* chmod */
+#define HANDLE_CHMOD(PATH, MODE)
+do {									\
+	if (chmod(PATH, MODE) == -1) {					\
+		char _perms_buffer[11];					\
+		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		EXIT_ON_FAILURE("failed to change mode of file"		\
+				"\e24m]\n\n{\n"				\
+				"\tpath: '" #PATH "' (%s),\n"		\
+				"\tmode: '" #MODE "' (%s) %s\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				PATH,					\
+				&_perms_buffer[0],			\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
+				CHMOD_FAILURE(errno));			\
+	}								\
+} while (0)
+#define CHMOD_FAILURE(ERRNO) PREPEND_CHMOD_FAILURE(ERRNO, "unknown")
+
+/* fchmod */
+#define HANDLE_FCHMOD(FILDES, MODE)
+do {									\
+	if (fchmod(FILDES, MODE) == -1) {				\
+		char _perms_buffer[11];					\
+		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		EXIT_ON_FAILURE("failed to change mode of file"		\
+				"\e24m]\n\n{\n"				\
+				"\tfildes: '" #FILDES "' (%d) %s,\n"	\
+				"\tmode:   '" #MODE   "' (%s) %s\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILDES,					\
+				CLASSIFY_FILDES(FILDES)			\
+				&_perms_buffer[0],			\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
+				FCHMOD_FAILURE(errno));			\
+} while (0)
+#define FCHMOD_FAILURE(ERRNO)						\
+  ((ERRNO == EBADF)							\
+? "'fildes' is not a valid file descriptor."				\
+: ((ERRNO == EINVAL)							\
+? "'fildes' refers to a socket, not to a file."				\
+: ((ERRNO == EINVAL)							\
+? "'mode' is not a valid file mode."					\
+: ((ERRNO == EINTR)							\
+? "Execution was interrupted by a signal."				\
+: ((ERRNO == EIO)							\
+? "An I/O error occurred while reading from or writing to the file "	\
+   "system."								\
+: ((ERRNO == EPERM)							\
+? "The effective user ID does not match the owner of the file and the "	\
+   "effective user ID is not the super-user."				\
+: ((ERRNO == EROFS)							\
+? "The file resides on a read-only file system."			\
+: "unknown")))))))
+
+/* fchmodat */
+#define HANDLE_FCHMODAT(FD, PATH, MODE, FLAG)
+do {									\
+	if (fchmodat(FD, PATH, MODE, FLAG) == -1) {			\
+		char _perms_buffer[11];					\
+		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		EXIT_ON_FAILURE("failed to change mode of file"		\
+				"\e24m]\n\n{\n"				\
+				"\tfd:   '" #FD   "' (%d) %s,\n"	\
+				"\tpath: '" #PATH "' (%s),\n"		\
+				"\tmode: '" #MODE "' (%s) %s,\n"	\
+				"\tflag: '" #FLAG "' (%s)\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				FD,					\
+				CLASSIFY_FILDES(FD)			\
+				PATH,					\
+				&_perms_buffer[0],			\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
+				CLASSIFY_FILE_ATFLAG(FLAG),		\
+				FCHMODAT_FAILURE(errno));		\
+} while (0)
+#define FCHMODAT_FAILURE(ERRNO) PREPEND_CHMOD_FAILURE(ERRNO,		\
+  ((ERRNO == EBADF)							\
+? "The 'path' argument does not specify an absolute path and the 'fd' "	\
+  "argument is neither 'AT_FDCWD' nor a valid file descriptor open "	\
+  "for searching."							\
+: ((ERRNO == EINVAL)							\
+? "The value of the 'flag' argument is not valid."			\
+: ((ERRNO == ENOTDIR)							\
+? "The 'path' argument is not an absolute path and 'fd' is neither "	\
+  "'AT_FDCWD' nor a file descriptor associated with a directory."	\
+: "unknown"))))
+
+
+#define PREPEND_CHMOD_FAILURE(ERRNO, REM_REASONS)			\
+  ((ERRNO == EACCES)							\
+? "Search permission is denied for a component of the path prefix."	\
+: ((ERRNO == EFAULT)							\
+? "path points outside the process's allocated address space."		\
+: ((ERRNO == EINTR)							\
+? "Its execution was interrupted by a signal."				\
+: ((ERRNO == EIO)							\
+? "An I/O error occurred while reading from or writing to the file "	\
+   "system."								\
+: ((ERRNO == ELOOP)							\
+? "Too many symbolic links were encountered in translating the "	\
+  "pathname.  This is taken to be indicative of a looping symbolic "	\
+   "link."								\
+: ((ERRNO == ENAMETOOLONG)						\
+? "A component of a pathname exceeded {NAME_MAX} characters, or an "	\
+   "entire path name exceeded {PATH_MAX} characters."			\
+: ((ERRNO == ENOENT)							\
+? "The named file does not exist."					\
+: ((ERRNO == ENOTDIR)							\
+? "A component of the path prefix is not a directory."			\
+: ((ERRNO == EPERM)							\
+? "The effective user ID does not match the owner of the file and the "	\
+   "effective user ID is not the super-user."				\
+: ((ERRNO == EROFS)							\
+? "The named file resides on a read-only file system."			\
+: REM_REASONS))))))))))
+
+
 
 
 /* fopen */
@@ -271,7 +508,7 @@ do {									\
 				"reason: %s",				\
 				STREAM,					\
 				FILENAME,				\
-				MODE,					\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
 				FOPEN_FAILURE(errno));			\
 } while (0)
 #define FREOPEN_FAILURE(ERRNO) FOPEN_FAILURE(ERRNO)
@@ -315,6 +552,29 @@ do {									\
 : "unknown")
 
 
+/* fputs */
+#define HANDLE_FGETS(STR, SIZE, STREAM)					\
+do {									\
+	const char *const restrict _str_ptr = fgets(STR,		\
+						    (int) SIZE,		\
+						    STREAM);		\
+	 if ((_str_ptr == NULL_POINTER) && (ferror(STREAM) != 0))	\
+		EXIT_ON_FAILURE("failed to open file"			\
+				"\e24m]\n\n{\n"				\
+				"\tstr:    '" #STR    "',\n"		\
+				"\tsize:   %d,\n"			\
+				"\tstream: '" #STREAM "'\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				(int) SIZE,				\
+				STREAM_GET_FAILURE(errno));		\
+} while (0)
+#define STREAM_GET_FAILURE(ERRNO)					\
+  ((ERRNO == EBADF)							\
+? "The given 'stream' is not a readable stream."			\
+: "unknown")
+
+
 #define STREAM_GETV_EXIT(GET_TYPE, FAIL_TYPE)				\
 EXIT_ON_FAILURE("failed to get next " GET_TYPE " (" FAIL_TYPE " error)"	\
 		"\e24m]\n\n{\n"						\
@@ -330,7 +590,7 @@ do {									\
 	RES = (__typeof__(RES)) GETV(STREAM);				\
 	if (RES == EOF) {						\
 		if (ferror(STREAM))					\
-			STREAM_GETV_EXIT(GET_TYPE, "IO");		\
+			STREAM_GETV_EXIT(GET_TYPE, "I/O");		\
 		if (!feof(STREAM))					\
 			STREAM_GETV_EXIT(GET_TYPE, "format");		\
 	}
@@ -360,13 +620,14 @@ do {									\
 		EXIT_ON_FAILURE("failed to get current working"		\
 				"directory",				\
 				"\e24m]\n\n{\n"				\
-				"\tbuf:  '" #BUF  "',\n"		\
-				"\tsize: '" #SIZE "'\n"			\
+				"\tbuf:  '" #BUF  "' (%s),\n"		\
+				"\tsize: '" #SIZE "' (%zu)\n"		\
 				"}\n\n"					\
 				"reason: %s\n\n"			\
 				"buf contents: %s",			\
-				GETCWD_FAILURE(errno),			\
-				BUF);					\
+				BUF,					\
+				SIZE,					\
+				GETCWD_FAILURE(errno));			\
 } while (0)
 #define GETCWD_FAILURE(ERRNO)						\
   ((ERRNO == EACCES)							\
@@ -387,15 +648,18 @@ do {									\
 /* mkdir */
 #define HANDLE_MKDIR(FILENAME, MODE)					\
 do {									\
-	if (mkdir(FILENAME, MODE) == -1)				\
+	if (mkdir(FILENAME, MODE) == -1) {				\
+		char _perms_buffer[11];					\
+		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
 		EXIT_ON_FAILURE("failed to make directory"		\
 				"\e24m]\n\n{\n"				\
-				"\tfilename: %s\n"			\
-				"\tmode:     %s\n"			\
+				"\tfilename: '" #FILENAME "' (%s),\n"	\
+				"\tmode:     '" #MODE     "' (%s) %s\n"	\
 				"}\n\n"					\
 				"reason: %s",				\
 				FILENAME,				\
-				PERMISSION(MODE),			\
+				&_perms_buffer[0],			\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
 				MKDIR_FAILURE(errno));			\
 } while (0)
 #define MKDIR_FAILURE(ERRNO)						\
@@ -421,17 +685,74 @@ do {									\
 
 
 
-/* string description for permission bits 'MODE' */
-#define PERMISSION(MODE)						\
-  (((MODE == S_IRUSR) || (MODE == S_IREAD))				\
+
+/* inspection, debugging utils
+ * ========================================================================== */
+/* description for file open flag bits, 'OFLAG' */
+#define CLASSIFY_FILE_OFLAG(OFLAG)					\
+  ((OFLAG == O_RDONLY)							\
+? "'O_RDONLY' - Open for reading only."					\
+: ((OFLAG == O_WRONLY)							\
+? "'O_WRONLY' - Open for writing only."					\
+: ((OFLAG == O_RDWR)							\
+? "'O_RDWR' - Open for reading and writing."				\
+: ((OFLAG == O_NONBLOCK)						\
+? "'O_NONBLOCK' - Do not block on open or for data to become "		\
+  "available."								\
+: ((OFLAG == O_APPEND)							\
+? "'O_APPEND' - Append on each write."					\
+: ((OFLAG == O_CREAT)							\
+? "'O_CREAT' - Create file if it does not exist."			\
+: ((OFLAG == O_TRUNC)							\
+? "'O_TRUNC' - Truncate size to 0."					\
+: ((OFLAG == (O_CREAT | O_EXCL))					\
+? "'(O_CREAT | O_EXCL)' - Signal error if the file exists."		\
+: ((OFLAG == O_SHLOCK)							\
+? "'O_SHLOCK' - Atomically obtain a shared lock."			\
+: ((OFLAG == O_EXLOCK)							\
+? "'O_EXLOCK' - Atomically obtain an exclusive lock."			\
+: ((OFLAG == O_NOFOLLOW)						\
+? "'O_NOFOLLOW' - Do not follow symlinks."				\
+: ((OFLAG == O_SYMLINK)							\
+? "'O_SYMLINK' - Allow open of symlinks."				\
+: ((OFLAG == O_EVTONLY)							\
+? "'O_EVTONLY' - Descriptor requested for event notifications only."	\
+: ((OFLAG == O_CLOEXEC)							\
+? "'O_CLOEXEC' - Mark as close-on-exe."					\
+: "compound 'oflag'"))))))))))))))
+
+
+/* description for flag bits belonging to an "at" function, 'ATFLAG' */
+#define CLASSIFY_FILE_ATFLAG(ATFLAG)					\
+  ((ATFLAG == AT_EACCESS)						\
+? "'AT_EACCESS' Use effective ids in access check."			\
+: ((ATFLAG == AT_SYMLINK_NOFOLLOW)					\
+? "'AT_SYMLINK_NOFOLLOW' - Act on the symlink itself not the target."	\
+: ((ATFLAG == AT_SYMLINK_FOLLOW)					\
+? "'AT_SYMLINK_FOLLOW' - Act on target of symlink."			\
+: ((ATFLAG == AT_REMOVEDIR)						\
+? "'AT_REMOVEDIR' - 'path' refers to directory."			\
+: "compound 'at flag'"))))
+
+
+/* description for file descriptor 'FILDES' */
+#define CLASSIFY_FILDES(FILDES)						\
+  ((FILDES == AT_FDCWD)							\
+? "'AT_FDCWD' - Descriptor value for the current working directory."	\
+: "unknown")
+
+
+/* description for permission bits 'MODE' */
+#define CLASSIFY_FILE_PERMISSION(MODE)					\
+  ((MODE == S_IRUSR)							\
 ? "'S_ISRUSR' - Read permission bit for the owner of the file. On many"	\
   " systems this bit is 0400. 'S_IREAD' is an obsolete synonym "	\
   "provided for BSD compatibility."					\
-: (((MODE == S_IWUSR) || (MODE == S_IWRITE))				\
+: ((MODE == S_IWUSR)							\
 ? "'S_IWUSR' - Write permission bit for the owner of the file. Usually"	\
   " 0200. 'S_IWRITE' is an obsolete synonym provided for BSD "		\
   "compatibility."							\
-: (((MODE == S_IXUSR) || (MODE == S_IEXEC))				\
+: ((MODE == S_IXUSR)							\
 ? "'S_IXUSR' - Execute (for ordinary files) or search (for "		\
   "directories) permission bit for the owner of the file. Usually "	\
   "0100. 'S_IEXEC' is an obsolete synonym provided for BSD "		\
@@ -455,7 +776,7 @@ do {									\
 ? "'S_IWOTH' - Write permission bit for other users. Usually 02."	\
 : ((MODE == S_IXOTH)							\
 ? "'S_IXOTH' - Execute or search permission bit for other users. "	\
-   "Usually 01."							\
+  "Usually 01."								\
 : ((MODE == S_IRWXO)							\
 ? "'S_IRWXO' - This is equivalent to ‘(S_IROTH | S_IWOTH | S_IXOTH)’."	\
 : ((MODE == S_ISUID)							\
@@ -464,13 +785,8 @@ do {									\
 ? "'S_ISGID' - This is the set-group-ID on execute bit, usually 02000."	\
 : ((MODE == S_ISVTX)							\
 ? "'S_ISVTX' - This is the sticky bit, usually 01000."			\
-: "unknown")))))))))))))))
+: "compound permissions")))))))))))))))
 
-
-
-
-/* compound macros
- * ========================================================================== */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
@@ -478,6 +794,7 @@ do {									\
  *
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
 
 inline void fildes_write_all(const int fildes,
 			     const char *restrict contents)
@@ -495,6 +812,33 @@ inline void filename_write_all(const char *restrict filename,
 	HANDLE_FOPEN(file, filename, "w");
 	HANDLE_FPUTS(contents, file);
 	HANDLE_FCLOSE(file);
+}
+
+
+/* 10 chars long */
+inline char *file_permissions_put_string(char *restrict buffer,
+					 const int mode)
+{
+	PUT_CHAR(buffer, (S_ISDIR(mode))  ? 'd' : '-');
+	PUT_CHAR(buffer, (mode & S_IRUSR) ? 'r' : '-');
+	PUT_CHAR(buffer, (mode & S_IWUSR) ? 'w' : '-');
+	PUT_CHAR(buffer, (mode & S_IXUSR) ? 'x' : '-');
+	PUT_CHAR(buffer, (mode & S_IRGRP) ? 'r' : '-');
+	PUT_CHAR(buffer, (mode & S_IWGRP) ? 'w' : '-');
+	PUT_CHAR(buffer, (mode & S_IXGRP) ? 'x' : '-');
+	PUT_CHAR(buffer, (mode & S_IROTH) ? 'r' : '-');
+	PUT_CHAR(buffer, (mode & S_IWOTH) ? 'w' : '-');
+	PUT_CHAR(buffer, (mode & S_IXOTH) ? 'x' : '-');
+
+	return buffer;
+}
+
+/* buffer must have space for 11 chars */
+inline void file_permissions_copy_string(char *restrict buffer,
+					 const int mode)
+{
+	buffer  = file_permissions_put_string(buffer, mode);
+	*buffer = '\0';
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

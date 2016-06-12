@@ -1,5 +1,11 @@
 #include "file_utils.h"
 
+extern inline char *file_permissions_put_string(char *restrict buffer,
+						const int mode);
+
+extern inline void file_permissions_copy_string(char *restrict buffer,
+						const int mode);
+
 extern inline void fildes_write_all(const int fildes,
 				    const char *restrict contents);
 
