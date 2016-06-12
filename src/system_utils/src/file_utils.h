@@ -382,7 +382,7 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
  * EINVAL ───────────────────────────────────────────────────────────────────
  * write, writev, pwrite */
 #define WRITE_WRITEV_PWRITE_EINVAL_REASON				\
-"The pointer associated with 'fildes' is negative."			\
+"The pointer associated with 'fildes' is negative."
 /* write */
 #define WRITE_EINVAL_REASON WRITE_WRITEV_PWRITE_EINVAL_REASON
 /* writev */
@@ -393,7 +393,7 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 "'UIO_MAXIOV'."								\
 "\t- One of the 'iov_len' values in the iov array is negative."		\
 "\t- The sum of the 'iov_len' values in the iov array overflows a "	\
-"32-bit integer.
+"32-bit integer."
 /* pwrite */
 #define PWRITE_EINVAL_REASON						\
 "(one of the following)\n"						\
@@ -407,12 +407,12 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 /* write, writev */
 #define WRITE_WRITEV_EAGAIN_REASON					\
 "The file descriptor is for a socket, is marked 'O_NONBLOCK', and "	\
-"write would block."							\
+"write would block."
 /* write */
 #define WRITE_EAGAIN_REASON						\
 "(one of the following)\n"						\
 "\t- " WRITE_PWRITE_EAGAIN_REASON					\
-"\t- " WRITE_WRITEV_EAGAIN_REASON					\
+"\t- " WRITE_WRITEV_EAGAIN_REASON
 /* writev */
 #define WRITEV_EAGAIN_REASON WRITE_WRITEV_EAGAIN_REASON
 /* pwrite */
@@ -422,7 +422,7 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 
 
 /* close */
-#define HANDLE_CLOSE(FILDES)
+#define HANDLE_CLOSE(FILDES)						\
 do {									\
 	if (close(FILDES) == -1)					\
 		EXIT_ON_FAILURE("failed to close file"			\
@@ -446,7 +446,7 @@ do {									\
 
 
 /* chmod */
-#define HANDLE_CHMOD(PATH, MODE)
+#define HANDLE_CHMOD(PATH, MODE)					\
 do {									\
 	if (chmod(PATH, MODE) == -1) {					\
 		char _perms_buffer[11];					\
@@ -463,10 +463,10 @@ do {									\
 				CHMOD_FAILURE(errno));			\
 	}								\
 } while (0)
-#define CHMOD_FAILURE(ERRNO) PREPEND_CHMOD_FAILURE(ERRNO, "unknown")
+#define CHMOD_FAILURE(ERRNO) CMOD_FCHMODAT_FAILURE(ERRNO, "unknown")
 
 /* fchmod */
-#define HANDLE_FCHMOD(FILDES, MODE)
+#define HANDLE_FCHMOD(FILDES, MODE)					\
 do {									\
 	if (fchmod(FILDES, MODE) == -1) {				\
 		char _perms_buffer[11];					\
@@ -503,7 +503,7 @@ do {									\
 : "unknown")))))))
 
 /* fchmodat */
-#define HANDLE_FCHMODAT(FD, PATH, MODE, FLAG)
+#define HANDLE_FCHMODAT(FD, PATH, MODE, FLAG)				\
 do {									\
 	if (fchmodat(FD, PATH, MODE, FLAG) == -1) {			\
 		char _perms_buffer[11];					\
@@ -524,7 +524,8 @@ do {									\
 				CLASSIFY_FILE_ATFLAG(FLAG),		\
 				FCHMODAT_FAILURE(errno));		\
 } while (0)
-#define FCHMODAT_FAILURE(ERRNO) PREPEND_CHMOD_FAILURE(ERRNO,		\
+#define FCHMODAT_FAILURE(ERRNO)						\
+CMOD_FCHMODAT_FAILURE(ERRNO,						\
   ((ERRNO == EBADF)							\
 ? "The 'path' argument does not specify an absolute path and the 'fd' "	\
   "argument is neither 'AT_FDCWD' nor a valid file descriptor open "	\
@@ -537,7 +538,7 @@ do {									\
 : "unknown"))))
 
 
-#define PREPEND_CHMOD_FAILURE(ERRNO, REM_REASON)			\
+#define CMOD_FCHMODAT_FAILURE(ERRNO, REM_REASON)			\
   ((ERRNO == EACCES)							\
 ? "Search permission is denied for a component of the path prefix."	\
 : ((ERRNO == EFAULT)							\
@@ -591,9 +592,9 @@ do {									\
 : OPEN_FAILURE(ERRNO))
 
 /* fdopen */
-#define HANDLE_FDOPEN(STREAM, FILENAME, MODE)				\
+#define HANDLE_FDOPEN(STREAM, FILDES, MODE)				\
 do {									\
-	STREAM = fdopen(FILENAME, MODE);				\
+	STREAM = fdopen(FILDES, MODE);					\
 	if (STREAM == NULL_POINTER)					\
 		EXIT_ON_FAILURE("failed to open file"			\
 				"\e24m]\n\n{\n"				\
@@ -632,7 +633,7 @@ do {									\
 /* fclose */
 #define HANDLE_FCLOSE(STREAM)						\
 do {									\
-	if (fclose(STREAM) == NULL_POINTER)				\
+	if (fclose(STREAM) == EOF)					\
 		EXIT_ON_FAILURE("failed to close file"			\
 				"\e24m]\n\n{\n"				\
 				"\tstream: '" #STREAM "' (%p),\n"	\
@@ -690,7 +691,7 @@ do {									\
 : "unknown")
 
 
-#define STREAM_GETV_EXIT(GET_TYPE, FAIL_TYPE)				\
+#define STREAM_GETV_EXIT(GET_TYPE, FAIL_TYPE, RES, STREAM)		\
 EXIT_ON_FAILURE("failed to get next " GET_TYPE " (" FAIL_TYPE " error)"	\
 		"\e24m]\n\n{\n"						\
 		"\tres:    '" #RES    "',\n"				\
@@ -705,10 +706,16 @@ do {									\
 	RES = (__typeof__(RES)) GETV(STREAM);				\
 	if (RES == EOF) {						\
 		if (ferror(STREAM))					\
-			STREAM_GETV_EXIT(GET_TYPE, "I/O");		\
+			STREAM_GETV_EXIT(GET_TYPE,			\
+					 "I/O",				\
+					 RES,				\
+					 STREAM);			\
 		if (!feof(STREAM))					\
-			STREAM_GETV_EXIT(GET_TYPE, "format");		\
-	}
+			STREAM_GETV_EXIT(GET_TYPE,			\
+					 "format",			\
+					 RES,				\
+					 STREAM);			\
+	}								\
 } while (0)
 
 /* fgetc, getc, getw */

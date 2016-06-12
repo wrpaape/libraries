@@ -95,6 +95,7 @@ do {									\
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 inline void stdio_get_command(char *restrict buffer,
+			      const int size,
 			      const char *const restrict command)
 {
 
