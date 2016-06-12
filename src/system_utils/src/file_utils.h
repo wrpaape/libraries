@@ -99,6 +99,8 @@ do {				\
 /* error handlers
  * ========================================================================== */
 
+/* HANDLE_OPEN, HANDLE_OPENAT ───────────────────────────────────────────────
+ * open */
 #define HANDLE_OPEN(FILDES, PATH, OFLAG, ...)				\
 do {									\
 	FILDES = open(PATH, OFLAG, ##__VA_ARGS__);			\
@@ -230,8 +232,20 @@ do {									\
 } while (0)
 #define OPENAT_FAILURE(ERRNO) OPEN_FAILURE(ERRNO)
 
+/* HANDLE_READ, HANDLE_PREAD, HANDLE_READV ──────────────────────────────────
+ * read */
+/* ssize_t */
+/* pread(int d, void *buf, size_t nbyte, off_t offset); */
 
-/* write */
+/* ssize_t */
+/* read(int fildes, void *buf, size_t nbyte); */
+
+/* ssize_t */
+/* readv(int d, const struct iovec *iov, int iovcnt); */
+
+
+/* HANDLE_WRITE, HANDLE_WRITEV, HANDLE_PWRITE ───────────────────────────────
+ * write */
 #define HANDLE_WRITE(FILDES, BUF, NBYTE)				\
 do {									\
 	if (write(FILDES, BUF, NBYTE) == -1) {				\
@@ -253,8 +267,6 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 	WRITE_PWRITE_FAILURE(ERRNO,					\
 			     WRITE_EAGAIN_REASON,			\
 			     WRITE_WRITEV_FAILURE(ERRNO)))
-
-
 
 /* writev */
 #define HANDLE_WRITEV(FILDES, IOV, IOVCNT)				\
@@ -284,8 +296,6 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
   "socket."								\
 : WRITE_WRITEV_FAILURE(ERRNO))))
 
-
-
 /* pwrite */
 #define HANDLE_PWRITE(FILDES, BUF, NBYTE, OFFSET)			\
 do {									\
@@ -313,9 +323,7 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 ? "The file descriptor is associated with a pipe, socket, or FIFO."	\
 : "unknown")))
 
-
-
-/* shared write failure reasons */
+/* write, writev, and pwrite failure reasons */
 #define WRITE_WRITEV_PWRITE_FAILURE(ERRNO, EINVAL_REASON, REM_REASON)	\
   ((ERRNO == EDQUOT)							\
 ? "The user's quota of disk blocks on the file system containing the "	\
@@ -327,6 +335,7 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 ? EINVAL_REASON								\
 : REM_REASON)))
 
+/* write and pwrite failure reasons */
 #define WRITE_PWRITE_FAILURE(ERRNO,					\
 			     EAGAIN_REASON,				\
 			     REM_REASON)				\
@@ -368,14 +377,11 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
    "that is not connected to a peer socket."				\
 : REM_REASON)))))))))))
 
-
-#define WRITE_WRITEV_FAILURE(ERRNO,					\
-			     EAGAIN_REASON)				\
+/* write and writev failure reasons */
+#define WRITE_WRITEV_FAILURE(ERRNO)					\
   ((ERRNO == EWOULDBLOCK)						\
 ? WRITEV_EAGAIN_REASON							\
 : "unknown")
-
-
 
 /* write failure reasons for specific 'errno's
  *
@@ -418,10 +424,8 @@ WRITE_WRITEV_PWRITE_FAILURE(ERRNO,					\
 /* pwrite */
 #define PWRITE_EAGAIN_REASON WRITE_PWRITE_EAGAIN_REASON
 
-
-
-
-/* close */
+/* HANDLE_CLOSE ─────────────────────────────────────────────────────────────
+ * close */
 #define HANDLE_CLOSE(FILDES)						\
 do {									\
 	if (close(FILDES) == -1)					\
@@ -444,8 +448,365 @@ do {									\
 : "unknown")))
 
 
+/* HANDLE_FOPEN, HANDLE_FDOPEN, HANDLE_FREOPEN ──────────────────────────────
+ * fopen */
+#define HANDLE_FOPEN(STREAM, FILENAME, MODE)				\
+do {									\
+	STREAM = fopen(FILENAME, MODE);					\
+	if (STREAM == NULL_POINTER)					\
+		EXIT_ON_FAILURE("failed to open file"			\
+				"\e24m]\n\n{\n"				\
+				"\tstream:   '" #STREAM   "' (%p),\n"	\
+				"\tfilename: '" #FILENAME "' (%s),\n"	\
+				"\tmode:     '" #MODE     "' (%s)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STREAM,					\
+				FILENAME,				\
+				MODE,					\
+				FOPEN_FAILURE(errno));			\
+} while (0)
+#define FOPEN_FAILURE(ERRNO)						\
+  ((ERRNO == EINVAL)							\
+? "invalid 'mode' argument"						\
+: OPEN_FAILURE(ERRNO))
 
-/* chmod */
+/* fdopen */
+#define HANDLE_FDOPEN(STREAM, FILDES, MODE)				\
+do {									\
+	STREAM = fdopen(FILDES, MODE);					\
+	if (STREAM == NULL_POINTER)					\
+		EXIT_ON_FAILURE("failed to open file"			\
+				"\e24m]\n\n{\n"				\
+				"\tstream: '" #STREAM "' (%p),\n"	\
+				"\tfildes: '" #FILDES "' (%d),\n"	\
+				"\tmode:   '" #MODE   "' (%s)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STREAM,					\
+				FILDES,					\
+				MODE,					\
+				FDOPEN_FAILURE(errno));			\
+} while (0)
+#define FDOPEN_FAILURE(ERRNO) FOPEN_FAILURE(ERRNO)
+
+/* freopen */
+#define HANDLE_FREOPEN(STREAM, FILENAME, MODE)				\
+do {									\
+	STREAM = freopen(FILENAME, MODE, STREAM);			\
+	if (STREAM == NULL_POINTER)					\
+		EXIT_ON_FAILURE("failed to reopen file"			\
+				"\e24m]\n\n{\n"				\
+				"\tstream:   '" #STREAM   "' (%p),\n"	\
+				"\tfilename: '" #FILENAME "' (%s),\n"	\
+				"\tmode:     '" #MODE     "' (%s)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STREAM,					\
+				FILENAME,				\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
+				FOPEN_FAILURE(errno));			\
+} while (0)
+#define FREOPEN_FAILURE(ERRNO) FOPEN_FAILURE(ERRNO)
+
+/* HANDLE_FREAD ─────────────────────────────────────────────────────────────
+ * fread */
+#define HANDLE_FREAD(NREAD, PTR, SIZE, NITEMS, STREAM)			\
+do {									\
+	NREAD = fread(PTR, SIZE, NITEMS, STREAM);			\
+	if (NREAD == 0lu) {						\
+		if (ferror(STREAM))					\
+			FREAD_EXIT("I/O",				\
+				   NREAD,				\
+				   PTR,					\
+				   SIZE,				\
+				   NITEMS,				\
+				   STREAM);				\
+		if (!feof(STREAM))					\
+			FREAD_EXIT("format",				\
+				   NREAD,				\
+				   PTR,					\
+				   SIZE,				\
+				   NITEMS,				\
+				   STREAM);				\
+	}								\
+} while (0)
+#define FREAD_EXIT(FAIL_TYPE, NREAD, PTR, SIZE, NITEMS, STREAM)		\
+EXIT_ON_FAILURE("failed to read file (" FAIL_TYPE " error)"		\
+		"\e24m]\n\n{\n"						\
+		"\tnread:  '" #NREAD  "', (0)\n"			\
+		"\tptr:    '" #PTR    "', (%p)\n"			\
+		"\tsize:   '" #SIZE   "', (%zu)\n"			\
+		"\tnitems: '" #NITEMS "', (%zu)\n"			\
+		"\tstream: '" #STREAM "' (%p)\n"			\
+		"}\n\n"							\
+		"reason: %s",						\
+		PTR,							\
+		SIZE,							\
+		NITEMS,							\
+		STREAM,							\
+		FREAD_FAILURE(errno))
+#define FREAD_FAILUE(ERRNO) READ_FAILURE(ERRNO)
+
+
+/* HANDLE_FWRITE ────────────────────────────────────────────────────────────
+ * fwrite */
+#define HANDLE_FWRITE(NWRITE, PTR, SIZE, NITEMS, STREAM)		\
+do {									\
+	NWRITE = fwrite(PTR, SIZE, NITEMS, STREAM);			\
+	if (NWRITE == 0lu) {						\
+		if (ferror(STREAM))					\
+			FWRITE_EXIT("I/O",				\
+				    NWRITE,				\
+				    PTR,				\
+				    SIZE,				\
+				    NITEMS,				\
+				    STREAM);				\
+		if (!feof(STREAM))					\
+			FWRITE_EXIT("format",				\
+				    NWRITE,				\
+				    PTR,				\
+				    SIZE,				\
+				    NITEMS,				\
+				    STREAM);				\
+	}								\
+} while (0)
+#define FWRITE_EXIT(FAIL_TYPE, NWRITE, PTR, SIZE, NITEMS, STREAM)	\
+EXIT_ON_FAILURE("failed to read file (" FAIL_TYPE " error)"		\
+		"\e24m]\n\n{\n"						\
+		"\tnwrite: '" #NWRITE "', (0)\n"			\
+		"\tptr:    '" #PTR    "', (%p)\n"			\
+		"\tsize:   '" #SIZE   "', (%zu)\n"			\
+		"\tnitems: '" #NITEMS "', (%zu)\n"			\
+		"\tstream: '" #STREAM "' (%p)\n"			\
+		"}\n\n"							\
+		"reason: %s",						\
+		PTR,							\
+		SIZE,							\
+		NITEMS,							\
+		STREAM,							\
+		FWRITE_FAILURE(errno))
+#define FWRITE_FAILURE(ERRNO) WRITE_FAILURE(ERRNO)
+
+/* HANDLE_FCLOSE ────────────────────────────────────────────────────────────
+ * fclose */
+#define HANDLE_FCLOSE(STREAM)						\
+do {									\
+	if (fclose(STREAM) == EOF)					\
+		EXIT_ON_FAILURE("failed to close file"			\
+				"\e24m]\n\n{\n"				\
+				"\tstream: '" #STREAM "' (%p),\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STREAM,					\
+				FCLOSE_FAILURE(errno));			\
+} while (0)
+#define FCLOSE_FAILURE(ERRNO) CLOSE_FAILURE(ERRNO)
+
+/* HANDLE_FGETS, HANDLE_GETS ────────────────────────────────────────────────
+ * fgets */
+#define HANDLE_FGETS(STR, SIZE, STREAM)					\
+do {									\
+	const char *const restrict _str_ptr = fgets(STR,		\
+						    (int) SIZE,		\
+						    STREAM);		\
+	 if ((_str_ptr == NULL_POINTER) && (ferror(STREAM) != 0))	\
+		EXIT_ON_FAILURE("failed to read from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tstr:    '" #STR    "' (%p),\n"	\
+				"\tsize:   '" #SIZE   "' (%d),\n"	\
+				"\tstream: '" #STREAM "' (%p)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STR,					\
+				(int) SIZE,				\
+				STREAM,					\
+				FGETS_FAILURE(errno));			\
+} while (0)
+#define FGETS_FAILURE(ERRNO) STREAM_GET_FAILURE(ERRNO)
+
+/* gets */
+#define HANDLE_GETS(STR)						\
+do {									\
+	const char *const restrict _str_ptr = gets(STR);		\
+	 if ((_str_ptr == NULL_POINTER) && (ferror(stdin) != 0))	\
+		EXIT_ON_FAILURE("failed to read from 'stdin'"		\
+				"\e24m]\n\n{\n"				\
+				"\tstr: '" #STR "' (%p)\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				STR,					\
+				GETS_FAILURE(errno));			\
+} while (0)
+#define GETS_FAILURE(ERRNO) STREAM_GET_FAILURE(ERRNO)
+
+/* HANDLE_FGETC, HANDLE_GETC, HANDLE_GET_CHAR, HANDLE_GETW, ─────────────────
+ * HANDLE_GETC_UNLOCKED, HANDLE_GET_CHAR_UNLOCKED ───────────────────────────
+ * fgetc, getc, getw */
+#define HANDLE_FGETC(RES, STREAM) STREAM_GETV(fgetc, "char",	    RES, STREAM)
+#define HANDLE_GETC(RES,  STREAM) STREAM_GETV(getc,  "char",	    RES, STREAM)
+#define HANDLE_GETW(RES,  STREAM) STREAM_GETV(getw,  "wchar (int)", RES, STREAM)
+/* getc_unlocked */
+#define HANDLE_GETC_UNLOCKED(RES, STREAM) STREAM_GETV(getc_unlocked,	\
+						      "char",		\
+						      RES,		\
+						      STREAM)
+/* getchar, getchar_unlocked */
+#define HANDLE_GETCHAR(RES)	     HANDLE_GETC(RES, stdin)
+#define HANDLE_GETCHAR_UNLOCKED(RES) HANDLE_GETC_UNLOCKED(RES, stdin)
+
+/* misc get/s handler implementation ────────────────────────────────────────
+ * failure reasons for stream reading 'get/s' functions */
+#define STREAM_GET_FAILURE(ERRNO)					\
+  ((ERRNO == EBADF)							\
+? "The given 'stream' is not a readable stream."			\
+: READ_FAILURE(ERRNO))
+
+/* exit for single value 'get' functions */
+#define STREAM_GETV_EXIT(GET_TYPE, FAIL_TYPE, RES, STREAM)		\
+EXIT_ON_FAILURE("failed to read next " GET_TYPE " from file ("		\
+		FAIL_TYPE " error)"					\
+		"\e24m]\n\n{\n"						\
+		"\tres:    '" #RES    "',\n"				\
+		"\tstream: '" #STREAM "'\n"				\
+		"}\n\n"							\
+		"reason: %s",						\
+		STREAM_GET_FAILURE(errno))				\
+
+/* routine for single value 'get' functions */
+#define STREAM_GETV(GETV, GET_TYPE, RES, STREAM)			\
+do {									\
+	RES = (__typeof__(RES)) GETV(STREAM);				\
+	if (RES == EOF) {						\
+		if (ferror(STREAM))					\
+			STREAM_GETV_EXIT(GET_TYPE,			\
+					 "I/O",				\
+					 RES,				\
+					 STREAM);			\
+		if (!feof(STREAM))					\
+			STREAM_GETV_EXIT(GET_TYPE,			\
+					 "format",			\
+					 RES,				\
+					 STREAM);			\
+	}								\
+} while (0)
+
+
+/* HANDLE_FPUTS, HANDLE_PUTS ────────────────────────────────────────────────
+ * fputs */
+#define HANDLE_FPUTS(STR, STREAM)					\
+do {									\
+	 if (fputs(STR, STREAM) == EOF)					\
+		EXIT_ON_FAILURE("failed to write to file"		\
+				"\e24m]\n\n{\n"				\
+				"\tstr:    '" #STR    "' (%p) %s,\n"	\
+				"\tstream: '" #STREAM "' (%p)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				STR,					\
+				STR,					\
+				STREAM,					\
+				FPUTS_FAILURE(errno));			\
+} while (0)
+#define FPUTS_FAILURE(ERRNO) STREAM_PUT_FAILURE(ERRNO)
+
+/* fputs */
+#define HANDLE_PUTS(STR)						\
+do {									\
+	 if (puts(STR) == EOF)						\
+		EXIT_ON_FAILURE("failed to write to 'stdout'"		\
+				"\e24m]\n\n{\n"				\
+				"\tstr: '" #STR "' (%p) %s\n"		\
+				"}\n\n"					\
+				"reason: %s",				\
+				STR,					\
+				STR,					\
+				PUTS_FAILURE(errno));			\
+} while (0)
+#define PUTS_FAILURE(ERRNO) STREAM_PUT_FAILURE(ERRNO)
+
+/* failure reasons for stream 'put' functions */
+#define STREAM_PUT_FAILURE(ERRNO)					\
+  ((ERRNO == EBADF)							\
+? "The 'stream' argument is not a writable stream."			\
+: WRITE_FAILURE(ERRNO))
+
+
+/* HANDLE_GETCWD ────────────────────────────────────────────────────────────
+ * getcwd */
+#define HANDLE_GETCWD(BUF, SIZE)					\
+do {									\
+	if (getcwd(BUF, SIZE) == NULL_POINTER)				\
+		EXIT_ON_FAILURE("failed to get current working"		\
+				"directory",				\
+				"\e24m]\n\n{\n"				\
+				"\tbuf:  '" #BUF  "' (%s),\n"		\
+				"\tsize: '" #SIZE "' (%zu)\n"		\
+				"}\n\n"					\
+				"reason: %s\n\n"			\
+				"buf contents: %s",			\
+				BUF,					\
+				SIZE,					\
+				GETCWD_FAILURE(errno));			\
+} while (0)
+#define GETCWD_FAILURE(ERRNO)						\
+  ((ERRNO == EACCES)							\
+? "Read or search permission was denied for a component of the "	\
+   "pathname."								\
+: ((ERRNO == EINVAL)							\
+? "The 'size' argument is zero."					\
+: ((ERRNO == ENOENT)							\
+? "A component of the pathname no longer exists."			\
+: ((ERRNO == ENOMEM)							\
+? "Insufficient memory is available."					\
+: ((ERRNO == ERANGE)							\
+? "The 'size' argument is greater than zero but smaller than the "	\
+   "length of the pathname plus 1."					\
+: "unknown")))))
+
+
+/* HANDLE_MKDIR ─────────────────────────────────────────────────────────────
+ * mkdir */
+#define HANDLE_MKDIR(FILENAME, MODE)					\
+do {									\
+	if (mkdir(FILENAME, MODE) == -1) {				\
+		char _perms_buffer[11];					\
+		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		EXIT_ON_FAILURE("failed to make directory"		\
+				"\e24m]\n\n{\n"				\
+				"\tfilename: '" #FILENAME "' (%s),\n"	\
+				"\tmode:     '" #MODE     "' (%s) %s\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				FILENAME,				\
+				&_perms_buffer[0],			\
+				CLASSIFY_FILE_PERMISSION(MODE),		\
+				MKDIR_FAILURE(errno));			\
+} while (0)
+#define MKDIR_FAILURE(ERRNO)						\
+  ((ERRNO == EACCES)							\
+? "Write permission is denied for the parent directory in which the "	\
+  "new directory is to be added."					\
+: ((ERRNO == EEXIST)							\
+? "A file named 'filename' already exists."				\
+: ((ERRNO == EMLINK)							\
+? "The parent directory has too many links (entries).\n\n "		\
+  "Well-designed file systems never report this error, because they "	\
+  "permit more links than your disk could possibly hold. However, you "	\
+  "must still take account of the possibility of this error, as it "	\
+  "could result from network access to a file system on another "	\
+  "machine."								\
+: ((ERRNO == ENOSPC)							\
+? "The file system doesn’t have enough room to create the new "		\
+  "directory."								\
+: ((ERRNO == EROFS)							\
+? "The parent directory of the directory being created is on a "	\
+  "read-only file system and cannot be modified."			\
+: "unknown")))))
+
+
+/* HANDLE_CHMOD, HANDLE_FCHMOD, HANDLE_FCHMODAT ─────────────────────────────
+ * chmod */
 #define HANDLE_CHMOD(PATH, MODE)					\
 do {									\
 	if (chmod(PATH, MODE) == -1) {					\
@@ -538,6 +899,7 @@ CMOD_FCHMODAT_FAILURE(ERRNO,						\
 : "unknown"))))
 
 
+/* chmod and fchmodat failure reasons */
 #define CMOD_FCHMODAT_FAILURE(ERRNO, REM_REASON)			\
   ((ERRNO == EACCES)							\
 ? "Search permission is denied for a component of the path prefix."	\
@@ -567,248 +929,7 @@ CMOD_FCHMODAT_FAILURE(ERRNO,						\
 : REM_REASON))))))))))
 
 
-
-
-/* fopen */
-#define HANDLE_FOPEN(STREAM, FILENAME, MODE)				\
-do {									\
-	STREAM = fopen(FILENAME, MODE);					\
-	if (STREAM == NULL_POINTER)					\
-		EXIT_ON_FAILURE("failed to open file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstream:   '" #STREAM   "' (%p),\n"	\
-				"\tfilename: '" #FILENAME "' (%s),\n"	\
-				"\tmode:     '" #MODE     "' (%s)\n"	\
-				"}\n\n"					\
-				"reason: %s",				\
-				STREAM,					\
-				FILENAME,				\
-				MODE,					\
-				FOPEN_FAILURE(errno));			\
-} while (0)
-#define FOPEN_FAILURE(ERRNO)						\
-  ((ERRNO == EINVAL)							\
-? "invalid 'mode' argument"						\
-: OPEN_FAILURE(ERRNO))
-
-/* fdopen */
-#define HANDLE_FDOPEN(STREAM, FILDES, MODE)				\
-do {									\
-	STREAM = fdopen(FILDES, MODE);					\
-	if (STREAM == NULL_POINTER)					\
-		EXIT_ON_FAILURE("failed to open file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstream: '" #STREAM "' (%p),\n"	\
-				"\tfildes: '" #FILDES "' (%d),\n"	\
-				"\tmode:   '" #MODE   "' (%s)\n"	\
-				"}\n\n"					\
-				"reason: %s",				\
-				STREAM,					\
-				FILDES,					\
-				MODE,					\
-				FDOPEN_FAILURE(errno));			\
-} while (0)
-#define FDOPEN_FAILURE(ERRNO) FOPEN_FAILURE(ERRNO)
-
-/* freopen */
-#define HANDLE_FREOPEN(STREAM, FILENAME, MODE)				\
-do {									\
-	STREAM = freopen(FILENAME, MODE, STREAM);			\
-	if (STREAM == NULL_POINTER)					\
-		EXIT_ON_FAILURE("failed to reopen file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstream:   '" #STREAM   "' (%p),\n"	\
-				"\tfilename: '" #FILENAME "' (%s),\n"	\
-				"\tmode:     '" #MODE     "' (%s)\n"	\
-				"}\n\n"					\
-				"reason: %s",				\
-				STREAM,					\
-				FILENAME,				\
-				CLASSIFY_FILE_PERMISSION(MODE),		\
-				FOPEN_FAILURE(errno));			\
-} while (0)
-#define FREOPEN_FAILURE(ERRNO) FOPEN_FAILURE(ERRNO)
-
-
-/* fclose */
-#define HANDLE_FCLOSE(STREAM)						\
-do {									\
-	if (fclose(STREAM) == EOF)					\
-		EXIT_ON_FAILURE("failed to close file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstream: '" #STREAM "' (%p),\n"	\
-				"}\n\n"					\
-				"reason: %s",				\
-				STREAM,					\
-				FCLOSE_FAILURE(errno));			\
-} while (0)
-#define FCLOSE_FAILURE(ERRNO) CLOSE_FAILURE(ERRNO)
-
-
-/* fgets */
-#define HANDLE_FGETS(STR, SIZE, STREAM)					\
-do {									\
-	const char *const restrict _str_ptr = fgets(STR,		\
-						    (int) SIZE,		\
-						    STREAM);		\
-	 if ((_str_ptr == NULL_POINTER) && (ferror(STREAM) != 0))	\
-		EXIT_ON_FAILURE("failed to open file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstr:    '" #STR    "',\n"		\
-				"\tsize:   %d,\n"			\
-				"\tstream: '" #STREAM "'\n"		\
-				"}\n\n"					\
-				"reason: %s",				\
-				(int) SIZE,				\
-				STREAM_GET_FAILURE(errno));		\
-} while (0)
-#define STREAM_GET_FAILURE(ERRNO)					\
-  ((ERRNO == EBADF)							\
-? "The given 'stream' is not a readable stream."			\
-: "unknown")
-
-
-/* fputs */
-#define HANDLE_FGETS(STR, SIZE, STREAM)					\
-do {									\
-	const char *const restrict _str_ptr = fgets(STR,		\
-						    (int) SIZE,		\
-						    STREAM);		\
-	 if ((_str_ptr == NULL_POINTER) && (ferror(STREAM) != 0))	\
-		EXIT_ON_FAILURE("failed to open file"			\
-				"\e24m]\n\n{\n"				\
-				"\tstr:    '" #STR    "',\n"		\
-				"\tsize:   %d,\n"			\
-				"\tstream: '" #STREAM "'\n"		\
-				"}\n\n"					\
-				"reason: %s",				\
-				(int) SIZE,				\
-				STREAM_GET_FAILURE(errno));		\
-} while (0)
-#define STREAM_GET_FAILURE(ERRNO)					\
-  ((ERRNO == EBADF)							\
-? "The given 'stream' is not a readable stream."			\
-: "unknown")
-
-
-#define STREAM_GETV_EXIT(GET_TYPE, FAIL_TYPE, RES, STREAM)		\
-EXIT_ON_FAILURE("failed to get next " GET_TYPE " (" FAIL_TYPE " error)"	\
-		"\e24m]\n\n{\n"						\
-		"\tres:    '" #RES    "',\n"				\
-		"\tstream: '" #STREAM "'\n"				\
-		"}\n\n"							\
-		"reason: %s",						\
-		STREAM_GET_FAILURE(errno))				\
-
-
-#define STREAM_GETV(GETV, GET_TYPE, RES, STREAM)			\
-do {									\
-	RES = (__typeof__(RES)) GETV(STREAM);				\
-	if (RES == EOF) {						\
-		if (ferror(STREAM))					\
-			STREAM_GETV_EXIT(GET_TYPE,			\
-					 "I/O",				\
-					 RES,				\
-					 STREAM);			\
-		if (!feof(STREAM))					\
-			STREAM_GETV_EXIT(GET_TYPE,			\
-					 "format",			\
-					 RES,				\
-					 STREAM);			\
-	}								\
-} while (0)
-
-/* fgetc, getc, getw */
-#define HANDLE_FGETC(RES, STREAM) STREAM_GETV(fgetc, "char",	    RES, STREAM)
-#define HANDLE_GETC(RES,  STREAM) STREAM_GETV(getc,  "char",	    RES, STREAM)
-#define HANDLE_GETW(RES,  STREAM) STREAM_GETV(getw,  "wchar (int)", RES, STREAM)
-
-/* getc_unlocked */
-#define HANDLE_GETC_UNLOCKED(RES, STREAM) STREAM_GETV(getc_unlocked,	\
-						      "char",		\
-						      RES,		\
-						      STREAM)
-
-/* getchar, getchar_unlocked */
-#define HANDLE_GETCHAR(RES)	     HANDLE_GETC(RES, stdin)
-#define HANDLE_GETCHAR_UNLOCKED(RES) HANDLE_GETC_UNLOCKED(RES, stdin)
-
-
-
-/* getcwd */
-#define HANDLE_GETCWD(BUF, SIZE)					\
-do {									\
-	if (getcwd(BUF, SIZE) == NULL_POINTER)				\
-		EXIT_ON_FAILURE("failed to get current working"		\
-				"directory",				\
-				"\e24m]\n\n{\n"				\
-				"\tbuf:  '" #BUF  "' (%s),\n"		\
-				"\tsize: '" #SIZE "' (%zu)\n"		\
-				"}\n\n"					\
-				"reason: %s\n\n"			\
-				"buf contents: %s",			\
-				BUF,					\
-				SIZE,					\
-				GETCWD_FAILURE(errno));			\
-} while (0)
-#define GETCWD_FAILURE(ERRNO)						\
-  ((ERRNO == EACCES)							\
-? "Read or search permission was denied for a component of the "	\
-   "pathname."								\
-: ((ERRNO == EINVAL)							\
-? "The 'size' argument is zero."					\
-: ((ERRNO == ENOENT)							\
-? "A component of the pathname no longer exists."			\
-: ((ERRNO == ENOMEM)							\
-? "Insufficient memory is available."					\
-: ((ERRNO == ERANGE)							\
-? "The 'size' argument is greater than zero but smaller than the "	\
-   "length of the pathname plus 1."					\
-: "unknown")))))
-
-
-/* mkdir */
-#define HANDLE_MKDIR(FILENAME, MODE)					\
-do {									\
-	if (mkdir(FILENAME, MODE) == -1) {				\
-		char _perms_buffer[11];					\
-		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
-		EXIT_ON_FAILURE("failed to make directory"		\
-				"\e24m]\n\n{\n"				\
-				"\tfilename: '" #FILENAME "' (%s),\n"	\
-				"\tmode:     '" #MODE     "' (%s) %s\n"	\
-				"}\n\n"					\
-				"reason: %s",				\
-				FILENAME,				\
-				&_perms_buffer[0],			\
-				CLASSIFY_FILE_PERMISSION(MODE),		\
-				MKDIR_FAILURE(errno));			\
-} while (0)
-#define MKDIR_FAILURE(ERRNO)						\
-  ((ERRNO == EACCES)							\
-? "Write permission is denied for the parent directory in which the "	\
-  "new directory is to be added."					\
-: ((ERRNO == EEXIST)							\
-? "A file named 'filename' already exists."				\
-: ((ERRNO == EMLINK)							\
-? "The parent directory has too many links (entries).\n\n "		\
-  "Well-designed file systems never report this error, because they "	\
-  "permit more links than your disk could possibly hold. However, you "	\
-  "must still take account of the possibility of this error, as it "	\
-  "could result from network access to a file system on another "	\
-  "machine."								\
-: ((ERRNO == ENOSPC)							\
-? "The file system doesn’t have enough room to create the new "		\
-  "directory."								\
-: ((ERRNO == EROFS)							\
-? "The parent directory of the directory being created is on a "	\
-  "read-only file system and cannot be modified."			\
-: "unknown")))))
-
-
-
-
-/* inspection, debugging utils
+/* misc inspection, debugging utils
  * ========================================================================== */
 /* description for file open flag bits, 'OFLAG' */
 #define CLASSIFY_FILE_OFLAG(OFLAG)					\
