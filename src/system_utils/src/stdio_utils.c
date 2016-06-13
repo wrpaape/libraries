@@ -1,7 +1,11 @@
 #include "stdio_utils.h"
 
-extern inline void stdio_get_command(char *restrict buffer,
-				     const int size,
-				     const char *const restrict command);
+extern inline size_t shell_command_read(char *restrict buffer,
+					const size_t size,
+					const char *const restrict command);
 
-extern inline void stdio_get_winsize(struct winsize *const restrict window);
+extern inline void shell_command_gets(char *restrict buffer,
+				      const size_t size,
+				      const char *const restrict command);
+
+extern inline void stdio_winsize(struct winsize *const restrict window);

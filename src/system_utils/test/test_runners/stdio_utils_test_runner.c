@@ -28,7 +28,9 @@
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_get_winsize_stdout(void);
+extern void test_shell_command_read(void);
+extern void test_shell_command_gets(void);
+extern void test_stdio_winsize(void);
 
 
 //=======Test Reset Option=====
@@ -44,7 +46,9 @@ void resetTest(void)
 int main(void)
 {
   UnityBegin("../test/stdio_utils_test.c");
-  RUN_TEST(test_get_winsize_stdout, 13);
+  RUN_TEST(test_shell_command_read, 15);
+  RUN_TEST(test_shell_command_gets, 25);
+  RUN_TEST(test_stdio_winsize, 34);
 
   return (UnityEnd());
 }

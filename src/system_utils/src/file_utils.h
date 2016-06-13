@@ -94,13 +94,18 @@ extern "C" {
 
 /* FUNCTION-LIKE MACROS ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+#undef PUT_CHAR
 #define PUT_CHAR(PTR, CHAR)	\
 do {				\
 	*PTR = CHAR;		\
 	++PTR;			\
 } while (0)
 
-#define PUT_SLASH(PTR) PUT_CHAR(PTR, CHAR)
+#ifdef _WIN32	/* use backslashes for windows enviroment */
+#	define PUT_FILE_DELIM(PTR) PUT_CHAR(PTR, '\\')
+#else
+#	define PUT_FILE_DELIM(PTR) PUT_CHAR(PTR, '/')
+#endif
 
 /* error handlers
  * ========================================================================== */
@@ -239,7 +244,7 @@ do {									\
 #define OPENAT_FAILURE(ERRNO) OPEN_FAILURE(ERRNO)
 
 /* HANDLE_READ, HANDLE_PREAD, HANDLE_READV ──────────────────────────────────
-/* read */
+ * read */
 #define HANDLE_READ(NREAD, FILDES, BUF, NBYTE)				\
 do {									\
 	NREAD = read(FILDES, BUF, NBYTE);				\
@@ -336,7 +341,7 @@ READ_PREAD_READV_FAILURE(ERRNO,						\
 ? "A read from a slow device was interrupted before any data arrived "	\
   "by the delivery of a signal."					\
 : ((ERRNO == EINVAL)							\
-? EINVAL_REASON
+? EINVAL_REASON								\
 : ((ERRNO == EIO)							\
 ? "(one of the following)\n"						\
   "\t- An I/O error occurred while reading from the file system."	\
@@ -685,7 +690,7 @@ EXIT_ON_FAILURE("failed to read file (" FAIL_TYPE " error)"		\
 		NITEMS,							\
 		STREAM,							\
 		FREAD_FAILURE(errno))
-#define FREAD_FAILUE(ERRNO) READ_FAILURE(ERRNO)
+#define FREAD_FAILURE(ERRNO) READ_FAILURE(ERRNO)
 
 /* HANDLE_FWRITE ────────────────────────────────────────────────────────────
  * fwrite */
@@ -741,7 +746,7 @@ do {									\
 } while (0)
 #define FCLOSE_FAILURE(ERRNO) CLOSE_FAILURE(ERRNO)
 
-/* HANDLE_FGETS, HANDLE_GETS ────────────────────────────────────────────────
+/* HANDLE_FGETS, HANDLE_GETS, HANDLE_GETLINE, HANDLE_GETDELIM  ──────────────
  * fgets */
 #define HANDLE_FGETS(STR, SIZE, STREAM)					\
 do {									\
@@ -777,6 +782,62 @@ do {									\
 				GETS_FAILURE(errno));			\
 } while (0)
 #define GETS_FAILURE(ERRNO) STREAM_GET_FAILURE(ERRNO)
+
+ssize_t
+getdelim(char ** restrict linep, size_t * restrict linecapp, int delimiter, FILE * restrict stream);
+ssize_t
+getline(char ** restrict linep, size_t * restrict linecapp, FILE * restrict stream);
+
+/* getline */
+#define HANDLE_GETLINE(LINEP, LINECAPP, STREAM)				\
+do {									\
+	 if (getline(LINEP, LINECAPP, STREAM) == -1l)			\
+		EXIT_ON_FAILURE("failed to read line from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tlinep:    '" #LINEP    "' (%p),\n"	\
+				"\tlinecapp: '" #LINECAPP "' (%zu),\n"	\
+				"\tstream:   '" #STREAM   "' (%p)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				LINEP,					\
+				LINECAPP,				\
+				STREAM,					\
+				GETLINE_FAILURE(errno));		\
+} while (0)
+#define GETLINE_FAILURE(ERRNO) GETLINE_GETDELIM_FAILURE(ERRNO)
+
+/* getdelim */
+#define HANDLE_GETDELIM(LINEP, LINECAPP, DELIMITER, STREAM)		\
+do {									\
+	 if (getdelim(LINEP, LINECAPP, DELIMITER, STREAM) == -1l)	\
+		EXIT_ON_FAILURE("failed to read line from file"		\
+				"\e24m]\n\n{\n"				\
+				"\tlinep:     '" #LINEP     "' (%p),\n"	\
+				"\tlinecapp:  '" #LINECAPP  "' (%zu),\n"\
+				"\tdelimiter: '" #DELIMITER "' (%d),\n"	\
+				"\tstream:    '" #STREAM    "' (%p)\n"	\
+				"}\n\n"					\
+				"reason: %s",				\
+				LINEP,					\
+				LINECAPP,				\
+				DELIMITER,				\
+				STREAM,					\
+				GETDELIM_FAILURE(errno));		\
+} while (0)
+#define GETDELIM_FAILURE(ERRNO) GETLINE_GETDELIM_FAILURE(ERRNO)
+
+
+#define GETLINE_GETDELIM_FAILURE(ERRNO)					\
+((ERRNO == EINVAL)							\
+? "Either 'linep' or 'linecapp' is NULL."				\
+((ERRNO == EOVERFLOW)							\
+? "No delimiter was found in the first 'SSIZE_MAX' characters."		\
+: FGETS_FAILURE(ERRNO)))
+
+
+
+
+
 
 /* HANDLE_FGETC, HANDLE_GETC, HANDLE_GET_CHAR, HANDLE_GETW, ─────────────────
  * HANDLE_GETC_UNLOCKED, HANDLE_GET_CHAR_UNLOCKED ───────────────────────────
@@ -875,13 +936,12 @@ do {									\
 do {									\
 	if (getcwd(BUF, SIZE) == NULL_POINTER)				\
 		EXIT_ON_FAILURE("failed to get current working"		\
-				"directory",				\
+				"directory"				\
 				"\e24m]\n\n{\n"				\
 				"\tbuf:  '" #BUF  "' (%s),\n"		\
 				"\tsize: '" #SIZE "' (%zu)\n"		\
 				"}\n\n"					\
-				"reason: %s\n\n"			\
-				"buf contents: %s",			\
+				"reason: %s\n\n",			\
 				BUF,					\
 				SIZE,					\
 				GETCWD_FAILURE(errno));			\
@@ -908,7 +968,7 @@ do {									\
 do {									\
 	if (mkdir(FILENAME, MODE) == -1) {				\
 		char _perms_buffer[11];					\
-		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		file_permissions_string(&_perms_buffer[0], MODE);	\
 		EXIT_ON_FAILURE("failed to make directory"		\
 				"\e24m]\n\n{\n"				\
 				"\tfilename: '" #FILENAME "' (%s),\n"	\
@@ -919,6 +979,7 @@ do {									\
 				&_perms_buffer[0],			\
 				CLASSIFY_FILE_PERMISSION(MODE),		\
 				MKDIR_FAILURE(errno));			\
+	}								\
 } while (0)
 #define MKDIR_FAILURE(ERRNO)						\
   ((ERRNO == EACCES)							\
@@ -948,7 +1009,7 @@ do {									\
 do {									\
 	if (chmod(PATH, MODE) == -1) {					\
 		char _perms_buffer[11];					\
-		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		file_permissions_string(&_perms_buffer[0], MODE);	\
 		EXIT_ON_FAILURE("failed to change mode of file"		\
 				"\e24m]\n\n{\n"				\
 				"\tpath: '" #PATH "' (%s),\n"		\
@@ -968,7 +1029,7 @@ do {									\
 do {									\
 	if (fchmod(FILDES, MODE) == -1) {				\
 		char _perms_buffer[11];					\
-		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		file_permissions_string(&_perms_buffer[0], MODE);	\
 		EXIT_ON_FAILURE("failed to change mode of file"		\
 				"\e24m]\n\n{\n"				\
 				"\tfildes: '" #FILDES "' (%d) %s,\n"	\
@@ -980,6 +1041,7 @@ do {									\
 				&_perms_buffer[0],			\
 				CLASSIFY_FILE_PERMISSION(MODE),		\
 				FCHMOD_FAILURE(errno));			\
+	}								\
 } while (0)
 #define FCHMOD_FAILURE(ERRNO)						\
   ((ERRNO == EBADF)							\
@@ -1005,7 +1067,7 @@ do {									\
 do {									\
 	if (fchmodat(FD, PATH, MODE, FLAG) == -1) {			\
 		char _perms_buffer[11];					\
-		file_permissions_copy_string(&_perms_buffer[0], MODE);	\
+		file_permissions_string(&_perms_buffer[0], MODE);	\
 		EXIT_ON_FAILURE("failed to change mode of file"		\
 				"\e24m]\n\n{\n"				\
 				"\tfd:   '" #FD   "' (%d) %s,\n"	\
@@ -1021,6 +1083,7 @@ do {									\
 				CLASSIFY_FILE_PERMISSION(MODE),		\
 				CLASSIFY_FILE_ATFLAG(FLAG),		\
 				FCHMODAT_FAILURE(errno));		\
+	}								\
 } while (0)
 #define FCHMODAT_FAILURE(ERRNO)						\
 CMOD_FCHMODAT_FAILURE(ERRNO,						\
@@ -1193,7 +1256,7 @@ inline void filename_write_all(const char *restrict filename,
 }
 
 /* 10 chars long */
-inline char *file_permissions_put_string(char *restrict buffer,
+inline char *file_permissions_string_put(char *restrict buffer,
 					 const int mode)
 {
 	PUT_CHAR(buffer, (S_ISDIR(mode))  ? 'd' : '-');
@@ -1211,10 +1274,10 @@ inline char *file_permissions_put_string(char *restrict buffer,
 }
 
 /* buffer must have space for 11 chars */
-inline void file_permissions_copy_string(char *restrict buffer,
-					 const int mode)
+inline void file_permissions_string(char *restrict buffer,
+				    const int mode)
 {
-	buffer  = file_permissions_put_string(buffer, mode);
+	buffer  = file_permissions_string_put(buffer, mode);
 	*buffer = '\0';
 }
 

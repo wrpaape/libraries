@@ -54,14 +54,16 @@ extern "C" {
 /* popen */
 #define HANDLE_POPEN(STREAM, COMMAND, MODE)				\
 do {									\
-	STREAM = popen(COMMAND, MODE)					\
+	STREAM = popen(COMMAND, MODE);					\
 	if (STREAM == NULL_POINTER)					\
 		EXIT_ON_FAILURE("failed open process"			\
 				"\e24m]\n\n{\n"				\
-				"\tcommand: '" #COMMAND ",'\n"		\
-				"\tmode:    '" #MODE    "'\n"		\
+				"\tcommand: '" #COMMAND "' (%s),\n"	\
+				"\tmode:    '" #MODE    "' (%s)\n"	\
 				"}\n\n"					\
-				"reason: " POPEN_FAILURE);		\
+				"reason: " POPEN_FAILURE,		\
+				COMMAND,				\
+				MODE);					\
 } while (0)
 #define POPEN_FAILURE							\
 "(one of the following)\n"						\
@@ -73,13 +75,13 @@ do {									\
 /* pclose */
 #define HANDLE_PCLOSE(STREAM)						\
 do {									\
-	const int status = pclose(STREAM)				\
-	if (status == -1)						\
+	if (pclose(STREAM) == -1)					\
 		EXIT_ON_FAILURE("failed close process"			\
 				"\e24m]\n\n{\n"				\
-				"\tstream: '" #STREAM "'\n"		\
+				"\tstream: '" #STREAM " (%p) '\n"	\
 				"}\n\n"					\
-				"reason: " PCLOSE_FAILURE);		\
+				"reason: " PCLOSE_FAILURE,		\
+				STREAM);				\
 } while (0)
 #define PCLOSE_FAILURE							\
 "(one of the following)\n"						\
@@ -94,14 +96,32 @@ do {									\
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline void stdio_get_command(char *restrict buffer,
-			      const int size,
-			      const char *const restrict command)
+inline size_t shell_command_read(char *restrict buffer,
+				 const size_t size,
+				 const char *const restrict command)
 {
+	FILE *process;
+	size_t nread;
 
+	HANDLE_POPEN(process, command, "r");
+	HANDLE_FREAD(nread, buffer, sizeof(char), size, process);
+	HANDLE_PCLOSE(process);
+
+	return nread;
 }
 
-inline void stdio_get_winsize(struct winsize *const restrict window)
+inline void shell_command_gets(char *restrict buffer,
+			       const size_t size,
+			       const char *const restrict command)
+{
+	FILE *process;
+
+	HANDLE_POPEN(process, command, "r");
+	HANDLE_FGETS(buffer, size, process);
+	HANDLE_PCLOSE(process);
+}
+
+inline void stdio_winsize(struct winsize *const restrict window)
 {
 	get_winsize(window, STDOUT_FILENO);
 }
