@@ -14,49 +14,49 @@ MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul] = {
 
 /* declare all memory_set<WIDTH> functions extern */
 extern inline void memory_set1(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set2(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set3(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set4(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set5(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set6(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set7(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set8(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set9(void *const restrict x,
-				 const void *const restrict y);
+			       const void *const restrict y);
 
 extern inline void memory_set10(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set11(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set12(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set13(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set14(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set15(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
 
 extern inline void memory_set16(void *const restrict x,
-				  const void *const restrict y);
+				const void *const restrict y);
