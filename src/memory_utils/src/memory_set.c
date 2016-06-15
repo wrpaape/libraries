@@ -8,9 +8,13 @@ MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul] = {
 	&memory_set1,  &memory_set2,  &memory_set3,  &memory_set4,
 	&memory_set5,  &memory_set6,  &memory_set7,  &memory_set8,
 	&memory_set9,  &memory_set10, &memory_set11, &memory_set12,
-	&memory_set13, &memory_set14, &memory_set15, &memory_set16,
+	&memory_set13, &memory_set14, &memory_set15, &memory_set16
 };
 
+
+extern inline void memory_set_width(void *const restrict x,
+				    const void *const restrict y,
+				    const size_t width);
 
 /* declare all memory_set<WIDTH> functions extern */
 extern inline void memory_set1(void *const restrict x,

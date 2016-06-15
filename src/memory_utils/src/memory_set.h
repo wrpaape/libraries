@@ -48,7 +48,13 @@ extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul];
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define memory_set_width(X, Y, WIDTH) memset(X, ((int) Y), WIDTH)
+/* memory set arbitrary byte size, 'width' */
+inline void memory_set_width(void *const restrict x,
+			     const void *const restrict y,
+			     const size_t width)
+{
+	memcpy(x, y, width);
+}
 
 inline MemorySet *assign_memory_set(const size_t width)
 {

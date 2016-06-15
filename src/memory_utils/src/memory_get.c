@@ -8,7 +8,7 @@ MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul] = {
 	&memory_get1,  &memory_get2,  &memory_get3,  &memory_get4,
 	&memory_get5,  &memory_get6,  &memory_get7,  &memory_get8,
 	&memory_get9,  &memory_get10, &memory_get11, &memory_get12,
-	&memory_get13, &memory_get14, &memory_get15, &memory_get16,
+	&memory_get13, &memory_get14, &memory_get15, &memory_get16
 };
 
 /* access 'i'th member of 'ptr' having elements of size 'width' */

@@ -40,7 +40,13 @@ $(foreach accessor,memory_swap memory_get memory_set,\
 		   $(call MEMORY_MODULE,$(accessor)))
 
 $(call CHILD_MEMORY_MODULE,memory_put,\
-			   memory_set)
+			   memory_set memory_get)
+
+$(call CHILD_MEMORY_MODULE,memory_set_array,\
+			   memory_put memory_set memory_get)
+
+$(call CHILD_MEMORY_MODULE,memory_put_array,\
+			   memory_put memory_set memory_get)
 
 $(call EXPORT_ALL_HEADERS,memory_utils)
 endef

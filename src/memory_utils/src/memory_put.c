@@ -8,8 +8,13 @@ MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX + 1ul] = {
 	&memory_put1,  &memory_put2,  &memory_put3,  &memory_put4,
 	&memory_put5,  &memory_put6,  &memory_put7,  &memory_put8,
 	&memory_put9,  &memory_put10, &memory_put11, &memory_put12,
-	&memory_put13, &memory_put14, &memory_put15, &memory_put16,
+	&memory_put13, &memory_put14, &memory_put15, &memory_put16
 };
+
+
+extern inline void *memory_put_width(void *const restrict x,
+				     const void *const restrict y,
+				     const size_t width);
 
 
 /* declare all memory_put<WIDTH> functions extern */
