@@ -13,12 +13,14 @@ extern "C" {
  * macros for printing multi-byte characters to char pointer 'PTR'
  */
 
+#undef PUT_CHAR
 #define PUT_CHAR(PTR, BYTE)	\
 do {				\
 	*PTR = BYTE;		\
 	++PTR;			\
 } while (0)
 
+#undef PUT_SPACE
 #define PUT_SPACE(PTR) PUT_CHAR(PTR, ' ')
 
 

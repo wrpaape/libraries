@@ -32,13 +32,12 @@ const ascii_t ASCII_UPPER_MAP[ASCII_CNT]  = _ASCII_UPPER_MAP();
 const ascii_t ASCII_TOGGLE_MAP[ASCII_CNT] = _ASCII_TOGGLE_MAP();
 
 
-extern inline bool is_ascii_string(char *bytes);
-extern inline bool is_ascii_string(char *bytes);
+extern inline bool is_ascii_string(const char *restrict bytes);
 
 /* character map case */
-extern inline ascii_t lowercase_ascii(ascii_t ascii);
-extern inline ascii_t uppercase_ascii(ascii_t ascii);
-extern inline ascii_t togglecase_ascii(ascii_t ascii);
+extern inline ascii_t lowercase_ascii(const ascii_t ascii);
+extern inline ascii_t uppercase_ascii(const ascii_t ascii);
+extern inline ascii_t togglecase_ascii(const ascii_t ascii);
 
 /* string map case */
 extern inline void uppercase_ascii_string(ascii_t *restrict string);

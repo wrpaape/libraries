@@ -12,9 +12,8 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include <stdint.h>	/* uint8_t */
-#include <limits.h>	/* UINT8_MAX */
-#include <stdbool.h>	/* bool */
+#include <utils/octet.h>	/* octet_t, OCTET_MAX */
+#include <stdbool.h>		/* bool */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -23,7 +22,7 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-typedef uint8_t ascii_t;
+typedef octet_t ascii_t;
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -35,7 +34,7 @@ typedef uint8_t ascii_t;
 /* ASCII limits, bounds
  * ========================================================================== */
 #define ASCII_VALID_MAX 127
-#define ASCII_MAX UINT8_MAX
+#define ASCII_MAX OCTET_MAX
 #define ASCII_CNT (ASCII_MAX + 1ul)
 #define ASCII_VALID_CNT (ASCII_VALID_MAX + 1ul)
 #define ASCII_PRINTABLE_CNT (ASCII_VALID_CNT - ASCII_CONTROL_CNT)
@@ -257,7 +256,7 @@ inline bool is_ascii(char byte)
 }
 
 /* character map case */
-inline ascii_t lowercase_ascii(ascii_t ascii)
+inline ascii_t lowercase_ascii(const ascii_t ascii)
 {
 	return ASCII_LOWER_MAP[ascii];
 }
@@ -279,7 +278,7 @@ inline ascii_t togglecase_ascii(ascii_t ascii)
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline bool is_ascii_string(char *string)
+inline bool is_ascii_string(const char *restrict string)
 {
 	while (1) {
 		if (*string == '\0')

@@ -1,17 +1,19 @@
 #include "utf8.h"
 
-extern inline size_t utf8_head_width(const byte_t head);
-extern inline size_t utf8_width(const byte_t *bytes);
-extern inline bool is_utf8(const byte_t *restrict bytes);
+extern inline unsigned int utf8_head_width(const octet_t head);
+extern inline unsigned int utf8_width(const octet_t *restrict bytes);
+extern inline bool is_utf8(const octet_t *restrict bytes);
+extern inline void utf8_char_init(struct UTF8Char *restrict utf8_char,
+				  const char *const restrict *buffer);
 
-bool is_utf8_string(const byte_t *restrict string)
+bool is_utf8_string(const octet_t *restrict string)
 {
-	size_t width;
+	unsigned int width;
 
 	while (1) {
 		width = utf8_width(string);
 
-		if (width == 0ul)
+		if (width == 0u)
 			return false;
 
 		if (*string == '\0')
@@ -26,20 +28,20 @@ char *fgets_utf8(char *const restrict char_buffer,
 		 int count,
 		 FILE *restrict stream)
 {
-	byte_t *restrict byte_buffer = (byte_t *) fgets(char_buffer,
-							count
-							* ((int) UTF8_MAX_SIZE),
-							stream);
+	octet_t *restrict byte_buffer = (octet_t *restrict)
+				       fgets(char_buffer,
+					     count * ((int) UTF8_MAX_SIZE),
+					     stream);
 
 	if (byte_buffer == NULL) /* will catch case of 'count <= 0' */
 		return NULL;
 
-	size_t width;
+	unsigned int width;
 
 	while (1) {
 		width = utf8_width(byte_buffer);
 
-		if (width == 0ul)
+		if (width == 0u)
 			return NULL;
 
 		byte_buffer += width;

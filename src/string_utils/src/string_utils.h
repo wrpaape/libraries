@@ -45,31 +45,39 @@ extern "C" {
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline char *extend_string(char *restrict buffer,
-			   const char *restrict extend)
+inline char *put_string(char *restrict buffer,
+			const char *restrict string)
 {
-	while (*extend != '\0') {
-		*buffer = *extend;
+	while (*string != '\0') {
+		*buffer = *string;
 		++buffer;
-		++extend;
+		++string;
 	}
 
 	return buffer;
 }
 
-inline char *capitalize_string(const char *restrict string)
+inline void capitalize_string(char *restrict cap_string,
+			      const char *restrict string)
+{
+	while (*string != '\0') {
+		*cap_string = (char) toupper((int) (*string));
+		++cap_string;
+		++string;
+	}
+
+	*cap_string = '\0';
+}
+
+inline char *capitalized_string(const char *const restrict string)
 {
 	char *restrict cap_string;
 
-	const size_t length = strlen(string);
-
 	HANDLE_MALLOC(cap_string,
-		      sizeof(char) * (length + 1ul));
+		      sizeof(char) * (strlen(string) + 1ul));
 
-	for (size_t i = 0ul; i < length; ++i)
-		cap_string[i] = (char) toupper((int) string[i]);
-
-	cap_string[length] = '\0';
+	capitalize_string(cap_string,
+			  string);
 
 	return cap_string;
 }
