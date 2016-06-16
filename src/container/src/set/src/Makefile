@@ -1,12 +1,23 @@
 include $(MAKEFILE_SCAFFOLD)
 
+
+define SET_MODULE
+$(call LIBRARIES,$1)
+
+$(call EXPORT_LIBRARIES,$1)
+
+$(call TEST_BINARY,$1,\
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $(EMPTY),\
+		 $2)
+endef
+
 define RULES
-$(call USER_LIBRARIES,bit_vector)
-$(call TEST_BINARY,bit_vector,
-		   $(EMPTY),
-		   $(EMPTY),
-		   $(EMPTY),
-		   -lrandom_shared)
+$(call SET_MODULE,bit_vector,\
+		    -lrandom_shared)
+
+$(call EXPORT_ALL_HEADERS,container/set)
 endef
 
 $(eval $(RULES))

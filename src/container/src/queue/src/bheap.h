@@ -65,13 +65,13 @@ inline void bheap_assign_accessors(struct BHeap *const restrict heap)
 	if (heap->width == 0ul)
 		EXIT_ON_FAILURE("zero byte BHeap node width is not supported: "
 				"(valid width 'w' = { w ∈ ℕ | 1 ≤ w ≤ %zu })",
-				WIDTH_MAX);
+				WIDTH_MAX_SIZE);
 
-	if (heap->width > WIDTH_MAX)
+	if (heap->width > WIDTH_MAX_SIZE)
 		EXIT_ON_FAILURE("BHeap node width of %zu bytes exceeds "
 				"supported maximum: "
 				"(valid width 'w' = { w ∈ ℕ | 1 ≤ w ≤ %zu })",
-				heap->width, WIDTH_MAX);
+				heap->width, WIDTH_MAX_SIZE);
 
 	heap->get  = MEMORY_GET_MAP[ heap->width];
 	heap->set  = MEMORY_SET_MAP[ heap->width];
