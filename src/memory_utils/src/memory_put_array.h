@@ -25,8 +25,8 @@ extern "C" {
 
 /* put_array memory for a particular byte width */
 typedef void *MemoryPutArray(void *restrict,
-			      const void *restrict,
-			      const size_t);
+			     const void *restrict,
+			     const size_t);
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -36,7 +36,7 @@ typedef void *MemoryPutArray(void *restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_put_array' (+1 for extra NULL slot) */
-extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX + 1ul];
+extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -64,10 +64,10 @@ inline void *memory_put_array_width(void *restrict x,
 
 inline MemoryPutArray *assign_memory_put_array(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_PUT_ARRAY_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_PUT_ARRAY_MAP[width];
 }
 
-/* define memory_put_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_put_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void *memory_put_array1(void *restrict x,
 			       const void *restrict y,
 			       const size_t length)

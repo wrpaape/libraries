@@ -35,7 +35,7 @@ typedef void MemorySwap(void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_swap' (+1 for extra NULL slot) */
-extern MemorySwap *const MEMORY_SWAP_MAP[WIDTH_MAX + 1ul];
+extern MemorySwap *const MEMORY_SWAP_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -92,10 +92,10 @@ inline void memory_swap_buffer(void *const restrict x,
 
 inline MemorySwap *assign_memory_swap(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_SWAP_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_SWAP_MAP[width];
 }
 
-/* define memory_swap<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_swap<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void memory_swap1(void *const restrict x,
 			 void *const restrict y)
 {

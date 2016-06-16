@@ -12,9 +12,10 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h" /* Width<WIDTH>, memory_set<WIDTH> */
-#include "memory_set.h" /* memory_set<WIDTH> */
-#include "memory_get.h" /* memory_get<WIDTH> */
+#include "memory_put.h"			/* Width<WIDTH>, memory_set<WIDTH> */
+#include "memory_set.h"			/* memory_set<WIDTH> */
+#include "memory_get.h"			/* memory_get<WIDTH> */
+#include "memory_set_word_rem.h"	/* MEMORY_SET_WORD_REM, word_t */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -36,7 +37,7 @@ typedef void MemorySetArray(void *restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_set_array' (+1 for extra NULL slot) */
-extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX + 1ul];
+extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -44,6 +45,9 @@ extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX + 1ul];
  *
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+/* MEMORY_SET_REM_WORD(
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
  *
@@ -62,16 +66,32 @@ inline void memory_set_array_width(void *restrict x,
 
 inline MemorySetArray *assign_memory_set_array(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_SET_ARRAY_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_SET_ARRAY_MAP[width];
 }
 
-/* define memory_set_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_set_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void memory_set_array1(void *restrict x,
 			      const void *restrict y,
 			      const size_t length)
 {
 	if (length == 0lu)
 		return;
+
+/* 	const size_t array_size  = sizeof(Width1) * length; */
+
+/* 	switch (rem_count) { */
+
+/* 	case 0: break; */
+/* 	case 1kkk */
+/* 	} */
+
+#if (WORD_SIZE > 1lu)
+
+	const size_t length_words = length / WORD_SIZE;
+	const size_t rem_size     = length % WORD_SIZE;
+
+
+#endif
 
 	void *const restrict end_ptr = memory_get1(x, length);
 

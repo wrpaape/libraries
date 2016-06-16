@@ -34,7 +34,7 @@ typedef void *MemoryPut(void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_put' (+1 for extra NULL slot) */
-extern MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX + 1ul];
+extern MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -61,10 +61,10 @@ inline void *memory_put_width(void *const restrict x,
 
 inline MemoryPut *assign_memory_put(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_PUT_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_PUT_MAP[width];
 }
 
-/* define memory_put<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_put<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void *memory_put1(void *const restrict x,
 			 const void *const restrict y)
 {

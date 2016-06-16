@@ -3,7 +3,7 @@
 extern inline MemorySwap *assign_memory_swap(const size_t width);
 
 /* define lookup for 'assign_memory_swap' (zero-width maps to NULL) */
-MemorySwap *const MEMORY_SWAP_MAP[WIDTH_MAX + 1ul] = {
+MemorySwap *const MEMORY_SWAP_MAP[WIDTH_MAX_SIZE + 1ul] = {
 	NULL,
 	&memory_swap1,  &memory_swap2,  &memory_swap3,  &memory_swap4,
 	&memory_swap5,  &memory_swap6,  &memory_swap7,  &memory_swap8,

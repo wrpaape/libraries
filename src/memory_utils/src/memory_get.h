@@ -33,7 +33,7 @@ typedef void *MemoryGet(const void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_get' (+1 for extra NULL slot) */
-extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX + 1ul];
+extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -59,10 +59,10 @@ inline void *memory_get_width(const void *const restrict ptr,
 
 inline MemoryGet *assign_memory_get(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_GET_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_GET_MAP[width];
 }
 
-/* define memory_get<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_get<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void *memory_get1(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {

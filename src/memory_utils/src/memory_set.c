@@ -3,7 +3,7 @@
 extern inline MemorySet *assign_memory_set(const size_t width);
 
 /* define lookup for 'assign_memory_set' (zero-width maps to NULL) */
-MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul] = {
+MemorySet *const MEMORY_SET_MAP[WIDTH_MAX_SIZE + 1ul] = {
 	NULL,
 	&memory_set1,  &memory_set2,  &memory_set3,  &memory_set4,
 	&memory_set5,  &memory_set6,  &memory_set7,  &memory_set8,

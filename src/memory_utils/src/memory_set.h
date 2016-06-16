@@ -33,7 +33,7 @@ typedef void MemorySet(void *const restrict,
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* lookup for 'assign_memory_set' (+1 for extra NULL slot) */
-extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX + 1ul];
+extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
@@ -58,10 +58,10 @@ inline void memory_set_width(void *const restrict x,
 
 inline MemorySet *assign_memory_set(const size_t width)
 {
-	return (width > WIDTH_MAX) ? NULL : MEMORY_SET_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_SET_MAP[width];
 }
 
-/* define memory_set<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX */
+/* define memory_set<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void memory_set1(void *const restrict x,
 			const void *const restrict y)
 {

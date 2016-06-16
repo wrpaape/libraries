@@ -3,7 +3,7 @@
 extern inline MemorySetArray *assign_memory_set_array(const size_t width);
 
 /* define lookup for 'assign_memory_set_array' (zero-width maps to NULL) */
-MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX + 1ul] = {
+MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul] = {
 	NULL,
 	&memory_set_array1,  &memory_set_array2,  &memory_set_array3,
 	&memory_set_array4,  &memory_set_array5,  &memory_set_array6,

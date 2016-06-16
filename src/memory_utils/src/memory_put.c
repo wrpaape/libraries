@@ -3,7 +3,7 @@
 extern inline MemoryPut *assign_memory_put(const size_t width);
 
 /* define lookup for 'assign_memory_put' (zero-width maps to NULL) */
-MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX + 1ul] = {
+MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX_SIZE + 1ul] = {
 	NULL,
 	&memory_put1,  &memory_put2,  &memory_put3,  &memory_put4,
 	&memory_put5,  &memory_put6,  &memory_put7,  &memory_put8,
