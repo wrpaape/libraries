@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h" /* Width<WIDTH> */
+#include "memory_get_width.h" /* MEMORY_GET_WIDTH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -41,6 +41,9 @@ extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX_SIZE + 1ul];
  *
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+#define MEMORY_GET_WIDTH(PTR, I, WIDTH)					\
+((void *) (((const Width ## WIDTH *const restrict) (PTR)) + (I)))
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
  *
@@ -66,97 +69,97 @@ inline MemoryGet *assign_memory_get(const size_t width)
 inline void *memory_get1(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width1 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 1);
 }
 
 inline void *memory_get2(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width2 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 2);
 }
 
 inline void *memory_get3(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width3 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 3);
 }
 
 inline void *memory_get4(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width4 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 4);
 }
 
 inline void *memory_get5(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width5 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 5);
 }
 
 inline void *memory_get6(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width6 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 6);
 }
 
 inline void *memory_get7(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width7 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 7);
 }
 
 inline void *memory_get8(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width8 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 8);
 }
 
 inline void *memory_get9(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {
-	return (void *) (((const Width9 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 9);
 }
 
 inline void *memory_get10(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width10 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 10);
 }
 
 inline void *memory_get11(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width11 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 11);
 }
 
 inline void *memory_get12(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width12 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 12);
 }
 
 inline void *memory_get13(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width13 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 13);
 }
 
 inline void *memory_get14(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width14 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 14);
 }
 
 inline void *memory_get15(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width15 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 15);
 }
 
 inline void *memory_get16(const void *const restrict ptr,
 			  const ptrdiff_t i)
 {
-	return (void *) (((const Width16 *const restrict) ptr) + i);
+	return MEMORY_GET_WIDTH(ptr, i, 16);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

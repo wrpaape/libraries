@@ -14,7 +14,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h" /* Width<WIDTH> */
+#include "memory_swap_width.h" /* Width<WIDTH>, MEMORY_SWAP_WIDTH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -99,129 +99,97 @@ inline MemorySwap *assign_memory_swap(const size_t width)
 inline void memory_swap1(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width1 swap = *((Width1 *const restrict) x);
-	*((Width1 *const restrict) x) = *((Width1 *const restrict) y);
-	*((Width1 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 1);
 }
 
 inline void memory_swap2(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width2 swap = *((Width2 *const restrict) x);
-	*((Width2 *const restrict) x) = *((Width2 *const restrict) y);
-	*((Width2 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 2);
 }
 
 inline void memory_swap3(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width3 swap = *((Width3 *const restrict) x);
-	*((Width3 *const restrict) x) = *((Width3 *const restrict) y);
-	*((Width3 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 3);
 }
 
 inline void memory_swap4(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width4 swap = *((Width4 *const restrict) x);
-	*((Width4 *const restrict) x) = *((Width4 *const restrict) y);
-	*((Width4 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 4);
 }
 
 inline void memory_swap5(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width5 swap = *((Width5 *const restrict) x);
-	*((Width5 *const restrict) x) = *((Width5 *const restrict) y);
-	*((Width5 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 5);
 }
 
 inline void memory_swap6(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width6 swap = *((Width6 *const restrict) x);
-	*((Width6 *const restrict) x) = *((Width6 *const restrict) y);
-	*((Width6 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 6);
 }
 
 inline void memory_swap7(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width7 swap = *((Width7 *const restrict) x);
-	*((Width7 *const restrict) x) = *((Width7 *const restrict) y);
-	*((Width7 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 7);
 }
 
 inline void memory_swap8(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width8 swap = *((Width8 *const restrict) x);
-	*((Width8 *const restrict) x) = *((Width8 *const restrict) y);
-	*((Width8 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 8);
 }
 
 inline void memory_swap9(void *const restrict x,
 			 void *const restrict y)
 {
-	const Width9 swap = *((Width9 *const restrict) x);
-	*((Width9 *const restrict) x) = *((Width9 *const restrict) y);
-	*((Width9 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 9);
 }
 
 inline void memory_swap10(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width10 swap = *((Width10 *const restrict) x);
-	*((Width10 *const restrict) x) = *((Width10 *const restrict) y);
-	*((Width10 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 10);
 }
 
 inline void memory_swap11(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width11 swap = *((Width11 *const restrict) x);
-	*((Width11 *const restrict) x) = *((Width11 *const restrict) y);
-	*((Width11 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 11);
 }
 
 inline void memory_swap12(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width12 swap = *((Width12 *const restrict) x);
-	*((Width12 *const restrict) x) = *((Width12 *const restrict) y);
-	*((Width12 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 12);
 }
 
 inline void memory_swap13(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width13 swap = *((Width13 *const restrict) x);
-	*((Width13 *const restrict) x) = *((Width13 *const restrict) y);
-	*((Width13 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 13);
 }
 
 inline void memory_swap14(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width14 swap = *((Width14 *const restrict) x);
-	*((Width14 *const restrict) x) = *((Width14 *const restrict) y);
-	*((Width14 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 14);
 }
 
 inline void memory_swap15(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width15 swap = *((Width15 *const restrict) x);
-	*((Width15 *const restrict) x) = *((Width15 *const restrict) y);
-	*((Width15 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 15);
 }
 
 inline void memory_swap16(void *const restrict x,
 			  void *const restrict y)
 {
-	const Width16 swap = *((Width16 *const restrict) x);
-	*((Width16 *const restrict) x) = *((Width16 *const restrict) y);
-	*((Width16 *const restrict) y) = swap;
+	MEMORY_SWAP_WIDTH(x, y, 16);
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

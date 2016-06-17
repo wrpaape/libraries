@@ -19,6 +19,11 @@ $(call TEST_BINARY,$1,\
 		   $(MEMORY_UTILS_OBJ) $4)
 endef
 
+define MEMORY_ACTION_MODULE
+$(call MEMORY_MODULE,$(call TRIM,memory_$1),\
+		     $(call HEADER_PATH,$(call TRIM,memory_$1_width)))
+endef
+
 define CHILD_MEMORY_MODULE
 $(call MEMORY_MODULE,$1,\
 		     $(foreach preq,$2,\
@@ -29,10 +34,12 @@ $(call MEMORY_MODULE,$1,\
 		     		    $(call OBJECT_PATH,$(preq))))
 endef
 
-ARRAY_MEMORY_MODULE = $(call CHILD_MEMORY_MODULE,$1,\
-		      				 memory_put,\
-						 $(call HEADER_PATH,word_rem_utils))
+# ARRAY_MEMORY_MODULE = $(call CHILD_MEMORY_MODULE,$1,\
+# 		      				 $(EMPTY),\
+# 						 $(call HEADER_PATH,word_rem_utils))
 
+# $(call CHILD_MEMORY_MODULE,memory_put,\
+# 			   memory_set memory_get)
 define RULES
 $(call OBJECT,memory_utils)
 
@@ -40,11 +47,9 @@ $(call PIC_OBJECT,memory_utils)
 
 $(call TEST_BINARY,memory_utils)
 
-$(foreach module,memory_swap memory_get memory_set,\
-		 $(call MEMORY_MODULE,$(module)))
+$(foreach action,swap get set put,\
+		 $(call MEMORY_ACTION_MODULE,$(action)))
 
-$(call CHILD_MEMORY_MODULE,memory_put,\
-			   memory_set memory_get)
 
 $(foreach module,memory_set_array memory_put_array,\
 		 $(call ARRAY_MEMORY_MODULE,$(module)))
