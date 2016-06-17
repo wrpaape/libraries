@@ -39,6 +39,8 @@ do {									\
 } while (0)
 
 
+#define MACRO_EXPAND_ARGS(MACRO, ...) MACRO(__VA_ARGS__)
+
 
 /* returns 'THIS' or 'THAT' according to the predicate 'THIS CMP THAT',
  * where 'CMP' is a binary relational operator */
@@ -63,21 +65,31 @@ do {							\
 /* FUNCTION-LIKE MACROS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
 
-/* log₂(num) when num ≡ 0 (mod 2) */
+/* log₂(num) when num > 0 and num ≡ 0 (mod 2) */
 inline unsigned long log_base_two_p2(const unsigned long num)
 {
 	return __builtin_ctzl(num);
 }
 
-/* floor( log₂(num) ) */
+/* exits if num == 0 */
+inline unsigned long handle_log_base_two_p2(const unsigned long num)
+{
+	if (num == 0lu)
+		EXIT_ON_FAILURE("'0' is not a power of two, log₂(0) undefined");
+
+	return log_base_two_p2(num);
+}
+
+/* floor( log₂(num) ) when num > 0 */
 inline unsigned long log_base_two(const unsigned long num)
 {
 	return BIT_SIZE(unsigned long) - 1lu - __builtin_clzl(num);
 }
 
+/* exits if num == 0 */
 inline unsigned long handle_log_base_two(const unsigned long num)
 {
-	if (num < 1lu)
+	if (num == 0lu)
 		EXIT_ON_FAILURE("log₂(0) undefined");
 
 	return log_base_two(num);
