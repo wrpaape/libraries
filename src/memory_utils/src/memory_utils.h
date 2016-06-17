@@ -113,6 +113,14 @@ do {									\
 
 #endif	/* ifdef __cplusplus */
 
+/* call memory action function */
+#define MEMORY_ACTION_WIDTH(ACTION, WIDTH, ...)				\
+memory_ ## ACTION ## WIDTH (__VA_ARGS__)
+
+#define EXPAND_MEMORY_ACTION_WIDTH(ACTION, WIDTH, ...)			\
+MACRO_EXPAND_ARGS(MEMORY_ACTION_WIDTH, ACTION, WIDTH, ##__VA_ARGS__)
+
+MEMORY_EXPAND_WIDTH
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
  *

@@ -12,10 +12,8 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h"			/* Width<WIDTH>, memory_set<WIDTH> */
-#include "memory_set.h"			/* memory_set<WIDTH> */
-#include "memory_get.h"			/* memory_get<WIDTH> */
-#include "memory_set_word_rem.h"	/* MEMORY_SET_WORD_REM, word_t */
+#include "memory_put.h"		/* Width<WIDTH>, memory_get/set<WIDTH> */
+#include "word_rem_switch.h"	/* word_t, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -46,10 +44,42 @@ extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* MEMORY_SET_REM_WORD(
+/* word remainder case handlers */
+#define HANDLE_REM0(X, Y)  return
+#define HANDLE_REM1(X, Y)  memory_set1(X, Y);  return
+#define HANDLE_REM2(X, Y)  memory_set2(X, Y);  return
+#define HANDLE_REM3(X, Y)  memory_set3(X, Y);  return
+#define HANDLE_REM4(X, Y)  memory_set4(X, Y);  return
+#define HANDLE_REM5(X, Y)  memory_set5(X, Y);  return
+#define HANDLE_REM6(X, Y)  memory_set6(X, Y);  return
+#define HANDLE_REM7(X, Y)  memory_set7(X, Y);  return
+#define HANDLE_REM8(X, Y)  memory_set8(X, Y);  return
+#define HANDLE_REM9(X, Y)  memory_set9(X, Y);  return
+#define HANDLE_REM10(X, Y) memory_set10(X, Y); return
+#define HANDLE_REM11(X, Y) memory_set11(X, Y); return
+#define HANDLE_REM12(X, Y) memory_set12(X, Y); return
+#define HANDLE_REM13(X, Y) memory_set13(X, Y); return
+#define HANDLE_REM14(X, Y) memory_set14(X, Y); return
+#define HANDLE_REM15(X, Y) memory_set15(X, Y); return
+#define HANDLE_REM16(X, Y) memory_set16(X, Y); return
+
+
+
+#define memory_set_array_words(X, Y, LENGTH)			\
+MEMORY_ACCESSOR_WIDTH(set_array, WORD_WIDTH, X, Y, LENGTH)
+
+
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
+ *
+ *
+ * HELPER FUNCTIONS
+ * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+ * HELPER FUNCTIONS
  *
  *
  * TOP-LEVEL FUNCTIONS
@@ -77,21 +107,8 @@ inline void memory_set_array1(void *restrict x,
 	if (length == 0lu)
 		return;
 
-/* 	const size_t array_size  = sizeof(Width1) * length; */
-
-/* 	switch (rem_count) { */
-
-/* 	case 0: break; */
-/* 	case 1kkk */
-/* 	} */
-
-#if (WORD_SIZE > 1lu)
-
 	const size_t length_words = length / WORD_SIZE;
 	const size_t rem_size     = length % WORD_SIZE;
-
-
-#endif
 
 	void *const restrict end_ptr = memory_get1(x, length);
 
@@ -389,15 +406,8 @@ inline void memory_set_array16(void *restrict x,
 		y = memory_get16(y, 1l);
 	}
 }
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * TOP-LEVEL FUNCTIONS
- *
- *
- * HELPER FUNCTIONS
- * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * HELPER FUNCTIONS */
+ * TOP-LEVEL FUNCTIONS */
 
 
 #ifdef __cplusplus /* close 'extern "C" {' */
