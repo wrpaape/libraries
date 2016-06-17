@@ -48,217 +48,217 @@ extern "C" {
 #elif (WORD_SIZE == 2lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(1, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 1 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 3lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(2, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 2 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 4lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(3, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 3 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 5lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(4, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 4 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 6lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(5, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 5 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 7lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4, ##__VA_ARGS__);		\
-	case 5lu: HANDLE_CASE(5, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(6, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	case 5lu: HANDLE_CASE ## 5 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 6 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 8lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4, ##__VA_ARGS__);		\
-	case 5lu: HANDLE_CASE(5, ##__VA_ARGS__);		\
-	case 6lu: HANDLE_CASE(6, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(7, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	case 5lu: HANDLE_CASE ## 5 (##__VA_ARGS__);		\
+	case 6lu: HANDLE_CASE ## 6 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 7 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 9lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4, ##__VA_ARGS__);		\
-	case 5lu: HANDLE_CASE(5, ##__VA_ARGS__);		\
-	case 6lu: HANDLE_CASE(6, ##__VA_ARGS__);		\
-	case 7lu: HANDLE_CASE(7, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(8, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	case 5lu: HANDLE_CASE ## 5 (##__VA_ARGS__);		\
+	case 6lu: HANDLE_CASE ## 6 (##__VA_ARGS__);		\
+	case 7lu: HANDLE_CASE ## 7 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 8 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 10lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1, ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2, ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3, ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4, ##__VA_ARGS__);		\
-	case 5lu: HANDLE_CASE(5, ##__VA_ARGS__);		\
-	case 6lu: HANDLE_CASE(6, ##__VA_ARGS__);		\
-	case 7lu: HANDLE_CASE(7, ##__VA_ARGS__);		\
-	case 8lu: HANDLE_CASE(8, ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(9, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	case 5lu: HANDLE_CASE ## 5 (##__VA_ARGS__);		\
+	case 6lu: HANDLE_CASE ## 6 (##__VA_ARGS__);		\
+	case 7lu: HANDLE_CASE ## 7 (##__VA_ARGS__);		\
+	case 8lu: HANDLE_CASE ## 8 (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 9 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 11lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu: HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu: HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu: HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu: HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu: HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu: HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu: HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu: HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu: HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	default:  HANDLE_CASE(10, ##__VA_ARGS__);		\
+	case 0lu: HANDLE_CASE ## 0  (##__VA_ARGS__);		\
+	case 1lu: HANDLE_CASE ## 1  (##__VA_ARGS__);		\
+	case 2lu: HANDLE_CASE ## 2  (##__VA_ARGS__);		\
+	case 3lu: HANDLE_CASE ## 3  (##__VA_ARGS__);		\
+	case 4lu: HANDLE_CASE ## 4  (##__VA_ARGS__);		\
+	case 5lu: HANDLE_CASE ## 5  (##__VA_ARGS__);		\
+	case 6lu: HANDLE_CASE ## 6  (##__VA_ARGS__);		\
+	case 7lu: HANDLE_CASE ## 7  (##__VA_ARGS__);		\
+	case 8lu: HANDLE_CASE ## 8  (##__VA_ARGS__);		\
+	case 9lu: HANDLE_CASE ## 9  (##__VA_ARGS__);		\
+	default:  HANDLE_CASE ## 10 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 12lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu:  HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(11, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0 (##__VA_ARGS__);		\
+	case 1lu:  HANDLE_CASE ## 1 (##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2 (##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3 (##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4 (##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5 (##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6 (##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7 (##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8 (##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9 (##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10(##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 11(##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 13lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu:  HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	case 11lu: HANDLE_CASE(11, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(12, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0 ( ##__VA_ARGS__);		\
+	case 1lu:  HANDLE_CASE ## 1 ( ##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2 ( ##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3 ( ##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4 ( ##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5 ( ##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6 ( ##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7 ( ##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8 ( ##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9 ( ##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10( ##__VA_ARGS__);		\
+	case 11lu: HANDLE_CASE ## 11( ##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 12( ##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 14lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu: HANDLE_CASE(0, ##__VA_ARGS__);		\
-	case 1lu:  HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	case 11lu: HANDLE_CASE(11, ##__VA_ARGS__);		\
-	case 12lu: HANDLE_CASE(12, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(13, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0  (##__VA_ARGS__);		\
+	case 1lu:  HANDLE_CASE ## 1  (##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2  (##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3  (##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4  (##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5  (##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6  (##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7  (##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8  (##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9  (##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10 (##__VA_ARGS__);		\
+	case 11lu: HANDLE_CASE ## 11 (##__VA_ARGS__);		\
+	case 12lu: HANDLE_CASE ## 12 (##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 13 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 15lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu:  HANDLE_CASE(0,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	case 11lu: HANDLE_CASE(11, ##__VA_ARGS__);		\
-	case 12lu: HANDLE_CASE(12, ##__VA_ARGS__);		\
-	case 13lu: HANDLE_CASE(13, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(14, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0  (##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2  (##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3  (##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4  (##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5  (##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6  (##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7  (##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8  (##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9  (##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10 (##__VA_ARGS__);		\
+	case 11lu: HANDLE_CASE ## 11 (##__VA_ARGS__);		\
+	case 12lu: HANDLE_CASE ## 12 (##__VA_ARGS__);		\
+	case 13lu: HANDLE_CASE ## 13 (##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 14 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 16lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu:  HANDLE_CASE(0,  ##__VA_ARGS__);		\
-	case 1lu:  HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	case 11lu: HANDLE_CASE(11, ##__VA_ARGS__);		\
-	case 12lu: HANDLE_CASE(12, ##__VA_ARGS__);		\
-	case 13lu: HANDLE_CASE(13, ##__VA_ARGS__);		\
-	case 14lu: HANDLE_CASE(14, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(15, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0  (##__VA_ARGS__);		\
+	case 1lu:  HANDLE_CASE ## 1  (##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2  (##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3  (##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4  (##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5  (##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6  (##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7  (##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8  (##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9  (##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10 (##__VA_ARGS__);		\
+	case 11lu: HANDLE_CASE ## 11 (##__VA_ARGS__);		\
+	case 12lu: HANDLE_CASE ## 12 (##__VA_ARGS__);		\
+	case 13lu: HANDLE_CASE ## 13 (##__VA_ARGS__);		\
+	case 14lu: HANDLE_CASE ## 14 (##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 15 (##__VA_ARGS__);		\
 	}
 #elif (WORD_SIZE == 17lu)
 #	define WORD_REM_SWITCH(WORD_REM, HANDLE_CASE, ...)	\
 	switch (WORD_REM) {					\
-	case 0lu:  HANDLE_CASE(0,  ##__VA_ARGS__);		\
-	case 1lu:  HANDLE_CASE(1,  ##__VA_ARGS__);		\
-	case 2lu:  HANDLE_CASE(2,  ##__VA_ARGS__);		\
-	case 3lu:  HANDLE_CASE(3,  ##__VA_ARGS__);		\
-	case 4lu:  HANDLE_CASE(4,  ##__VA_ARGS__);		\
-	case 5lu:  HANDLE_CASE(5,  ##__VA_ARGS__);		\
-	case 6lu:  HANDLE_CASE(6,  ##__VA_ARGS__);		\
-	case 7lu:  HANDLE_CASE(7,  ##__VA_ARGS__);		\
-	case 8lu:  HANDLE_CASE(8,  ##__VA_ARGS__);		\
-	case 9lu:  HANDLE_CASE(9,  ##__VA_ARGS__);		\
-	case 10lu: HANDLE_CASE(10, ##__VA_ARGS__);		\
-	case 11lu: HANDLE_CASE(11, ##__VA_ARGS__);		\
-	case 12lu: HANDLE_CASE(12, ##__VA_ARGS__);		\
-	case 13lu: HANDLE_CASE(13, ##__VA_ARGS__);		\
-	case 14lu: HANDLE_CASE(14, ##__VA_ARGS__);		\
-	case 15lu: HANDLE_CASE(15, ##__VA_ARGS__);		\
-	default:   HANDLE_CASE(16, ##__VA_ARGS__);		\
+	case 0lu:  HANDLE_CASE ## 0  (##__VA_ARGS__);		\
+	case 1lu:  HANDLE_CASE ## 1  (##__VA_ARGS__);		\
+	case 2lu:  HANDLE_CASE ## 2  (##__VA_ARGS__);		\
+	case 3lu:  HANDLE_CASE ## 3  (##__VA_ARGS__);		\
+	case 4lu:  HANDLE_CASE ## 4  (##__VA_ARGS__);		\
+	case 5lu:  HANDLE_CASE ## 5  (##__VA_ARGS__);		\
+	case 6lu:  HANDLE_CASE ## 6  (##__VA_ARGS__);		\
+	case 7lu:  HANDLE_CASE ## 7  (##__VA_ARGS__);		\
+	case 8lu:  HANDLE_CASE ## 8  (##__VA_ARGS__);		\
+	case 9lu:  HANDLE_CASE ## 9  (##__VA_ARGS__);		\
+	case 10lu: HANDLE_CASE ## 10 (##__VA_ARGS__);		\
+	case 11lu: HANDLE_CASE ## 11 (##__VA_ARGS__);		\
+	case 12lu: HANDLE_CASE ## 12 (##__VA_ARGS__);		\
+	case 13lu: HANDLE_CASE ## 13 (##__VA_ARGS__);		\
+	case 14lu: HANDLE_CASE ## 14 (##__VA_ARGS__);		\
+	case 15lu: HANDLE_CASE ## 15 (##__VA_ARGS__);		\
+	default:   HANDLE_CASE ## 16 (##__VA_ARGS__);		\
 	}							\
 #else
 #	error "'WORD_SIZE' > 'WIDTH_MAX_SIZE' + 1"
