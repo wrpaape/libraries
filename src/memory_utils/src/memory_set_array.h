@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h"		/* Width<WIDTH>, memory_get/set/put<WIDTH> */
+#include "memory_set.h"		/* Width<WIDTH>, MEMORY_SET_WIDTH */
 #include "word_rem_utils.h"	/* word_t, PUT_WORDS_LOOP, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -46,22 +46,22 @@ extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* word remainder case handlers */
 #define HANDLE_SET_REM0(X, Y)  return
-#define HANDLE_SET_REM1(X, Y)  memory_set1(X, Y);  return
-#define HANDLE_SET_REM2(X, Y)  memory_set2(X, Y);  return
-#define HANDLE_SET_REM3(X, Y)  memory_set3(X, Y);  return
-#define HANDLE_SET_REM4(X, Y)  memory_set4(X, Y);  return
-#define HANDLE_SET_REM5(X, Y)  memory_set5(X, Y);  return
-#define HANDLE_SET_REM6(X, Y)  memory_set6(X, Y);  return
-#define HANDLE_SET_REM7(X, Y)  memory_set7(X, Y);  return
-#define HANDLE_SET_REM8(X, Y)  memory_set8(X, Y);  return
-#define HANDLE_SET_REM9(X, Y)  memory_set9(X, Y);  return
-#define HANDLE_SET_REM10(X, Y) memory_set10(X, Y); return
-#define HANDLE_SET_REM11(X, Y) memory_set11(X, Y); return
-#define HANDLE_SET_REM12(X, Y) memory_set12(X, Y); return
-#define HANDLE_SET_REM13(X, Y) memory_set13(X, Y); return
-#define HANDLE_SET_REM14(X, Y) memory_set14(X, Y); return
-#define HANDLE_SET_REM15(X, Y) memory_set15(X, Y); return
-#define HANDLE_SET_REM16(X, Y) memory_set16(X, Y); return
+#define HANDLE_SET_REM1(X, Y)  MEMORY_SET_WIDTH(X, Y, 1);  return
+#define HANDLE_SET_REM2(X, Y)  MEMORY_SET_WIDTH(X, Y, 2);  return
+#define HANDLE_SET_REM3(X, Y)  MEMORY_SET_WIDTH(X, Y, 3);  return
+#define HANDLE_SET_REM4(X, Y)  MEMORY_SET_WIDTH(X, Y, 4);  return
+#define HANDLE_SET_REM5(X, Y)  MEMORY_SET_WIDTH(X, Y, 5);  return
+#define HANDLE_SET_REM6(X, Y)  MEMORY_SET_WIDTH(X, Y, 6);  return
+#define HANDLE_SET_REM7(X, Y)  MEMORY_SET_WIDTH(X, Y, 7);  return
+#define HANDLE_SET_REM8(X, Y)  MEMORY_SET_WIDTH(X, Y, 8);  return
+#define HANDLE_SET_REM9(X, Y)  MEMORY_SET_WIDTH(X, Y, 9);  return
+#define HANDLE_SET_REM10(X, Y) MEMORY_SET_WIDTH(X, Y, 10); return
+#define HANDLE_SET_REM11(X, Y) MEMORY_SET_WIDTH(X, Y, 11); return
+#define HANDLE_SET_REM12(X, Y) MEMORY_SET_WIDTH(X, Y, 12); return
+#define HANDLE_SET_REM13(X, Y) MEMORY_SET_WIDTH(X, Y, 13); return
+#define HANDLE_SET_REM14(X, Y) MEMORY_SET_WIDTH(X, Y, 14); return
+#define HANDLE_SET_REM15(X, Y) MEMORY_SET_WIDTH(X, Y, 15); return
+#define HANDLE_SET_REM16(X, Y) MEMORY_SET_WIDTH(X, Y, 16); return
 
 #define SET_WORDS_BODY(X, Y, LENGTH)					\
 PUT_WORDS_LOOP(X, Y, LENGTH,						\
