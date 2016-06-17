@@ -12,8 +12,8 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h"		/* Width<WIDTH>, memory_get/set<WIDTH> */
-#include "word_rem_switch.h"	/* word_t, WORD_REM_SWITCH */
+#include "memory_put.h"		/* Width<WIDTH>, memory_get/set/put<WIDTH> */
+#include "word_rem_utils.h"	/* word_t, PUT_WORDS_LOOP, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -45,30 +45,31 @@ extern MemorySetArray *const MEMORY_SET_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 /* word remainder case handlers */
-#define HANDLE_REM0(X, Y)  return
-#define HANDLE_REM1(X, Y)  memory_set1(X, Y);  return
-#define HANDLE_REM2(X, Y)  memory_set2(X, Y);  return
-#define HANDLE_REM3(X, Y)  memory_set3(X, Y);  return
-#define HANDLE_REM4(X, Y)  memory_set4(X, Y);  return
-#define HANDLE_REM5(X, Y)  memory_set5(X, Y);  return
-#define HANDLE_REM6(X, Y)  memory_set6(X, Y);  return
-#define HANDLE_REM7(X, Y)  memory_set7(X, Y);  return
-#define HANDLE_REM8(X, Y)  memory_set8(X, Y);  return
-#define HANDLE_REM9(X, Y)  memory_set9(X, Y);  return
-#define HANDLE_REM10(X, Y) memory_set10(X, Y); return
-#define HANDLE_REM11(X, Y) memory_set11(X, Y); return
-#define HANDLE_REM12(X, Y) memory_set12(X, Y); return
-#define HANDLE_REM13(X, Y) memory_set13(X, Y); return
-#define HANDLE_REM14(X, Y) memory_set14(X, Y); return
-#define HANDLE_REM15(X, Y) memory_set15(X, Y); return
-#define HANDLE_REM16(X, Y) memory_set16(X, Y); return
+#define HANDLE_SET_REM0(X, Y)  return
+#define HANDLE_SET_REM1(X, Y)  memory_set1(X, Y);  return
+#define HANDLE_SET_REM2(X, Y)  memory_set2(X, Y);  return
+#define HANDLE_SET_REM3(X, Y)  memory_set3(X, Y);  return
+#define HANDLE_SET_REM4(X, Y)  memory_set4(X, Y);  return
+#define HANDLE_SET_REM5(X, Y)  memory_set5(X, Y);  return
+#define HANDLE_SET_REM6(X, Y)  memory_set6(X, Y);  return
+#define HANDLE_SET_REM7(X, Y)  memory_set7(X, Y);  return
+#define HANDLE_SET_REM8(X, Y)  memory_set8(X, Y);  return
+#define HANDLE_SET_REM9(X, Y)  memory_set9(X, Y);  return
+#define HANDLE_SET_REM10(X, Y) memory_set10(X, Y); return
+#define HANDLE_SET_REM11(X, Y) memory_set11(X, Y); return
+#define HANDLE_SET_REM12(X, Y) memory_set12(X, Y); return
+#define HANDLE_SET_REM13(X, Y) memory_set13(X, Y); return
+#define HANDLE_SET_REM14(X, Y) memory_set14(X, Y); return
+#define HANDLE_SET_REM15(X, Y) memory_set15(X, Y); return
+#define HANDLE_SET_REM16(X, Y) memory_set16(X, Y); return
 
+#define SET_WORDS_BODY(X, Y, LENGTH)					\
+PUT_WORDS_LOOP(X, Y, LENGTH,						\
+	       return;)
 
-
-#define memory_set_array_words(X, Y, LENGTH)			\
-MEMORY_ACCESSOR_WIDTH(set_array, WORD_WIDTH, X, Y, LENGTH)
-
-
+#define SET_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
+PUT_WORDS_LOOP(X, Y, LENGTH_WORDS,					\
+	       WORD_REM_SWITCH(REM_SIZE, HANDLE_SET_REM, X, Y))
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
@@ -76,8 +77,6 @@ MEMORY_ACCESSOR_WIDTH(set_array, WORD_WIDTH, X, Y, LENGTH)
  *
  * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * HELPER FUNCTIONS
  *
@@ -101,272 +100,226 @@ inline MemorySetArray *assign_memory_set_array(const size_t width)
 
 /* define memory_set_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
 inline void memory_set_array1(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	const size_t length_words = length / WORD_SIZE;
-	const size_t rem_size     = length % WORD_SIZE;
-
-	void *const restrict end_ptr = memory_get1(x, length);
-
-	while (1) {
-		x = memory_put1(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get1(y, 1l);
-	}
+#if (WORD_SIZE == 1lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t length_words = DIV_WORD_SIZE(length);
+	const size_t rem_size     = REM_WORD_SIZE(length);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array2(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get2(x, length);
-
-	while (1) {
-		x = memory_put2(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get2(y, 1l);
-	}
+#if (WORD_SIZE == 2lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length << 1;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array3(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get3(x, length);
-
-	while (1) {
-		x = memory_put3(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get3(y, 1l);
-	}
+#if (WORD_SIZE == 3lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 3lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array4(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get4(x, length);
-
-	while (1) {
-		x = memory_put4(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get4(y, 1l);
-	}
+#if (WORD_SIZE == 4lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length << 2;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array5(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get5(x, length);
-
-	while (1) {
-		x = memory_put5(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get5(y, 1l);
-	}
+#if (WORD_SIZE == 5lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 5lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array6(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get6(x, length);
-
-	while (1) {
-		x = memory_put6(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get6(y, 1l);
-	}
+#if (WORD_SIZE == 6lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 6lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array7(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get7(x, length);
-
-	while (1) {
-		x = memory_put7(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get7(y, 1l);
-	}
+#if (WORD_SIZE == 7lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 7lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array8(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get8(x, length);
-
-	while (1) {
-		x = memory_put8(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get8(y, 1l);
-	}
+#if (WORD_SIZE == 8lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length << 3;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array9(void *restrict x,
-			      const void *restrict y,
-			      const size_t length)
+			       const void *restrict y,
+			       const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get9(x, length);
-
-	while (1) {
-		x = memory_put9(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get9(y, 1l);
-	}
+#if (WORD_SIZE == 9lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 9lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array10(void *restrict x,
-			       const void *restrict y,
-			       const size_t length)
+				const void *restrict y,
+				const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get10(x, length);
-
-	while (1) {
-		x = memory_put10(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get10(y, 1l);
-	}
+#if (WORD_SIZE == 10lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 10lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array11(void *restrict x,
-			       const void *restrict y,
-			       const size_t length)
+				const void *restrict y,
+				const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get11(x, length);
-
-	while (1) {
-		x = memory_put11(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get11(y, 1l);
-	}
+#if (WORD_SIZE == 11lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 11lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array12(void *restrict x,
-			       const void *restrict y,
-			       const size_t length)
+				const void *restrict y,
+				const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get12(x, length);
-
-	while (1) {
-		x = memory_put12(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get12(y, 1l);
-	}
+#if (WORD_SIZE == 12lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 12lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array13(void *restrict x,
-			       const void *restrict y,
-			       const size_t length)
+				const void *restrict y,
+				const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get13(x, length);
-
-	while (1) {
-		x = memory_put13(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get13(y, 1l);
-	}
+#if (WORD_SIZE == 13lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 13lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array14(void *restrict x,
-			       const void *restrict y,
-			       const size_t length)
+				const void *restrict y,
+				const size_t length)
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get14(x, length);
-
-	while (1) {
-		x = memory_put14(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get14(y, 1l);
-	}
+#if (WORD_SIZE == 14lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 14lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array15(void *restrict x,
@@ -375,17 +328,14 @@ inline void memory_set_array15(void *restrict x,
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get15(x, length);
-
-	while (1) {
-		x = memory_put15(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get15(y, 1l);
-	}
+#if (WORD_SIZE == 15lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length * 15lu;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 
 inline void memory_set_array16(void *restrict x,
@@ -394,17 +344,14 @@ inline void memory_set_array16(void *restrict x,
 {
 	if (length == 0lu)
 		return;
-
-	void *const restrict end_ptr = memory_get16(x, length);
-
-	while (1) {
-		x = memory_put16(x, y);
-
-		if (x == end_ptr)
-			return;
-
-		y = memory_get16(y, 1l);
-	}
+#if (WORD_SIZE == 16lu)
+	SET_WORDS_BODY(x, y, length)
+#else
+	const size_t array_size	  = length << 4;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
+	SET_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
+#endif
 }
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS */

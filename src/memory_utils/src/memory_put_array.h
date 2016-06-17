@@ -12,8 +12,8 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h"		/* Width<WIDTH>, memory_get/set<WIDTH> */
-#include "word_rem_switch.h"	/* word_t, WORD_REM_SWITCH */
+#include "memory_put.h"		/* Width<WIDTH>, memory_get/set/put<WIDTH> */
+#include "word_rem_utils.h"	/* word_t, PUT_WORDS_LOOP, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -62,17 +62,25 @@ extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 #define HANDLE_PUT_REM15(X, Y) return memory_put15(X, Y)
 #define HANDLE_PUT_REM16(X, Y) return memory_put16(X, Y)
 
-#define MEMORY_ACTION_WORD(ACTION, ...)			\
-EXPAND_MEMORY_ACTION_WIDTH(ACTION, WORD_WIDTH, ##__VA_ARGS__)
 
-#define memory_put_word(X, Y)			\
-MEMORY_ACTION_WORD(put, X, Y)
+#define PUT_WORDS_BODY(X, Y, LENGTH)					\
+PUT_WORDS_LOOP(X, Y, LENGTH,						\
+	       return X;)
 
-#define memory_get_word(PTR, I)			\
-MEMORY_ACTION_WORD(get, PTR, I)
+#define PUT_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
+PUT_WORDS_LOOP(X, Y, LENGTH_WORDS,					\
+	       WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
+/* #define MEMORY_ACTION_WORD(ACTION, ...)			\ */
+/* EXPAND_MEMORY_ACTION_WIDTH(ACTION, WORD_WIDTH, ##__VA_ARGS__) */
 
-#define memory_put_array_words(X, Y, LENGTH)	\
-MEMORY_ACTION_WORD(put_array, X, Y, LENGTH)
+/* #define memory_put_word(X, Y)			\ */
+/* MEMORY_ACTION_WORD(put, X, Y) */
+
+/* #define memory_get_word(PTR, I)			\ */
+/* MEMORY_ACTION_WORD(get, PTR, I) */
+
+/* #define memory_put_array_words(X, Y, LENGTH)	\ */
+/* MEMORY_ACTION_WORD(put_array, X, Y, LENGTH) */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
@@ -80,33 +88,6 @@ MEMORY_ACTION_WORD(put_array, X, Y, LENGTH)
  *
  * HELPER FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-
-/* put at least 1 word */
-#define PUT_WORDS_LOOP_BODY(X, Y, LENGTH_WORDS, EXIT_LOOP)		\
-void *const restrict end_ptr = (void *) (((word_t *const restrict) X)	\
-					 + length);			\
-while (1) {								\
-	*((word_t *restrict) X) = *((const word_t *restrict) Y);	\
-	X = (void *restrict) (((word_t *restrict) X) + 1l);		\
-	if (x == end_ptr)						\
-		EXIT_LOOP						\
-	Y = (void *restrict) (((word_t *restrict) Y) + 1l);		\
-}
-
-#define PUT_WORDS_BODY(X, Y, LENGTH)					\
-PUT_WORDS_LOOP_BODY(X, Y, LENGTH,					\
-		    return X;)
-
-#define PUT_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
-PUT_WORDS_LOOP_BODY(X, Y, LENGTH_WORDS,					\
-		    WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
-
-put_full_words((word_t *restrict) (X),	\
-	     (const word_t *restrict) (Y),
-	     LENGTH)
-/* handles casting */
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * HELPER FUNCTIONS
  *
@@ -138,8 +119,8 @@ inline void *memory_put_array1(void *restrict x,
 #if (WORD_SIZE == 1lu)
 	PUT_WORDS_BODY(x, y, length)
 #else
-	const size_t length_words = length / WORD_SIZE;
-	const size_t rem_size     = length % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(length);
+	const size_t rem_size     = REM_WORD_SIZE(length);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -153,9 +134,9 @@ inline void *memory_put_array2(void *restrict x,
 #if (WORD_SIZE == 2lu)
 	PUT_WORDS_BODY(x, y, length)
 #else
-	const size_t array_size	  = length * 2lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t array_size	  = length << 1;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -170,8 +151,8 @@ inline void *memory_put_array3(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 3lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -185,9 +166,9 @@ inline void *memory_put_array4(void *restrict x,
 #if (WORD_SIZE == 4lu)
 	PUT_WORDS_BODY(x, y, length)
 #else
-	const size_t array_size	  = length * 4lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t array_size	  = length << 2;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -202,8 +183,8 @@ inline void *memory_put_array5(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 5lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -218,8 +199,8 @@ inline void *memory_put_array6(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 6lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -234,8 +215,8 @@ inline void *memory_put_array7(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 7lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -249,9 +230,9 @@ inline void *memory_put_array8(void *restrict x,
 #if (WORD_SIZE == 8lu)
 	PUT_WORDS_BODY(x, y, length)
 #else
-	const size_t array_size	  = length * 8lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t array_size	  = length << 3;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -266,8 +247,8 @@ inline void *memory_put_array9(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 9lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -282,8 +263,8 @@ inline void *memory_put_array10(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 10lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -298,8 +279,8 @@ inline void *memory_put_array11(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 11lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -314,8 +295,8 @@ inline void *memory_put_array12(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 12lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -330,8 +311,8 @@ inline void *memory_put_array13(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 13lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -346,8 +327,8 @@ inline void *memory_put_array14(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 14lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -362,8 +343,8 @@ inline void *memory_put_array15(void *restrict x,
 	PUT_WORDS_BODY(x, y, length)
 #else
 	const size_t array_size	  = length * 15lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }
@@ -377,9 +358,9 @@ inline void *memory_put_array16(void *restrict x,
 #if (WORD_SIZE == 16lu)
 	PUT_WORDS_BODY(x, y, length)
 #else
-	const size_t array_size	  = length * 16lu;
-	const size_t length_words = array_size / WORD_SIZE;
-	const size_t rem_size     = array_size % WORD_SIZE;
+	const size_t array_size	  = length << 4;
+	const size_t length_words = DIV_WORD_SIZE(array_size);
+	const size_t rem_size     = REM_WORD_SIZE(array_size);
 	PUT_WORDS_AND_REM_BODY(x, y, length_words, rem_size)
 #endif
 }

@@ -22,12 +22,16 @@ endef
 define CHILD_MEMORY_MODULE
 $(call MEMORY_MODULE,$1,\
 		     $(foreach preq,$2,\
-		     		    $(call SOURCE_HEADER_PATHS,$(preq))),\
+		     		    $(call SOURCE_HEADER_PATHS,$(preq))) $3,\
 		     $(foreach preq,$2,\
 		     		    $(call PIC_OBJECT_PATH,$(preq))),\
 		     $(foreach preq,$2,\
 		     		    $(call OBJECT_PATH,$(preq))))
 endef
+
+ARRAY_MEMORY_MODULE = $(call CHILD_MEMORY_MODULE,$1,\
+		      				 memory_put,\
+						 $(call HEADER_PATH,word_rem_utils))
 
 define RULES
 $(call OBJECT,memory_utils)
@@ -36,17 +40,14 @@ $(call PIC_OBJECT,memory_utils)
 
 $(call TEST_BINARY,memory_utils)
 
-$(foreach accessor,memory_swap memory_get memory_set,\
-		   $(call MEMORY_MODULE,$(accessor)))
+$(foreach module,memory_swap memory_get memory_set,\
+		 $(call MEMORY_MODULE,$(module)))
 
 $(call CHILD_MEMORY_MODULE,memory_put,\
 			   memory_set memory_get)
 
-$(call CHILD_MEMORY_MODULE,memory_set_array,\
-			   memory_put memory_set memory_get)
-
-$(call CHILD_MEMORY_MODULE,memory_put_array,\
-			   memory_put memory_set memory_get)
+$(foreach module,memory_set_array memory_put_array,\
+		 $(call ARRAY_MEMORY_MODULE,$(module)))
 
 $(call EXPORT_ALL_HEADERS,memory_utils)
 endef

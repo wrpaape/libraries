@@ -61,7 +61,7 @@ void test_assign_memory_set(void)
 	TEST_ASSERT_EQUAL_PTR(&memory_set16,
 			      assign_memory_set(sizeof(Width16)));
 
-	TEST_ASSERT_NULL(assign_memory_set(WIDTH_MAX + 1ul));
+	TEST_ASSERT_NULL(assign_memory_set(WIDTH_MAX_SIZE + 1ul));
 }
 
 void test_assign_memory_set_then_set(void)

@@ -167,7 +167,7 @@ void test_assign_memory_swap(void)
 	TEST_ASSERT_EQUAL_PTR(&memory_swap16,
 			      assign_memory_swap(sizeof(Width16)));
 
-	TEST_ASSERT_NULL(assign_memory_swap(WIDTH_MAX + 1ul));
+	TEST_ASSERT_NULL(assign_memory_swap(WIDTH_MAX_SIZE + 1ul));
 }
 
 void test_assign_memory_swap_then_swap(void)

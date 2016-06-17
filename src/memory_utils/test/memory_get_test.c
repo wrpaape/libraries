@@ -61,7 +61,7 @@ void test_assign_memory_get(void)
 	TEST_ASSERT_EQUAL_PTR(&memory_get16,
 			      assign_memory_get(sizeof(Width16)));
 
-	TEST_ASSERT_NULL(assign_memory_get(WIDTH_MAX + 1ul));
+	TEST_ASSERT_NULL(assign_memory_get(WIDTH_MAX_SIZE + 1ul));
 }
 
 void test_memory_get_width(void)

@@ -1,5 +1,5 @@
-#ifndef MEMORY_UTILS_WORD_REM_SWITCH_H_
-#define MEMORY_UTILS_WORD_REM_SWITCH_H_
+#ifndef MEMORY_UTILS_WORD_REM_UTILS_H_
+#define MEMORY_UTILS_WORD_REM_UTILS_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
@@ -13,7 +13,7 @@ extern "C" {
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #include "memory_utils.h"	/* <WIDTH> */
-#include <utils/types/word.h>	/* word_t */
+#include <utils/word_utils.h>	/* word_t, WORD_SIZE */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -34,11 +34,20 @@ extern "C" {
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+/* PUT_WORDS_LOOP */
+/* put at least 1 word */
+#define PUT_WORDS_LOOP(X, Y, LENGTH_WORDS, EXIT_LOOP)			\
+void *const restrict							\
+end_ptr = (void *) (((word_t *const restrict) X) + (LENGTH_WORDS));	\
+while (1) {								\
+	*((word_t *restrict) X) = *((const word_t *restrict) Y);	\
+	X = (void *restrict) (((word_t *restrict) X) + 1l);		\
+	if (x == end_ptr)						\
+		EXIT_LOOP						\
+	Y = (void *restrict) (((word_t *restrict) Y) + 1l);		\
+}
 
-#define HANDLE_CASE(TYPE)	\
-*((Type *const restrict) (X)) = *((Type *const restrict) (Y))
-
-
+/* WORD_REM_SWITCH */
 #if   !defined(WORD_SIZE)
 #	error "'WORD_SIZE' is undefined"
 #elif (WORD_SIZE <= 0lu)
@@ -284,4 +293,4 @@ extern "C" {
 }
 #endif
 
-#endif /* ifndef MEMORY_UTILS_WORD_REM_SWITCH_H_ */
+#endif /* ifndef MEMORY_UTILS_WORD_REM_UTILS_H_ */
