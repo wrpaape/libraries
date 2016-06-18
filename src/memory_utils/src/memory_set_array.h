@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_set.h"		/* Width<WIDTH>, MEMORY_SET_WIDTH */
+#include "memory_set_width.h"	/* Width<WIDTH>, MEMORY_SET_WIDTH */
 #include "word_rem_utils.h"	/* word_t, PUT_WORDS_LOOP, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -90,7 +90,7 @@ inline void memory_set_array_width(void *restrict x,
 				   const size_t length,
 				   const size_t width)
 {
-	memory_set_width(x, y, length * width);
+	memcpy(x, y, length * width);
 }
 
 inline MemorySetArray *assign_memory_set_array(const size_t width)

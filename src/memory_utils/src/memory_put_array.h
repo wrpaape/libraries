@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_put.h"		/* Width<WIDTH>, memory_get/set/put<WIDTH> */
+#include "memory_put_width.h"	/* Width<WIDTH>, MEMORY_PUT/GET_WIDTH */
 #include "word_rem_utils.h"	/* word_t, PUT_WORDS_LOOP, WORD_REM_SWITCH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -45,23 +45,22 @@ extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
 #define HANDLE_PUT_REM0(X, Y)  return X
-#define HANDLE_PUT_REM1(X, Y)  return memory_put1(X, Y)
-#define HANDLE_PUT_REM2(X, Y)  return memory_put2(X, Y)
-#define HANDLE_PUT_REM3(X, Y)  return memory_put3(X, Y)
-#define HANDLE_PUT_REM4(X, Y)  return memory_put4(X, Y)
-#define HANDLE_PUT_REM5(X, Y)  return memory_put5(X, Y)
-#define HANDLE_PUT_REM6(X, Y)  return memory_put6(X, Y)
-#define HANDLE_PUT_REM7(X, Y)  return memory_put7(X, Y)
-#define HANDLE_PUT_REM8(X, Y)  return memory_put8(X, Y)
-#define HANDLE_PUT_REM9(X, Y)  return memory_put9(X, Y)
-#define HANDLE_PUT_REM10(X, Y) return memory_put10(X, Y)
-#define HANDLE_PUT_REM11(X, Y) return memory_put11(X, Y)
-#define HANDLE_PUT_REM12(X, Y) return memory_put12(X, Y)
-#define HANDLE_PUT_REM13(X, Y) return memory_put13(X, Y)
-#define HANDLE_PUT_REM14(X, Y) return memory_put14(X, Y)
-#define HANDLE_PUT_REM15(X, Y) return memory_put15(X, Y)
-#define HANDLE_PUT_REM16(X, Y) return memory_put16(X, Y)
-
+#define HANDLE_PUT_REM1(X, Y)  MEMORY_PUT_WIDTH(X, Y, 1,  return)
+#define HANDLE_PUT_REM2(X, Y)  MEMORY_PUT_WIDTH(X, Y, 2,  return)
+#define HANDLE_PUT_REM3(X, Y)  MEMORY_PUT_WIDTH(X, Y, 3,  return)
+#define HANDLE_PUT_REM4(X, Y)  MEMORY_PUT_WIDTH(X, Y, 4,  return)
+#define HANDLE_PUT_REM5(X, Y)  MEMORY_PUT_WIDTH(X, Y, 5,  return)
+#define HANDLE_PUT_REM6(X, Y)  MEMORY_PUT_WIDTH(X, Y, 6,  return)
+#define HANDLE_PUT_REM7(X, Y)  MEMORY_PUT_WIDTH(X, Y, 7,  return)
+#define HANDLE_PUT_REM8(X, Y)  MEMORY_PUT_WIDTH(X, Y, 8,  return)
+#define HANDLE_PUT_REM9(X, Y)  MEMORY_PUT_WIDTH(X, Y, 9,  return)
+#define HANDLE_PUT_REM10(X, Y) MEMORY_PUT_WIDTH(X, Y, 10, return)
+#define HANDLE_PUT_REM11(X, Y) MEMORY_PUT_WIDTH(X, Y, 11, return)
+#define HANDLE_PUT_REM12(X, Y) MEMORY_PUT_WIDTH(X, Y, 12, return)
+#define HANDLE_PUT_REM13(X, Y) MEMORY_PUT_WIDTH(X, Y, 13, return)
+#define HANDLE_PUT_REM14(X, Y) MEMORY_PUT_WIDTH(X, Y, 14, return)
+#define HANDLE_PUT_REM15(X, Y) MEMORY_PUT_WIDTH(X, Y, 15, return)
+#define HANDLE_PUT_REM16(X, Y) MEMORY_PUT_WIDTH(X, Y, 16, return)
 
 #define PUT_WORDS_BODY(X, Y, LENGTH)					\
 PUT_WORDS_LOOP(X, Y, LENGTH,						\
@@ -70,17 +69,6 @@ PUT_WORDS_LOOP(X, Y, LENGTH,						\
 #define PUT_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
 PUT_WORDS_LOOP(X, Y, LENGTH_WORDS,					\
 	       WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
-/* #define MEMORY_ACTION_WORD(ACTION, ...)			\ */
-/* EXPAND_MEMORY_ACTION_WIDTH(ACTION, WORD_WIDTH, ##__VA_ARGS__) */
-
-/* #define memory_put_word(X, Y)			\ */
-/* MEMORY_ACTION_WORD(put, X, Y) */
-
-/* #define memory_get_word(PTR, I)			\ */
-/* MEMORY_ACTION_WORD(get, PTR, I) */
-
-/* #define memory_put_array_words(X, Y, LENGTH)	\ */
-/* MEMORY_ACTION_WORD(put_array, X, Y, LENGTH) */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
@@ -101,7 +89,11 @@ inline void *memory_put_array_width(void *restrict x,
 				    const size_t length,
 				    const size_t width)
 {
-	return memory_put_width(x, y, length * width);
+	const size_t array_size = width * length;
+
+	memcpy(x, y, array_size);
+
+	return MEMORY_GET_WIDTH(x, array_size, 1);
 }
 
 inline MemoryPutArray *assign_memory_put_array(const size_t width)
