@@ -26,7 +26,8 @@ endef
 
 define MEMORY_ARRAY_ACTION_MODULE
 $(call MEMORY_MODULE,$(call TRIM,memory_$1_array),\
-		     $(call HEADER_PATH,$(call TRIM,memory_$1_width)))
+		     $(foreach aa_cc_preq,$(call TRIM,memory_$2_width) word_rem_utils,\
+				          $(call HEADER_PATH,$(aa_cc_preq))))
 endef
 
 
@@ -41,8 +42,10 @@ $(foreach action,swap get set put,\
 		 $(call MEMORY_ACTION_MODULE,$(action)))
 
 
-$(foreach array_action,set put,\
-		 $(call MEMORY_ARRAY_ACTION_MODULE,$(array_action)))
+$(foreach array_action,put,\
+		 $(call MEMORY_ARRAY_ACTION_MODULE,$(array_action),$(array_action)))
+
+$(call MEMORY_ARRAY_ACTION_MODULE,copy,set)
 
 $(call EXPORT_ALL_HEADERS,memory_utils)
 endef

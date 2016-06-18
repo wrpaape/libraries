@@ -22,13 +22,13 @@
 #include <unity/unity.h>
 #include <setjmp.h>
 #include <stdio.h>
-#include "memory_set_array.h"
+#include "memory_copy_array.h"
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_assign_memory_set_array(void);
-extern void test_assign_memory_set_array_then_set_array(void);
+extern void test_assign_memory_copy_array(void);
+extern void test_assign_memory_copy_array_then_copy_array(void);
 
 
 //=======Test Reset Option=====
@@ -43,9 +43,9 @@ void resetTest(void)
 //=======MAIN=====
 int main(void)
 {
-  UnityBegin("../test/memory_set_array_test.c");
-  RUN_TEST(test_assign_memory_set_array, 12);
-  RUN_TEST(test_assign_memory_set_array_then_set_array, 68);
+  UnityBegin("../test/memory_copy_array_test.c");
+  RUN_TEST(test_assign_memory_copy_array, 12);
+  RUN_TEST(test_assign_memory_copy_array_then_copy_array, 68);
 
   return (UnityEnd());
 }
