@@ -1,43 +1,37 @@
-#ifndef MEMORY_UTILS_MEMORY_PUT_WIDTH_H_
-#define MEMORY_UTILS_MEMORY_PUT_WIDTH_H_
+#ifndef MEMORY_UTILS_MEMORY_STRING_H_
+#define MEMORY_UTILS_MEMORY_STRING_H_
 
-#ifdef __cplusplus /* ensure C linkage */
+#ifdef _cplusplus /* ensure C linkage */
 extern "C" {
-#	ifndef restrict /* use c++ compatible '__restrict__' */
-#		define restrict __restrict__
-#	endif
-#	ifndef NULL_POINTER /* use c++ null pointer macro */
-#		define NULL_POINTER nullptr
-#	endif
-#else
-#	ifndef NULL_POINTER /* use traditional c null pointer macro */
-#		define NULL_POINTER NULL
-#	endif
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
+#define restrict __restrict__
+#endif
 #endif
 
 
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_set_width.h" /* Width<WIDTH>, MEMORY_SET_WIDTH */
-#include "memory_get_width.h" /* Width<WIDTH>, MEMORY_GET_WIDTH */
+#include <utils/types/word.h>	/* word_t, WORD_SIZE */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
  *
  *
- * FUNCTION-LIKE MACROS
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#define MEMORY_PUT_WIDTH(X, Y, WIDTH, HANDLE_GET)			\
-MEMORY_SET_WIDTH(X, Y, WIDTH); HANDLE_GET MEMORY_GET_WIDTH(X, 1l, WIDTH)
+struct MemoryString {
+	word_t *words;
+	void *rem;
+};
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
- * FUNCTION-LIKE MACROS */
+ * TYPEDEFS, ENUM AND STRUCT DEFINITIONS */
 
 
-#ifdef __cplusplus /* close 'extern "C" {' */
+#ifdef _cplusplus /* close 'extern "C" {' */
 }
 #endif
 
-#endif /* ifndef MEMORY_UTILS_MEMORY_PUT_WIDTH_H_ */
+#endif /* ifndef MEMORY_UTILS_MEMORY_STRING_H_ */

@@ -3,9 +3,16 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
-#define restrict __restrict__
-#endif
+#	ifndef restrict /* use c++ compatible '__restrict__' */
+#		define restrict __restrict__
+#	endif
+#	ifndef NULL_POINTER /* use c++ null pointer macro */
+#		define NULL_POINTER nullptr
+#	endif
+#else
+#	ifndef NULL_POINTER /* use traditional c null pointer macro */
+#		define NULL_POINTER NULL
+#	endif
 #endif
 
 
@@ -32,7 +39,7 @@ typedef void *MemoryPut(void *const restrict,
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* lookup for 'assign_memory_put' (+1 for extra NULL slot) */
+/* lookup for 'assign_memory_put' */
 extern MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -60,10 +67,16 @@ inline void *memory_put_width(void *const restrict x,
 
 inline MemoryPut *assign_memory_put(const size_t width)
 {
-	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_PUT_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL_POINTER : MEMORY_PUT_MAP[width];
 }
 
-/* define memory_put<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
+/* define memory_put<WIDTH> functions for WIDTH = 0 .. WIDTH_MAX_SIZE */
+inline void *memory_put0(void *const restrict x,
+			 const void *const restrict y)
+{
+	return x;
+}
+
 inline void *memory_put1(void *const restrict x,
 			 const void *const restrict y)
 {

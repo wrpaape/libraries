@@ -12,7 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h"	/* <WIDTH> */
+#include "memory_utils.h"	/* Width<WIDTH> */
 #include <utils/word_utils.h>	/* word_t, WORD_SIZE */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -36,15 +36,25 @@ extern "C" {
 
 /* PUT_WORDS_LOOP */
 /* put at least 1 word */
-#define PUT_WORDS_LOOP(X, Y, LENGTH_WORDS, EXIT_LOOP)			\
-void *const restrict							\
-end_ptr = (void *) (((word_t *const restrict) X) + (LENGTH_WORDS));	\
+#define PUT_WORDS_LOOP(X, Y, END_PTR, EXIT_LOOP)			\
 while (1) {								\
 	*((word_t *restrict) X) = *((const word_t *restrict) Y);	\
 	X = (void *restrict) (((word_t *restrict) X) + 1l);		\
-	if (x == end_ptr)						\
+	if (x == END_PTR)						\
 		EXIT_LOOP						\
 	Y = (void *restrict) (((word_t *restrict) Y) + 1l);		\
+}
+
+/* SET_WORDS_LOOP */
+/* set at least 1 word */
+#define SET_WORDS_LOOP(X, Y, END_PTR, EXIT_LOOP)			\
+void *const restrict end_ptr = (void *const restrict)			\
+	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
+while (1) {								\
+	*((word_t *restrict) X) = *((const word_t *const restrict) Y);	\
+	X = (void *restrict) (((word_t *restrict) X) + 1l);		\
+	if (x == end_ptr)						\
+		EXIT_LOOP						\
 }
 
 /* WORD_REM_SWITCH */

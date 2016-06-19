@@ -3,9 +3,16 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
-#define restrict __restrict__
-#endif
+#	ifndef restrict /* use c++ compatible '__restrict__' */
+#		define restrict __restrict__
+#	endif
+#	ifndef NULL_POINTER /* use c++ null pointer macro */
+#		define NULL_POINTER nullptr
+#	endif
+#else
+#	ifndef NULL_POINTER /* use traditional c null pointer macro */
+#		define NULL_POINTER NULL
+#	endif
 #endif
 
 
@@ -32,7 +39,7 @@ typedef void *MemoryGet(const void *const restrict,
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* lookup for 'assign_memory_get' (+1 for extra NULL slot) */
+/* lookup for 'assign_memory_get' */
 extern MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -62,10 +69,16 @@ inline void *memory_get_width(const void *const restrict ptr,
 
 inline MemoryGet *assign_memory_get(const size_t width)
 {
-	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_GET_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL_POINTER : MEMORY_GET_MAP[width];
 }
 
-/* define memory_get<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
+/* define memory_get<WIDTH> functions for WIDTH = 0 .. WIDTH_MAX_SIZE */
+inline void *memory_get0(const void *const restrict ptr,
+			 const ptrdiff_t i)
+{
+	return (void *) ptr;
+}
+
 inline void *memory_get1(const void *const restrict ptr,
 			 const ptrdiff_t i)
 {

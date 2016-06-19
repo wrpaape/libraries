@@ -2,9 +2,9 @@
 
 extern inline MemoryGet *assign_memory_get(const size_t width);
 
-/* define lookup for 'assign_memory_get' (zero-width maps to NULL) */
+/* define lookup for 'assign_memory_get' */
 MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	NULL_POINTER,
 	&memory_get1,  &memory_get2,  &memory_get3,  &memory_get4,
 	&memory_get5,  &memory_get6,  &memory_get7,  &memory_get8,
 	&memory_get9,  &memory_get10, &memory_get11, &memory_get12,
@@ -17,6 +17,9 @@ extern inline void *memory_get_width(const void *const restrict ptr,
 				     const size_t width);
 
 /* declare all memory_get<WIDTH> functions extern */
+extern inline void *memory_get0(const void *const restrict ptr,
+				const ptrdiff_t i);
+
 extern inline void *memory_get1(const void *const restrict ptr,
 				const ptrdiff_t i);
 

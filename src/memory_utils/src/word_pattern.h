@@ -1,25 +1,19 @@
-#ifndef MEMORY_UTILS_MEMORY_SET_H_
-#define MEMORY_UTILS_MEMORY_SET_H_
+#ifndef MEMORY_UTILS_WORD_PATTERN_H_
+#define MEMORY_UTILS_WORD_PATTERN_H_
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#	ifndef restrict /* use c++ compatible '__restrict__' */
-#		define restrict __restrict__
-#	endif
-#	ifndef NULL_POINTER /* use c++ null pointer macro */
-#		define NULL_POINTER nullptr
-#	endif
-#else
-#	ifndef NULL_POINTER /* use traditional c null pointer macro */
-#		define NULL_POINTER NULL
-#	endif
+#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
+#define restrict __restrict__
+#endif
 #endif
 
 
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_set_width.h" /* MEMORY_SET_WIDTH */
+#include "memory_utils.h"	/* Width<WIDTH> */
+#include <utils/word_utils.h>	/* word_t, WORD_SIZE */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -28,9 +22,60 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* set memory for a particular byte width */
-typedef void MemorySet(void *const restrict,
-		       const void *const restrict);
+struct WordLink {
+	word_t word;
+	struct WordLink *next;
+};
+
+struct WordPattern {
+	struct WordLink *words;
+	const unsigned int word_count;
+	const unsigned int base_count;
+};
+
+#if   !defined(WORD_SIZE)
+#	error "sizeof(word_t) is unknown to preprocessor: 'WORD_SIZE' is undefined"
+#elif (WORD_SIZE == 8lu) /*		    buffer | LCM(WORD_SIZE, <WIDTH> */
+struct WordPattern1  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern2  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern3  { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern4  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern5  { struct WordLink words[ 5]; };	/*  40 */
+struct WordPattern6  { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern7  { struct WordLink words[ 7]; };	/*  56 */
+struct WordPattern8  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern9  { struct WordLink words[ 9]; };	/*  72 */
+struct WordPattern10 { struct WordLink words[ 5]; };	/*  40 */
+struct WordPattern11 { struct WordLink words[11]; };	/*  88 */
+struct WordPattern12 { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern13 { struct WordLink words[13]; };	/* 104 */
+struct WordPattern14 { struct WordLink words[ 7]; };	/*  56 */
+struct WordPattern15 { struct WordLink words[15]; };	/* 120 */
+struct WordPattern16 { struct WordLink words[ 2]; };	/*  16 */
+#elif (WORD_SIZE == 7lu)
+struct WordPattern1  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern2  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern3  { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern4  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern5  { struct WordLink words[ 5]; };	/*  40 */
+struct WordPattern6  { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern7  { struct WordLink words[ 7]; };	/*  56 */
+struct WordPattern8  { struct WordLink words[ 1]; };	/*   8 */
+struct WordPattern9  { struct WordLink words[ 9]; };	/*  72 */
+struct WordPattern10 { struct WordLink words[ 5]; };	/*  40 */
+struct WordPattern11 { struct WordLink words[11]; };	/*  88 */
+struct WordPattern12 { struct WordLink words[ 3]; };	/*  24 */
+struct WordPattern13 { struct WordLink words[13]; };	/* 104 */
+struct WordPattern14 { struct WordLink words[ 7]; };	/*  56 */
+struct WordPattern15 { struct WordLink words[15]; };	/* 120 */
+struct WordPattern16 { struct WordLink words[ 2]; };	/*  16 */
+#elif (WORD_SIZE == 6lu)
+#elif (WORD_SIZE == 5lu)
+#elif (WORD_SIZE == 4lu)
+#elif (WORD_SIZE == 3lu)
+#elif (WORD_SIZE == 2lu)
+#else
+#endif
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
@@ -38,10 +83,6 @@ typedef void MemorySet(void *const restrict,
  *
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-/* lookup for 'assign_memory_set' (+1 for extra NULL slot) */
-extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX_SIZE + 1ul];
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
  *
@@ -54,123 +95,6 @@ extern MemorySet *const MEMORY_SET_MAP[WIDTH_MAX_SIZE + 1ul];
  *
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-
-/* memory set arbitrary byte size, 'width' */
-inline void memory_set_width(void *const restrict x,
-			     const void *const restrict y,
-			     const size_t width)
-{
-	memcpy(x, y, width);
-}
-
-inline MemorySet *assign_memory_set(const size_t width)
-{
-	return (width > WIDTH_MAX_SIZE) ? NULL_POINTER : MEMORY_SET_MAP[width];
-}
-
-
-/* define memory_set<WIDTH> functions for WIDTH = 0 .. WIDTH_MAX_SIZE */
-inline void memory_set0(void *const restrict x,
-			const void *const restrict y)
-{
-}
-
-inline void memory_set1(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 1);
-}
-
-inline void memory_set2(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 2);
-}
-
-inline void memory_set3(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 3);
-}
-
-inline void memory_set4(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 4);
-}
-
-inline void memory_set5(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 5);
-}
-
-inline void memory_set6(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 6);
-}
-
-inline void memory_set7(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 7);
-}
-
-inline void memory_set8(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 8);
-}
-
-inline void memory_set9(void *const restrict x,
-			const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 9);
-}
-
-inline void memory_set10(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 10);
-}
-
-inline void memory_set11(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 11);
-}
-
-inline void memory_set12(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 12);
-}
-
-inline void memory_set13(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 13);
-}
-
-inline void memory_set14(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 14);
-}
-
-inline void memory_set15(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 15);
-}
-
-inline void memory_set16(void *const restrict x,
-			 const void *const restrict y)
-{
-	MEMORY_SET_WIDTH(x, y, 16);
-}
-
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * TOP-LEVEL FUNCTIONS
  *
@@ -185,4 +109,4 @@ inline void memory_set16(void *const restrict x,
 }
 #endif
 
-#endif /* ifndef MEMORY_UTILS_MEMORY_SET_H_ */
+#endif /* ifndef MEMORY_UTILS_WORD_PATTERN_H_ */

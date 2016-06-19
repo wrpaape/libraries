@@ -4,7 +4,7 @@ extern inline MemoryPutArray *assign_memory_put_array(const size_t width);
 
 /* define lookup for 'assign_memory_put_array' (zero-width maps to NULL) */
 MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	&memory_put_array0,
 	&memory_put_array1,  &memory_put_array2,  &memory_put_array3,
 	&memory_put_array4,  &memory_put_array5,  &memory_put_array6,
 	&memory_put_array7,  &memory_put_array8,  &memory_put_array9,
@@ -21,6 +21,10 @@ extern inline void *memory_put_array_width(void *restrict x,
 
 
 /* declare all memory_put_array<WIDTH> functions extern */
+extern inline void *memory_put_array0(void *restrict x,
+				      const void *restrict y,
+				      const size_t length);
+
 extern inline void *memory_put_array1(void *restrict x,
 				      const void *restrict y,
 				      const size_t length);

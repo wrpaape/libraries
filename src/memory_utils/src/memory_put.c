@@ -2,9 +2,9 @@
 
 extern inline MemoryPut *assign_memory_put(const size_t width);
 
-/* define lookup for 'assign_memory_put' (zero-width maps to NULL) */
+/* define lookup for 'assign_memory_put' */
 MemoryPut *const MEMORY_PUT_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	&memory_put0,
 	&memory_put1,  &memory_put2,  &memory_put3,  &memory_put4,
 	&memory_put5,  &memory_put6,  &memory_put7,  &memory_put8,
 	&memory_put9,  &memory_put10, &memory_put11, &memory_put12,
@@ -18,6 +18,9 @@ extern inline void *memory_put_width(void *const restrict x,
 
 
 /* declare all memory_put<WIDTH> functions extern */
+extern inline void *memory_put0(void *const restrict x,
+				const void *const restrict y);
+
 extern inline void *memory_put1(void *const restrict x,
 				const void *const restrict y);
 

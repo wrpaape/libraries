@@ -3,9 +3,16 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
-#define restrict __restrict__
-#endif
+#	ifndef restrict /* use c++ compatible '__restrict__' */
+#		define restrict __restrict__
+#	endif
+#	ifndef NULL_POINTER /* use c++ null pointer macro */
+#		define NULL_POINTER nullptr
+#	endif
+#else
+#	ifndef NULL_POINTER /* use traditional c null pointer macro */
+#		define NULL_POINTER NULL
+#	endif
 #endif
 
 
@@ -34,7 +41,7 @@ typedef void *MemoryPutArray(void *restrict,
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-/* lookup for 'assign_memory_put_array' (+1 for extra NULL slot) */
+/* lookup for 'assign_memory_put_array' */
 extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -62,12 +69,19 @@ extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 #define HANDLE_PUT_REM15(X, Y) MEMORY_PUT_WIDTH(X, Y, 15, return)
 #define HANDLE_PUT_REM16(X, Y) MEMORY_PUT_WIDTH(X, Y, 16, return)
 
+#define PUT_LENGTH_WORDS(X, Y, LENGTH, EXIT_LOOP)
+void *const restrict end_ptr = (void *const restrict)			\
+	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
+PUT_WORDS_LOOP(X, Y, END_PTR, return END_PTR;)
+
 #define PUT_WORDS_BODY(X, Y, LENGTH)					\
-PUT_WORDS_LOOP(X, Y, LENGTH,						\
+PUT_LENGTH_WORDS(X, Y, LENGTH,						\
 	       return X;)
 
 #define PUT_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
-PUT_WORDS_LOOP(X, Y, LENGTH_WORDS,					\
+void *const restrict end_ptr = (void *const restrict)			\
+	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
+PUT_LENGTH_WORDS(X, Y, end_ptr,						\
 	       WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -98,10 +112,19 @@ inline void *memory_put_array_width(void *restrict x,
 
 inline MemoryPutArray *assign_memory_put_array(const size_t width)
 {
-	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_PUT_ARRAY_MAP[width];
+	return (width > WIDTH_MAX_SIZE)
+	     ? NULL_POINTER
+	     : MEMORY_PUT_ARRAY_MAP[width];
 }
 
-/* define memory_put_array<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
+/* define memory_put_array<WIDTH> functions for WIDTH = 0 .. WIDTH_MAX_SIZE */
+inline void *memory_put_array0(void *restrict x,
+			       const void *restrict y,
+			       const size_t length)
+{
+	return x;
+}
+
 inline void *memory_put_array1(void *restrict x,
 			       const void *restrict y,
 			       const size_t length)

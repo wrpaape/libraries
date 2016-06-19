@@ -2,9 +2,9 @@
 
 extern inline MemorySwap *assign_memory_swap(const size_t width);
 
-/* define lookup for 'assign_memory_swap' (zero-width maps to NULL) */
+/* define lookup for 'assign_memory_swap' */
 MemorySwap *const MEMORY_SWAP_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	&memory_swap0,
 	&memory_swap1,  &memory_swap2,  &memory_swap3,  &memory_swap4,
 	&memory_swap5,  &memory_swap6,  &memory_swap7,  &memory_swap8,
 	&memory_swap9,  &memory_swap10, &memory_swap11, &memory_swap12,
@@ -21,6 +21,9 @@ extern inline void memory_swap_buffer(void *const restrict x,
 				      const size_t width);
 
 /* declare all memory_swap<WIDTH> functions extern */
+extern inline void memory_swap0(void *const restrict x,
+				void *const restrict y);
+
 extern inline void memory_swap1(void *const restrict x,
 				void *const restrict y);
 

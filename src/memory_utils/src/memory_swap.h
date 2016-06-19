@@ -3,9 +3,16 @@
 
 #ifdef __cplusplus /* ensure C linkage */
 extern "C" {
-#ifndef restrict /* replace 'restrict' with c++ compatible '__restrict__' */
-#define restrict __restrict__
-#endif
+#	ifndef restrict /* use c++ compatible '__restrict__' */
+#		define restrict __restrict__
+#	endif
+#	ifndef NULL_POINTER /* use c++ null pointer macro */
+#		define NULL_POINTER nullptr
+#	endif
+#else
+#	ifndef NULL_POINTER /* use traditional c null pointer macro */
+#		define NULL_POINTER NULL
+#	endif
 #endif
 
 /* macros defined with leading underscores used for keeping consistency between
@@ -92,10 +99,15 @@ inline void memory_swap_buffer(void *const restrict x,
 
 inline MemorySwap *assign_memory_swap(const size_t width)
 {
-	return (width > WIDTH_MAX_SIZE) ? NULL : MEMORY_SWAP_MAP[width];
+	return (width > WIDTH_MAX_SIZE) ? NULL_POINTER : MEMORY_SWAP_MAP[width];
 }
 
 /* define memory_swap<WIDTH> functions for WIDTH = 1 .. WIDTH_MAX_SIZE */
+inline void memory_swap0(void *const restrict x,
+			 void *const restrict y)
+{
+}
+
 inline void memory_swap1(void *const restrict x,
 			 void *const restrict y)
 {

@@ -2,9 +2,9 @@
 
 extern inline MemoryCopyArray *assign_memory_copy_array(const size_t width);
 
-/* define lookup for 'assign_memory_copy_array' (zero-width maps to NULL) */
+/* define lookup for 'assign_memory_copy_array' */
 MemoryCopyArray *const MEMORY_COPY_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	&memory_copy_array0,
 	&memory_copy_array1,  &memory_copy_array2,  &memory_copy_array3,
 	&memory_copy_array4,  &memory_copy_array5,  &memory_copy_array6,
 	&memory_copy_array7,  &memory_copy_array8,  &memory_copy_array9,
@@ -15,12 +15,16 @@ MemoryCopyArray *const MEMORY_COPY_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul] = {
 
 
 extern inline void memory_copy_array_width(void *restrict x,
-					  const void *restrict y,
-					  const size_t length,
-					  const size_t width);
+					   const void *restrict y,
+					   const size_t length,
+					   const size_t width);
 
 
 /* declare all memory_copy_array<WIDTH> functions extern */
+extern inline void memory_copy_array0(void *restrict x,
+				      const void *restrict y,
+				      const size_t length);
+
 extern inline void memory_copy_array1(void *restrict x,
 				      const void *restrict y,
 				      const size_t length);

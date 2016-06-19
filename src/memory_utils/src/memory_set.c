@@ -2,9 +2,9 @@
 
 extern inline MemorySet *assign_memory_set(const size_t width);
 
-/* define lookup for 'assign_memory_set' (zero-width maps to NULL) */
+/* define lookup for 'assign_memory_set' */
 MemorySet *const MEMORY_SET_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL,
+	&memory_set0,
 	&memory_set1,  &memory_set2,  &memory_set3,  &memory_set4,
 	&memory_set5,  &memory_set6,  &memory_set7,  &memory_set8,
 	&memory_set9,  &memory_set10, &memory_set11, &memory_set12,
@@ -17,6 +17,9 @@ extern inline void memory_set_width(void *const restrict x,
 				    const size_t width);
 
 /* declare all memory_set<WIDTH> functions extern */
+extern inline void memory_set0(void *const restrict x,
+			       const void *const restrict y);
+
 extern inline void memory_set1(void *const restrict x,
 			       const void *const restrict y);
 
