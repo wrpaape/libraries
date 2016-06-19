@@ -71,12 +71,12 @@ extern MemoryCopyArray *const MEMORY_COPY_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 #define HANDLE_COPY_REM16(X, Y) MEMORY_SET_WIDTH(X, Y, 16); return
 
 #define COPY_WORDS_BODY(X, Y, LENGTH)					\
-PUT_WORDS_LOOP(X, Y, LENGTH,						\
-	       return;)
+PUT_WORDS_LOOP_LENGTH(X, Y, LENGTH,					\
+		      return;)
 
 #define COPY_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
-PUT_WORDS_LOOP(X, Y, LENGTH_WORDS,					\
-	       WORD_REM_SWITCH(REM_SIZE, HANDLE_COPY_REM, X, Y))
+PUT_WORDS_LOOP_LENGTH(X, Y, LENGTH_WORDS,				\
+		      WORD_REM_SWITCH(REM_SIZE, HANDLE_COPY_REM, X, Y))
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS

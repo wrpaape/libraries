@@ -46,8 +46,8 @@ int main(void)
 {
   UnityBegin("../test/memory_get_test.c");
   RUN_TEST(test_assign_memory_get, 12);
-  RUN_TEST(test_memory_get_width, 67);
-  RUN_TEST(test_assign_memory_get_then_get, 156);
+  RUN_TEST(test_memory_get_width, 68);
+  RUN_TEST(test_assign_memory_get_then_get, 157);
 
   return (UnityEnd());
 }

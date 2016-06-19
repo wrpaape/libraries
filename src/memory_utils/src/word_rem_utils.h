@@ -34,6 +34,13 @@ extern "C" {
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
+/* PUT_WORDS_LOOP_LENGTH */
+/* put at least 1 word */
+#define PUT_WORDS_LOOP_LENGTH(X, Y, LENGTH, EXIT_LOOP)			\
+void *const restrict end_ptr = (void *const restrict)			\
+	(((word_t *const restrict) X) + (LENGTH));			\
+PUT_WORDS_LOOP(X, Y, end_ptr, EXIT_LOOP)
+
 /* PUT_WORDS_LOOP */
 /* put at least 1 word */
 #define PUT_WORDS_LOOP(X, Y, END_PTR, EXIT_LOOP)			\
@@ -45,17 +52,6 @@ while (1) {								\
 	Y = (void *restrict) (((word_t *restrict) Y) + 1l);		\
 }
 
-/* SET_WORDS_LOOP */
-/* set at least 1 word */
-#define SET_WORDS_LOOP(X, Y, END_PTR, EXIT_LOOP)			\
-void *const restrict end_ptr = (void *const restrict)			\
-	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
-while (1) {								\
-	*((word_t *restrict) X) = *((const word_t *const restrict) Y);	\
-	X = (void *restrict) (((word_t *restrict) X) + 1l);		\
-	if (x == end_ptr)						\
-		EXIT_LOOP						\
-}
 
 /* WORD_REM_SWITCH */
 #if   !defined(WORD_SIZE)

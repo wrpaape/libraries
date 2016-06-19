@@ -11,7 +11,8 @@ void tearDown(void)
 
 void test_assign_memory_put_array(void)
 {
-	TEST_ASSERT_NULL(assign_memory_put_array(0));
+	TEST_ASSERT_EQUAL_PTR(&memory_put_array0,
+			      assign_memory_put_array(0lu));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_put_array1,
 			      assign_memory_put_array(sizeof(Width1)));

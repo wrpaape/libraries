@@ -57,7 +57,7 @@ int main(void)
   RUN_TEST(test_memory_swap_string, 84);
   RUN_TEST(test_memory_swap_pointers, 95);
   RUN_TEST(test_assign_memory_swap, 118);
-  RUN_TEST(test_assign_memory_swap_then_swap, 173);
+  RUN_TEST(test_assign_memory_swap_then_swap, 174);
 
   return (UnityEnd());
 }

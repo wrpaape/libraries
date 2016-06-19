@@ -45,7 +45,7 @@ int main(void)
 {
   UnityBegin("../test/memory_copy_array_test.c");
   RUN_TEST(test_assign_memory_copy_array, 12);
-  RUN_TEST(test_assign_memory_copy_array_then_copy_array, 68);
+  RUN_TEST(test_assign_memory_copy_array_then_copy_array, 69);
 
   return (UnityEnd());
 }

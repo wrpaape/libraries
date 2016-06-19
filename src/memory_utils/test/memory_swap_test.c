@@ -117,7 +117,8 @@ void test_memory_swap_pointers(void)
 
 void test_assign_memory_swap(void)
 {
-	TEST_ASSERT_NULL(assign_memory_swap(0));
+	TEST_ASSERT_EQUAL_PTR(&memory_swap0,
+			      assign_memory_swap(0lu));
 
 	TEST_ASSERT_EQUAL_PTR(&memory_swap1,
 			      assign_memory_swap(sizeof(Width1)));

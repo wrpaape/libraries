@@ -4,7 +4,7 @@ extern inline MemoryGet *assign_memory_get(const size_t width);
 
 /* define lookup for 'assign_memory_get' */
 MemoryGet *const MEMORY_GET_MAP[WIDTH_MAX_SIZE + 1ul] = {
-	NULL_POINTER,
+	&memory_get0,
 	&memory_get1,  &memory_get2,  &memory_get3,  &memory_get4,
 	&memory_get5,  &memory_get6,  &memory_get7,  &memory_get8,
 	&memory_get9,  &memory_get10, &memory_get11, &memory_get12,

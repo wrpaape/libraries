@@ -69,20 +69,13 @@ extern MemoryPutArray *const MEMORY_PUT_ARRAY_MAP[WIDTH_MAX_SIZE + 1ul];
 #define HANDLE_PUT_REM15(X, Y) MEMORY_PUT_WIDTH(X, Y, 15, return)
 #define HANDLE_PUT_REM16(X, Y) MEMORY_PUT_WIDTH(X, Y, 16, return)
 
-#define PUT_LENGTH_WORDS(X, Y, LENGTH, EXIT_LOOP)
-void *const restrict end_ptr = (void *const restrict)			\
-	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
-PUT_WORDS_LOOP(X, Y, END_PTR, return END_PTR;)
-
 #define PUT_WORDS_BODY(X, Y, LENGTH)					\
-PUT_LENGTH_WORDS(X, Y, LENGTH,						\
-	       return X;)
+PUT_WORDS_LOOP_LENGTH(X, Y, LENGTH,					\
+		      return X;)
 
 #define PUT_WORDS_AND_REM_BODY(X, Y, LENGTH_WORDS, REM_SIZE)		\
-void *const restrict end_ptr = (void *const restrict)			\
-	(((word_t *const restrict) X) + (LENGTH_WORDS));		\
-PUT_LENGTH_WORDS(X, Y, end_ptr,						\
-	       WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
+PUT_WORDS_LOOP_LENGTH(X, Y, LENGTH_WORDS,				\
+		      WORD_REM_SWITCH(REM_SIZE, HANDLE_PUT_REM, X, Y))
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
