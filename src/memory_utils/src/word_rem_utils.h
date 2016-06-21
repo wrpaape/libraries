@@ -12,8 +12,7 @@ extern "C" {
 /* EXTERNAL DEPENDENCIES
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-#include "memory_utils.h"	/* Width<WIDTH> */
-#include <utils/word_utils.h>	/* word_t, WORD_SIZE */
+#include "memory_utils.h"	/* Width<WIDTH>, word_t, WORD_SIZE */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -274,7 +273,7 @@ while (1) {								\
 	case 14lu: HANDLE_CASE ## 14 (__VA_ARGS__);		\
 	case 15lu: HANDLE_CASE ## 15 (__VA_ARGS__);		\
 	default:   HANDLE_CASE ## 16 (__VA_ARGS__);		\
-	}							\
+	}
 #else
 #	error "'WORD_SIZE' > 'WIDTH_MAX_SIZE' + 1"
 #endif /* if (WORD_SIZE <= 0lu) */

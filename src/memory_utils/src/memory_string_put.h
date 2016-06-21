@@ -21,7 +21,7 @@ extern "C" {
 
 #include "memory_string.h"	/* struct MemoryString, word_t, WORD_SIZE */
 #include "word_rem_utils.h"	/* PUT_WORDS_LOOP, WORD_REM_SWITCH */
-#include "memory_put_width.h" /* Width<WIDTH>, MEMORY_PUT/GET_WIDTH */
+#include "memory_put_width.h"	/* Width<WIDTH>, MEMORY_PUT/GET_WIDTH */
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * EXTERNAL DEPENDENCIES
@@ -30,7 +30,7 @@ extern "C" {
  * TYPEDEFS, ENUM AND STRUCT DEFINITIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-typedef void *MemoryStringPut(void *const restrict,
+typedef void *MemoryStringPut(void *restrict,
 			      const struct MemoryString *const restrict);
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
@@ -39,6 +39,14 @@ typedef void *MemoryStringPut(void *const restrict,
  *
  * CONSTANTS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+
+/* lookup for dynamic Putter assignment */
+extern MemoryStringPut *const
+MEMORY_STRING_PUT_REM_MAP[WIDTH_MAX_SIZE + 1ul];
+
+extern MemoryStringPut *const
+MEMORY_STRING_PUT_REM_WORDS_MAP[WIDTH_MAX_SIZE + 1ul];
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * CONSTANTS
  *
@@ -46,7 +54,17 @@ typedef void *MemoryStringPut(void *const restrict,
  * FUNCTION-LIKE MACROS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-
+#define MEMORY_STRING_PUT_WORDS_REM_BODY(BUFFER, STRING, REM_WIDTH)	\
+void *const restrict end_ptr = BUFFER + STRING->length;			\
+const word_t *restrict words = STRING->words;				\
+MEMORY_PUT_WIDTH(BUFFER, STRING->rem, REM_WIDTH, BUFFER =);		\
+while (1) {								\
+	*((word_t *restrict) BUFFER) = *words;				\
+	BUFFER = (void *restrict) (((word_t *restrict) BUFFER) + 1l);	\
+	if (BUFFER == end_ptr)						\
+		return BUFFER;						\
+	++words;							\
+}
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS
@@ -61,24 +79,9 @@ typedef void *MemoryStringPut(void *const restrict,
  * TOP-LEVEL FUNCTIONS
  * ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
 
-inline void *
-memory_string_put_words(void *const restrict buffer,
-			const struct MemoryString *const restrict string)
-{
-	const word_t *restrict words         = string->words;
-	const word_t *const restrict end_ptr = (const word_t *const restrict)
-					       string->rem;
-
-
-
-	return (void *) buffer;
-}
-
-
-
 /* put words remainder */
 inline void *
-memory_string_put_rem0(void *const restrict buffer,
+memory_string_put_rem0(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	return (void *) buffer;
@@ -86,7 +89,7 @@ memory_string_put_rem0(void *const restrict buffer,
 
 
 inline void *
-memory_string_put_rem1(void *const restrict buffer,
+memory_string_put_rem1(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 1, return);
@@ -94,121 +97,231 @@ memory_string_put_rem1(void *const restrict buffer,
 
 
 inline void *
-memory_string_put_rem2(void *const restrict buffer,
+memory_string_put_rem2(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 2, return);
 }
 
 inline void *
-memory_string_put_rem3(void *const restrict buffer,
+memory_string_put_rem3(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 3, return);
 }
 
 inline void *
-memory_string_put_rem4(void *const restrict buffer,
+memory_string_put_rem4(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 4, return);
 }
 
 inline void *
-memory_string_put_rem5(void *const restrict buffer,
+memory_string_put_rem5(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 5, return);
 }
 
 inline void *
-memory_string_put_rem6(void *const restrict buffer,
+memory_string_put_rem6(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 6, return);
 }
 
 inline void *
-memory_string_put_rem7(void *const restrict buffer,
+memory_string_put_rem7(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 7, return);
 }
 
 inline void *
-memory_string_put_rem8(void *const restrict buffer,
+memory_string_put_rem8(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 8, return);
 }
 
 inline void *
-memory_string_put_rem9(void *const restrict buffer,
+memory_string_put_rem9(void *restrict buffer,
 		       const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 9, return);
 }
 
 inline void *
-memory_string_put_rem10(void *const restrict buffer,
+memory_string_put_rem10(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 10, return);
 }
 
 inline void *
-memory_string_put_rem11(void *const restrict buffer,
+memory_string_put_rem11(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 11, return);
 }
 
 inline void *
-memory_string_put_rem12(void *const restrict buffer,
+memory_string_put_rem12(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 12, return);
 }
 
 inline void *
-memory_string_put_rem13(void *const restrict buffer,
+memory_string_put_rem13(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 13, return);
 }
 
 inline void *
-memory_string_put_rem14(void *const restrict buffer,
+memory_string_put_rem14(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 14, return);
 }
 
 inline void *
-memory_string_put_rem15(void *const restrict buffer,
+memory_string_put_rem15(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 15, return);
 }
 
 inline void *
-memory_string_put_rem16(void *const restrict buffer,
+memory_string_put_rem16(void *restrict buffer,
 			const struct MemoryString *const restrict string)
 {
 	MEMORY_PUT_WIDTH(buffer, string->rem, 16, return);
 }
 
 
-
-
-inline MemoryPut *assign_memory_string_put(const size_t size)
+/* put words with no remainder */
+inline void *
+memory_string_put_rem_words0(void *restrict buffer,
+			     const struct MemoryString *const restrict string)
 {
-	if (size <= WIDTH_MAX_SIZE)
-		return MEMORY_PUT_MAP[size];
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, Max)
+}
 
-	const size_t length_words = DIV_WORD_SIZE(size);
-	const size_t rem_size	  = REM_WORD_SIZE(size);
 
+/* put words with remainder <WIDTH> > 0 */
+inline void *
+memory_string_put_rem_words1(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 1)
+}
+
+inline void *
+memory_string_put_rem_words2(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 2)
+}
+
+inline void *
+memory_string_put_rem_words3(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 3)
+}
+
+inline void *
+memory_string_put_rem_words4(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 4)
+}
+
+inline void *
+memory_string_put_rem_words5(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 5)
+}
+
+inline void *
+memory_string_put_rem_words6(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 6)
+}
+
+inline void *
+memory_string_put_rem_words7(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 7)
+}
+
+inline void *
+memory_string_put_rem_words8(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 8)
+}
+
+inline void *
+memory_string_put_rem_words9(void *const restrict buffer,
+			     const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 9)
+}
+
+inline void *
+memory_string_put_rem_words10(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 10)
+}
+
+inline void *
+memory_string_put_rem_words11(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 11)
+}
+
+inline void *
+memory_string_put_rem_words12(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 12)
+}
+
+inline void *
+memory_string_put_rem_words13(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 13)
+}
+
+inline void *
+memory_string_put_rem_words14(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 14)
+}
+
+inline void *
+memory_string_put_rem_words15(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 15)
+}
+
+inline void *
+memory_string_put_rem_words16(void *const restrict buffer,
+			      const struct MemoryString *const restrict string)
+{
+	MEMORY_STRING_PUT_WORDS_REM_BODY(buffer, string, 16)
 }
 
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲

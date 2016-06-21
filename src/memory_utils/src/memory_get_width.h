@@ -31,6 +31,8 @@ extern "C" {
 #define MEMORY_GET_WIDTH(PTR, I, WIDTH)					\
 ((void *) (((const Width ## WIDTH *const restrict) (PTR)) + (I)))
 
+#define MEMORY_GET_WIDTH_MAX(PTR, I) MEMORY_GET_WIDTH(PTR, I, Max)
+
 /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
  * FUNCTION-LIKE MACROS */
 
